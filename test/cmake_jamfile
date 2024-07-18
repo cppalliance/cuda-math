@@ -16,4 +16,5 @@ run test_autodiff_1.cpp ;
 run test_polynomial.cpp ;
 
 # Distributions
+run test_arcsine.cpp ;
 run test_binomial.cpp ;
