@@ -9,5 +9,11 @@ project : requirements
     [ requires cxx14_decltype_auto cxx14_generic_lambdas cxx14_return_type_deduction cxx14_variable_templates cxx14_constexpr ]
     ;
 
-run ccmath_abs_test.cpp ;
-run ccmath_ceil_test.cpp ;
+# Autodiff Tests
+run test_autodiff_1.cpp ;
+
+# Tools Tests
+run test_polynomial.cpp ;
+
+# Distributions
+run test_binomial.cpp ;
