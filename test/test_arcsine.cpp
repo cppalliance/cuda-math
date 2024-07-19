@@ -41,6 +41,10 @@ using std::endl;
 #include <limits>
 using std::numeric_limits;
 
+#if defined(BOOST_CHECK_THROW) && defined(BOOST_MATH_NO_EXCEPTIONS)
+#  undef BOOST_CHECK_THROW
+#  define BOOST_CHECK_THROW(x, y)
+#endif
 
 template <class RealType>
 void test_ignore_policy(RealType)
@@ -289,11 +293,13 @@ void test_spots(RealType)
     BOOST_CHECK_CLOSE_FRACTION(pdf(arcsine_01, 0.999999), static_cast<RealType>(318.31004533885312973989414360099118178698415543136L), 100000 * tolerance);// Even less accurate.
 
     // Extreme x.
+    #ifndef BOOST_MATH_ENABLE_SYCL
     if (std::numeric_limits<RealType>::has_infinity)
     { //
       BOOST_CHECK_EQUAL(pdf(arcsine_01, 0), informax<RealType>()); //
       BOOST_CHECK_EQUAL(pdf(arcsine_01, 1), informax<RealType>()); //
     }
+    #endif
 
     BOOST_CHECK_CLOSE_FRACTION(pdf(arcsine_01, tolerance),
       1 /(sqrt(tolerance) * boost::math::constants::pi<RealType>()), 2 * tolerance); //
