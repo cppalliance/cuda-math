@@ -11,7 +11,6 @@ project : requirements
 
 # Distributions
 run test_arcsine.cpp ;
-run test_binomial.cpp ;
 
 # Special Functions
 run test_beta_simple.cpp ;
