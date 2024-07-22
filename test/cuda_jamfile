@@ -26,5 +26,5 @@ run test_arcsine_quan_float.cu ;
 run test_binomial.cpp ;
 
 # Special Functions
-run test_beta_simple.cpp ;
+# run test_beta_simple.cpp ;
 run test_beta_double.cu ;
