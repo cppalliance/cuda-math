@@ -18,4 +18,5 @@ run test_polynomial.cpp ;
 # Distributions
 run test_arcsine.cpp ;
 run test_arcsine_cdf_double.cu ;
+run test_arcsine_cdf_float.cu ;
 run test_binomial.cpp ;
