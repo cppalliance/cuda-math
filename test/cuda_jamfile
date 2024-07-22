@@ -22,4 +22,5 @@ run test_arcsine_cdf_float.cu ;
 run test_arcsine_pdf_double.cu ;
 run test_arcsine_pdf_float.cu ;
 run test_arcsine_quan_double.cu ;
+run test_arcsine_quan_float.cu ;
 run test_binomial.cpp ;
