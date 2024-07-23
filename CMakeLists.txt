@@ -11,6 +11,10 @@ add_library(boost_cuda_math INTERFACE)
 
 add_library(Boost::cuda_math ALIAS boost_cuda_math)
 
+if(NOT TARGET Boost::math)
+  add_library(Boost::math ALIAS boost_cuda_math)
+endif()
+
 target_include_directories(boost_cuda_math INTERFACE include)
 
 include(CMakeDependentOption)
