@@ -5,13 +5,17 @@
 
 cmake_minimum_required(VERSION 3.5...3.16)
 
-project(boost_math VERSION "${BOOST_SUPERPROJECT_VERSION}" LANGUAGES CXX)
+project(boost_cuda_math VERSION "${BOOST_SUPERPROJECT_VERSION}" LANGUAGES CXX)
 
-add_library(boost_math INTERFACE)
+add_library(boost_cuda_math INTERFACE)
 
-add_library(Boost::math ALIAS boost_math)
+add_library(Boost::cuda_math ALIAS boost_cuda_math)
 
-target_include_directories(boost_math INTERFACE include)
+if(NOT TARGET Boost::math)
+  add_library(Boost::math ALIAS boost_cuda_math)
+endif()
+
+target_include_directories(boost_cuda_math INTERFACE include)
 
 include(CMakeDependentOption)
 
@@ -21,11 +25,11 @@ message(STATUS "Boost.Math: standalone mode ${BOOST_MATH_STANDALONE}")
 
 if(BOOST_MATH_STANDALONE)
 
-  target_compile_definitions(boost_math INTERFACE BOOST_MATH_STANDALONE=1)
+  target_compile_definitions(boost_cuda_math INTERFACE BOOST_MATH_STANDALONE=1)
 
 else()
 
-  target_link_libraries(boost_math
+  target_link_libraries(boost_cuda_math
     INTERFACE
       Boost::assert
       Boost::concept_check
@@ -41,6 +45,12 @@ else()
 
 endif()
 
+if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
+
+  add_subdirectory(test)
+
+endif()
+
 # Only enable tests when we're the root project
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
@@ -49,4 +59,5 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   
   include(GNUInstallDirs)
   install(DIRECTORY "include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
 endif()
