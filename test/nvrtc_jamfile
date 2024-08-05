@@ -10,4 +10,4 @@ project : requirements
     ;
 
 # Special Functions
-run test_beta_nvrtc.cpp ;
+run test_gamma_nvrtc.cpp ;
