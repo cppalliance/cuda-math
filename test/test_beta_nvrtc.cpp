@@ -55,11 +55,15 @@ int main()
 
     // Create NVRTC program
     const char* const includeNames = "<boost/math/special_functions/beta.hpp>";
-    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_beta_nvrtc_ptx.cu", 1, nullptr, &includeNames);
+    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_beta_kernel.cu", 0, nullptr, nullptr);
     checkNVRTCError(res, "Failed to create NVRTC program");
 
+    nvrtcAddNameExpression(prog, "test_beta_kernel");
+
+    const char* opts[] = {"--std=c++14", "-I/usr/local/include/boost"};
+
     // Compile the program
-    res = nvrtcCompileProgram(prog, 0, nullptr);
+    res = nvrtcCompileProgram(prog, 2, opts);
     if (res != NVRTC_SUCCESS) 
     {
         size_t log_size;
@@ -81,7 +85,7 @@ int main()
     CUmodule module;
     CUfunction kernel;
     cuModuleLoadDataEx(&module, ptx, 0, 0, 0);
-    cuModuleGetFunction(&kernel, module, "beta");
+    cuModuleGetFunction(&kernel, module, "test_beta_kernel");
 
     // Clean up
     nvrtcDestroyProgram(&prog);
