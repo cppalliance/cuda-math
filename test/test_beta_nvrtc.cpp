@@ -26,8 +26,9 @@ typedef double float_type;
  *
  */
 const char* cuda_kernel = R"(
-extern "C" __global__ 
 #include <boost/math/special_functions/beta.hpp>
+
+extern "C" __global__ 
 void cuda_test(const float *in1, const float * in2, float *out, int numElements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -60,10 +61,10 @@ int main()
 
     nvrtcAddNameExpression(prog, "test_beta_kernel");
 
-    const char* opts[] = {"--std=c++14", "-I/usr/local/include/boost"};
+    const char* opts[] = {"--std=c++14", "-I/usr/local/include/", "-I/usr/include/c++/11", "-I/usr/include/c++/11/x86_64-redhat-linux/", "-I/usr/include/"};
 
     // Compile the program
-    res = nvrtcCompileProgram(prog, 2, opts);
+    res = nvrtcCompileProgram(prog, 5, opts);
     if (res != NVRTC_SUCCESS) 
     {
         size_t log_size;
