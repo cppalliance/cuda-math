@@ -88,7 +88,7 @@ jobs:
         with:
           cuda: '12.5.0'
           method: 'network'
-          sub-packages: '["nvcc"]'
+          sub-packages: '["nvcc", "cudart", "cudart-dev", "nvrtc", "nvrtc-dev"]'
 
       - name: Output CUDA information
         run: |
