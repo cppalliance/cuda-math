@@ -25,7 +25,7 @@ if(HAVE_BOOST_TEST)
 
         enable_testing()
 
-        boost_test_jamfile(FILE nvrtc_jamfile LINK_LIBRARIES Boost::cuda_math Boost::assert Boost::concept_check Boost::config Boost::core Boost::integer Boost::lexical_cast Boost::multiprecision Boost::predef Boost::random Boost::static_assert Boost::throw_exception Boost::unit_test_framework ${CUDA_LIBRARIES} nvrtc cuda )
+        boost_test_jamfile(FILE nvrtc_jamfile LINK_LIBRARIES Boost::cuda_math Boost::assert Boost::concept_check Boost::config Boost::core Boost::integer Boost::lexical_cast Boost::multiprecision Boost::predef Boost::random Boost::static_assert Boost::throw_exception ${CUDA_nvrtc_LIBRARY} ${CUDA_LIBRARIES} ${CUDA_CUDA_LIBRARY} INCLUDE_DIRECTORIES ${CUDA_INCLUDE_DIRS} )
 
     elseif (BOOST_MATH_ENABLE_SYCL)
 
