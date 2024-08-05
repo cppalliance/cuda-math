@@ -16,6 +16,21 @@ if(HAVE_BOOST_TEST)
         enable_testing()
 
         boost_test_jamfile(FILE cuda_jamfile LINK_LIBRARIES Boost::cuda_math Boost::assert Boost::concept_check Boost::config Boost::core Boost::integer Boost::lexical_cast Boost::multiprecision Boost::predef Boost::random Boost::static_assert Boost::throw_exception Boost::unit_test_framework )
+
+    elseif (BOOST_MATH_ENABLE_NVRTC)
+
+        message(STATUS "Building boost.cuda_math with NVRTC")
+
+        find_package(CUDA REQUIRED)
+
+        set(CUDA_NVRTC_LIB_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64/libnvrtc.so")
+        set(CUDA_CUDART_LIB_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcudart.so")
+        set(CUDA_DRIVER_LIB_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcuda.so")
+
+        enable_testing()
+
+        boost_test_jamfile(FILE nvrtc_jamfile LINK_LIBRARIES Boost::cuda_math Boost::assert Boost::concept_check Boost::config Boost::core Boost::integer Boost::lexical_cast Boost::multiprecision Boost::predef Boost::random Boost::static_assert Boost::throw_exception Boost::unit_test_framework ${CUDA_CUDART_LIB_PATH} ${CUDA_NVRTC_LIB_PATH} ${CUDA_DRIVER_LIB_PATH} )
+
     elseif (BOOST_MATH_ENABLE_SYCL)
 
         message(STATUS "Building boost.cuda_math with SYCL")
