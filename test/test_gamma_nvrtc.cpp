@@ -11,7 +11,6 @@
 #include <iomanip>
 #include <vector>
 #include <random>
-#include <boost/math/special_functions/beta.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
 
@@ -25,6 +24,19 @@
  *
  */
 const char* cuda_kernel = R"(
+
+namespace boost {
+namespace math {
+
+template <typename T>
+__host__ __device__ T tgamma(T x)
+{
+   return ::tgamma(x);
+}
+
+} // namespace math
+} // namespace boost
+
 extern "C" __global__ 
 void test_gamma_kernel(const float *in1, const float*, float *out, int numElements)
 {
@@ -32,7 +44,7 @@ void test_gamma_kernel(const float *in1, const float*, float *out, int numElemen
 
     if (i < numElements)
     {
-        out[i] = ::tgamma(in1[i]);
+        out[i] = boost::math::tgamma(in1[i]);
     }
 }
 )";
