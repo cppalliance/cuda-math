@@ -27,9 +27,9 @@ typedef double float_type;
  */
 const char* cuda_kernel = R"(
 extern "C" __global__ 
-void cuda_test(const float_type *in1, const float_type * in2, float_type *out, int numElements)
+#include <boost/math/special_functions/beta.hpp>
+void cuda_test(const float *in1, const float * in2, float *out, int numElements)
 {
-    using std::cos;
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (i < numElements)
@@ -54,7 +54,8 @@ int main()
     nvrtcResult res;
 
     // Create NVRTC program
-    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_beta_nvrtc_ptx.cu", 0, nullptr, nullptr);
+    const char* const includeNames = "<boost/math/special_functions/beta.hpp>";
+    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_beta_nvrtc_ptx.cu", 1, nullptr, &includeNames);
     checkNVRTCError(res, "Failed to create NVRTC program");
 
     // Compile the program
