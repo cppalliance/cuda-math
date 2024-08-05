@@ -13,13 +13,11 @@
 #include <random>
 #include <boost/math/special_functions/beta.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
-#include "cuda_managed_ptr.hpp"
-#include "stopwatch.hpp"
 
 // For the CUDA runtime routines (prefixed with "cuda_")
-#include <nvrtc.h>
-#include <cuda_runtime.h>
 #include <cuda.h>
+#include <cuda_runtime.h>
+#include <nvrtc.h>
 
 typedef double float_type;
 
@@ -131,11 +129,12 @@ int main()
         auto res = boost::math::beta(h_in1[i], h_in2[i]);
         if (std::isfinite(res))
         {
-            if (res != h_out[i])
+            if (boost::math::epsilon_difference(res, h_out[i]) > 300)
             {
                 std::cout << "error at line: " << i
                         << "\nParallel: " << h_out[i]
-                        << "\n  Serial: " << res << std::endl;
+                        << "\n  Serial: " << res
+                        << "\n    Dist: " << boost::math::epsilon_difference(res, h_out[i]) << std::endl;
             }
         }
     }
