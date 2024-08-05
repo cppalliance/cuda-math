@@ -12,6 +12,7 @@
 #include <vector>
 #include <random>
 #include <boost/math/special_functions/beta.hpp>
+#include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
 
 // For the CUDA runtime routines (prefixed with "cuda_")
@@ -19,23 +20,19 @@
 #include <cuda_runtime.h>
 #include <nvrtc.h>
 
-typedef double float_type;
-
 /**
  * CUDA Kernel Device code
  *
  */
 const char* cuda_kernel = R"(
-#include <boost/math/special_functions/beta.hpp>
-
 extern "C" __global__ 
-void cuda_test(const float *in1, const float * in2, float *out, int numElements)
+void test_gamma_kernel(const float *in1, const float*, float *out, int numElements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (i < numElements)
     {
-        out[i] = boost::math::beta(in1[i], in2[i]);
+        out[i] = ::tgamma(in1[i]);
     }
 }
 )";
@@ -55,16 +52,15 @@ int main()
     nvrtcResult res;
 
     // Create NVRTC program
-    const char* const includeNames = "<boost/math/special_functions/beta.hpp>";
-    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_beta_kernel.cu", 0, nullptr, nullptr);
+    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_gamma_kernel.cu", 0, nullptr, nullptr);
     checkNVRTCError(res, "Failed to create NVRTC program");
 
-    nvrtcAddNameExpression(prog, "test_beta_kernel");
+    nvrtcAddNameExpression(prog, "test_gamma_kernel");
 
-    const char* opts[] = {"--std=c++14", "-I/usr/local/include/", "-I/usr/include/c++/11", "-I/usr/include/c++/11/x86_64-redhat-linux/", "-I/usr/include/"};
+    const char* opts[] = {"--std=c++14"};
 
     // Compile the program
-    res = nvrtcCompileProgram(prog, 5, opts);
+    res = nvrtcCompileProgram(prog, 1, opts);
     if (res != NVRTC_SUCCESS) 
     {
         size_t log_size;
@@ -86,7 +82,7 @@ int main()
     CUmodule module;
     CUfunction kernel;
     cuModuleLoadDataEx(&module, ptx, 0, 0, 0);
-    cuModuleGetFunction(&kernel, module, "test_beta_kernel");
+    cuModuleGetFunction(&kernel, module, "test_gamma_kernel");
 
     // Clean up
     nvrtcDestroyProgram(&prog);
@@ -132,7 +128,7 @@ int main()
     // Verify results
     for (int i = 0; i < numElements; ++i) 
     {
-        auto res = boost::math::beta(h_in1[i], h_in2[i]);
+        auto res = boost::math::tgamma(h_in1[i]);
         if (std::isfinite(res))
         {
             if (boost::math::epsilon_difference(res, h_out[i]) > 300)
