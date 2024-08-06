@@ -30,7 +30,7 @@ extern "C" __global__
 void test_gamma_kernel(const float *in1, const float*, float *out, int numElements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
-
+    assert(i < 5000);
     if (i < numElements)
     {
         out[i] = boost::math::tgamma(in1[i]);
@@ -96,11 +96,7 @@ int main()
         CUfunction kernel;
         cuModuleLoadDataEx(&module, ptx, 0, 0, 0);
         cuModuleGetFunction(&kernel, module, "test_gamma_kernel");
-
-        // Clean up
-        nvrtcDestroyProgram(&prog);
-        delete[] ptx;
-
+    
         // Input parameters
         int numElements = 5000;
         float *h_in1, *h_in2, *h_out;
@@ -161,6 +157,9 @@ int main()
         delete[] h_in1;
         delete[] h_in2;
         delete[] h_out;
+
+        nvrtcDestroyProgram(&prog);
+        delete[] ptx;
 
         std::cout << "Kernel executed successfully." << std::endl;
         return 0;
