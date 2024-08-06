@@ -14,29 +14,42 @@
 #include <exception>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
-
-// For the CUDA runtime routines (prefixed with "cuda_")
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <nvrtc.h>
 
-/**
- * CUDA Kernel Device code
- *
- */
 const char* cuda_kernel = R"(
 #include <boost/math/special_functions/gamma.hpp>
 extern "C" __global__ 
 void test_gamma_kernel(const float *in1, const float*, float *out, int numElements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
-    assert(i < 5000);
     if (i < numElements)
     {
         out[i] = boost::math::tgamma(in1[i]);
     }
 }
 )";
+
+void checkCUDAError(cudaError_t result, const char* msg)
+{
+    if (result != cudaSuccess)
+    {
+        std::cerr << msg << ": " << cudaGetErrorString(result) << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+void checkCUError(CUresult result, const char* msg)
+{
+    if (result != CUDA_SUCCESS)
+    {
+        const char* errorStr;
+        cuGetErrorString(result, &errorStr);
+        std::cerr << msg << ": " << errorStr << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
 
 void checkNVRTCError(nvrtcResult result, const char* msg)
 {
@@ -51,17 +64,19 @@ int main()
 {
     try
     {
+        // Initialize CUDA driver API
+        checkCUError(cuInit(0), "Failed to initialize CUDA");
+
+        // Create CUDA context
+        CUcontext context;
+        CUdevice device;
+        checkCUError(cuDeviceGet(&device, 0), "Failed to get CUDA device");
+        checkCUError(cuCtxCreate(&context, 0, device), "Failed to create CUDA context");
+
         nvrtcProgram prog;
         nvrtcResult res;
 
-        // Create NVRTC program
-        res = nvrtcCreateProgram(&prog, 
-                                cuda_kernel, 
-                                "test_gamma_kernel.cu", 
-                                0, 
-                                nullptr, 
-                                nullptr);
-
+        res = nvrtcCreateProgram(&prog, cuda_kernel, "test_gamma_kernel.cu", 0, nullptr, nullptr);
         checkNVRTCError(res, "Failed to create NVRTC program");
 
         nvrtcAddNameExpression(prog, "test_gamma_kernel");
@@ -94,10 +109,9 @@ int main()
         // Load PTX into CUDA module
         CUmodule module;
         CUfunction kernel;
-        cuModuleLoadDataEx(&module, ptx, 0, 0, 0);
-        cuModuleGetFunction(&kernel, module, "test_gamma_kernel");
-    
-        // Input parameters
+        checkCUError(cuModuleLoadDataEx(&module, ptx, 0, 0, 0), "Failed to load module");
+        checkCUError(cuModuleGetFunction(&kernel, module, "test_gamma_kernel"), "Failed to get kernel function");
+
         int numElements = 5000;
         float *h_in1, *h_in2, *h_out;
         float *d_in1, *d_in2, *d_out;
@@ -116,25 +130,21 @@ int main()
             h_in2[i] = static_cast<float>(dist(rng));
         }
 
-        // Allocate memory on the device
-        cudaMalloc(&d_in1, numElements * sizeof(float));
-        cudaMalloc(&d_in2, numElements * sizeof(float));
-        cudaMalloc(&d_out, numElements * sizeof(float));
+        checkCUDAError(cudaMalloc(&d_in1, numElements * sizeof(float)), "Failed to allocate device memory for d_in1");
+        checkCUDAError(cudaMalloc(&d_in2, numElements * sizeof(float)), "Failed to allocate device memory for d_in2");
+        checkCUDAError(cudaMalloc(&d_out, numElements * sizeof(float)), "Failed to allocate device memory for d_out");
 
-        // Copy input data to device
-        cudaMemcpy(d_in1, h_in1, numElements * sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_in2, h_in2, numElements * sizeof(float), cudaMemcpyHostToDevice);
+        checkCUDAError(cudaMemcpy(d_in1, h_in1, numElements * sizeof(float), cudaMemcpyHostToDevice), "Failed to copy data to device for d_in1");
+        checkCUDAError(cudaMemcpy(d_in2, h_in2, numElements * sizeof(float), cudaMemcpyHostToDevice), "Failed to copy data to device for d_in2");
 
-        // Launch the kernel
         int blockSize = 256;
         int numBlocks = (numElements + blockSize - 1) / blockSize;
         void* args[] = { &d_in1, &d_in2, &d_out, &numElements };
-        cuLaunchKernel(kernel, numBlocks, 1, 1, blockSize, 1, 1, 0, 0, args, 0);
+        checkCUError(cuLaunchKernel(kernel, numBlocks, 1, 1, blockSize, 1, 1, 0, 0, args, 0), "Kernel launch failed");
 
-        // Copy result back to host
-        cudaMemcpy(h_out, d_out, numElements * sizeof(float), cudaMemcpyDeviceToHost);
+        checkCUDAError(cudaMemcpy(h_out, d_out, numElements * sizeof(float), cudaMemcpyDeviceToHost), "Failed to copy data back to host for h_out");
 
-        // Verify results
+        // Verify Result
         for (int i = 0; i < numElements; ++i) 
         {
             auto res = boost::math::tgamma(h_in1[i]);
@@ -150,7 +160,6 @@ int main()
             }
         }
 
-        // Clean up
         cudaFree(d_in1);
         cudaFree(d_in2);
         cudaFree(d_out);
@@ -161,11 +170,14 @@ int main()
         nvrtcDestroyProgram(&prog);
         delete[] ptx;
 
+        cuCtxDestroy(context);
+
         std::cout << "Kernel executed successfully." << std::endl;
         return 0;
     }
     catch(const std::exception& e)
     {
         std::cerr << "Stopped with exception: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 }
