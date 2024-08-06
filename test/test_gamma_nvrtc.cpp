@@ -82,13 +82,13 @@ int main()
         nvrtcAddNameExpression(prog, "test_gamma_kernel");
 
         #ifdef BOOST_MATH_NVRTC_CI_RUN
-        const char* opts[] = {"--std=c++14", "--include-path=/home/runner/work/cuda-math/boost-root/libs/cuda-math/include/"};
+        const char* opts[] = {"--std=c++14", "--gpu-architecture=compute_75", "--include-path=/home/runner/work/cuda-math/boost-root/libs/cuda-math/include/"};
         #else
         const char* opts[] = {"--std=c++14", "--include-path=/home/mborland/Documents/boost/libs/cuda-math/include/"};
         #endif
 
         // Compile the program
-        res = nvrtcCompileProgram(prog, 2, opts);
+        res = nvrtcCompileProgram(prog, sizeof(opts) / sizeof(const char*), opts);
         if (res != NVRTC_SUCCESS) 
         {
             size_t log_size;
