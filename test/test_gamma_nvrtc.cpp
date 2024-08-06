@@ -24,19 +24,7 @@
  *
  */
 const char* cuda_kernel = R"(
-
-namespace boost {
-namespace math {
-
-template <typename T>
-__host__ __device__ T tgamma(T x)
-{
-   return ::tgamma(x);
-}
-
-} // namespace math
-} // namespace boost
-
+#include <boost/math/special_functions/gamma.hpp>
 extern "C" __global__ 
 void test_gamma_kernel(const float *in1, const float*, float *out, int numElements)
 {
@@ -64,15 +52,25 @@ int main()
     nvrtcResult res;
 
     // Create NVRTC program
-    res = nvrtcCreateProgram(&prog, cuda_kernel, "test_gamma_kernel.cu", 0, nullptr, nullptr);
+    res = nvrtcCreateProgram(&prog, 
+                             cuda_kernel, 
+                             "test_gamma_kernel.cu", 
+                             0, 
+                             nullptr, 
+                             nullptr);
+
     checkNVRTCError(res, "Failed to create NVRTC program");
 
     nvrtcAddNameExpression(prog, "test_gamma_kernel");
 
-    const char* opts[] = {"--std=c++14"};
+    #ifdef BOOST_MATH_NVRTC_CI_RUN
+    const char* opts[] = {"--std=c++14", "--include-path=../libs/cuda-math/include/"};
+    #else
+    const char* opts[] = {"--std=c++14", "--include-path=/home/mborland/Documents/boost/libs/cuda-math/include/"};
+    #endif
 
     // Compile the program
-    res = nvrtcCompileProgram(prog, 1, opts);
+    res = nvrtcCompileProgram(prog, 2, opts);
     if (res != NVRTC_SUCCESS) 
     {
         size_t log_size;
