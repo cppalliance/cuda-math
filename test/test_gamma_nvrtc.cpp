@@ -102,7 +102,7 @@ int main()
         delete[] ptx;
 
         // Input parameters
-        int numElements = 50000;
+        int numElements = 5000;
         float *h_in1, *h_in2, *h_out;
         float *d_in1, *d_in2, *d_out;
 
