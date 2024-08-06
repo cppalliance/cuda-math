@@ -16,10 +16,6 @@
 
 #ifdef __CUDACC_RTC__
 
-#include <cuda.h>
-#include <cuda_runtime.h>
-#include <nvrtc.h>
-
 namespace boost {
 namespace math {
 
