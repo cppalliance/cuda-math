@@ -40,7 +40,6 @@ if(HAVE_BOOST_TEST)
         set(CMAKE_CXX_COMPILER "icpx")
         set(CMAKE_C_COMPILER "icx")
 
-
         enable_testing()
 
         boost_test_jamfile(FILE sycl_jamfile LINK_LIBRARIES Boost::cuda_math Boost::assert Boost::concept_check Boost::config Boost::core Boost::integer Boost::lexical_cast Boost::multiprecision Boost::predef Boost::random Boost::static_assert Boost::throw_exception Boost::unit_test_framework sycl COMPILE_OPTIONS -fsycl )
