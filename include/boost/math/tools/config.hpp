@@ -829,6 +829,8 @@ BOOST_MATH_GPU_ENABLED constexpr void gpu_safe_swap(T& a, T& b) { T t(a); a = b;
 #  define BOOST_MATH_INLINE_CONSTEXPR constexpr
 #endif
 
+#define BOOST_MATH_INSTRUMENT_VARIABLE(x) 
+
 #endif // NVRTC
 
 #endif // BOOST_MATH_TOOLS_CONFIG_HPP
