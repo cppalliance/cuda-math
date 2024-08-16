@@ -2287,6 +2287,7 @@ BOOST_MATH_GPU_ENABLED inline tools::promote_args_t<T1, T2>
 #else
 
 #include <boost/math/tools/config.hpp>
+#include <boost/math/special_functions/expm1.hpp>
 
 namespace boost {
 namespace math {
@@ -2307,6 +2308,19 @@ template <typename T, typename Policy>
 inline BOOST_MATH_GPU_ENABLED T lgamma(T x, const Policy&)
 {
    return boost::math::lgamma(x);
+}
+
+template <typename T>
+BOOST_MATH_GPU_ENABLED T tgamma1pm1(T z)
+{
+   using namespace boost::math;
+
+   if (fabs(z) < T(0.55))
+   {
+      return expm1(lgamma(z));
+   }
+
+   return expm1(lgamma(1 + z));
 }
 
 } // namespace math
