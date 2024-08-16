@@ -16,12 +16,14 @@
 #pragma once
 #endif
 
+#include <boost/math/tools/config.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 
 namespace boost{ namespace math{ namespace detail{
 
 template <class T>
-inline T asymptotic_bessel_amplitude(T v, T x)
+BOOST_MATH_GPU_ENABLED inline T asymptotic_bessel_amplitude(T v, T x)
 {
    // Calculate the amplitude of J(v, x) and Y(v, x) for large
    // x: see A&S 9.2.28.
@@ -39,7 +41,7 @@ inline T asymptotic_bessel_amplitude(T v, T x)
 }
 
 template <class T>
-T asymptotic_bessel_phase_mx(T v, T x)
+BOOST_MATH_GPU_ENABLED T asymptotic_bessel_phase_mx(T v, T x)
 {
    //
    // Calculate the phase of J(v, x) and Y(v, x) for large x.
@@ -63,7 +65,7 @@ T asymptotic_bessel_phase_mx(T v, T x)
 }
 
 template <class T, class Policy>
-inline T asymptotic_bessel_y_large_x_2(T v, T x, const Policy& pol)
+BOOST_MATH_GPU_ENABLED inline T asymptotic_bessel_y_large_x_2(T v, T x, const Policy& pol)
 {
    // See A&S 9.2.19.
    BOOST_MATH_STD_USING
@@ -93,7 +95,7 @@ inline T asymptotic_bessel_y_large_x_2(T v, T x, const Policy& pol)
 }
 
 template <class T, class Policy>
-inline T asymptotic_bessel_j_large_x_2(T v, T x, const Policy& pol)
+BOOST_MATH_GPU_ENABLED inline T asymptotic_bessel_j_large_x_2(T v, T x, const Policy& pol)
 {
    // See A&S 9.2.19.
    BOOST_MATH_STD_USING
@@ -124,7 +126,7 @@ inline T asymptotic_bessel_j_large_x_2(T v, T x, const Policy& pol)
 }
 
 template <class T>
-inline bool asymptotic_bessel_large_x_limit(int v, const T& x)
+BOOST_MATH_GPU_ENABLED inline bool asymptotic_bessel_large_x_limit(int v, const T& x)
 {
    BOOST_MATH_STD_USING
       //
@@ -142,7 +144,7 @@ inline bool asymptotic_bessel_large_x_limit(int v, const T& x)
 }
 
 template <class T>
-inline bool asymptotic_bessel_large_x_limit(const T& v, const T& x)
+BOOST_MATH_GPU_ENABLED inline bool asymptotic_bessel_large_x_limit(const T& v, const T& x)
 {
    BOOST_MATH_STD_USING
    //
@@ -159,7 +161,7 @@ inline bool asymptotic_bessel_large_x_limit(const T& v, const T& x)
 }
 
 template <class T, class Policy>
-void temme_asymptotic_y_small_x(T v, T x, T* Y, T* Y1, const Policy& pol)
+BOOST_MATH_GPU_ENABLED void temme_asymptotic_y_small_x(T v, T x, T* Y, T* Y1, const Policy& pol)
 {
    T c = 1;
    T p = (v / boost::math::sin_pi(v, pol)) * pow(x / 2, -v) / boost::math::tgamma(1 - v, pol);
@@ -193,7 +195,7 @@ void temme_asymptotic_y_small_x(T v, T x, T* Y, T* Y1, const Policy& pol)
 }
 
 template <class T, class Policy>
-T asymptotic_bessel_i_large_x(T v, T x, const Policy& pol)
+BOOST_MATH_GPU_ENABLED T asymptotic_bessel_i_large_x(T v, T x, const Policy& pol)
 {
    BOOST_MATH_STD_USING  // ADL of std names
    T s = 1;

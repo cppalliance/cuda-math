@@ -20,7 +20,6 @@
 #include <boost/math/special_functions/detail/bessel_jy_series.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/policies/error_handling.hpp>
-#include <complex>
 
 // Bessel functions of the first and second kind of fractional order
 
@@ -38,7 +37,7 @@ namespace boost { namespace math {
       // try it and see...
       //
       template <class T, class Policy>
-      bool hankel_PQ(T v, T x, T* p, T* q, const Policy& )
+      BOOST_MATH_GPU_ENABLED bool hankel_PQ(T v, T x, T* p, T* q, const Policy& )
       {
          BOOST_MATH_STD_USING
             T tolerance = 2 * policies::get_epsilon<T, Policy>();
@@ -70,7 +69,7 @@ namespace boost { namespace math {
       // Calculate Y(v, x) and Y(v+1, x) by Temme's method, see
       // Temme, Journal of Computational Physics, vol 21, 343 (1976)
       template <typename T, typename Policy>
-      int temme_jy(T v, T x, T* Y, T* Y1, const Policy& pol)
+      BOOST_MATH_GPU_ENABLED int temme_jy(T v, T x, T* Y, T* Y1, const Policy& pol)
       {
          T g, h, p, q, f, coef, sum, sum1, tolerance;
          T a, d, e, sigma;
@@ -139,7 +138,7 @@ namespace boost { namespace math {
       // Evaluate continued fraction fv = J_(v+1) / J_v, see
       // Abramowitz and Stegun, Handbook of Mathematical Functions, 1972, 9.1.73
       template <typename T, typename Policy>
-      int CF1_jy(T v, T x, T* fv, int* sign, const Policy& pol)
+      BOOST_MATH_GPU_ENABLED int CF1_jy(T v, T x, T* fv, int* sign, const Policy& pol)
       {
          T C, D, f, a, b, delta, tiny, tolerance;
          unsigned long k;
@@ -185,7 +184,7 @@ namespace boost { namespace math {
       // real values only.
       //
       template <typename T, typename Policy>
-      int CF2_jy(T v, T x, T* p, T* q, const Policy& pol)
+      BOOST_MATH_GPU_ENABLED int CF2_jy(T v, T x, T* p, T* q, const Policy& pol)
       {
          BOOST_MATH_STD_USING
 
@@ -254,13 +253,13 @@ namespace boost { namespace math {
          return 0;
       }
 
-      static const int need_j = 1;
-      static const int need_y = 2;
+      BOOST_MATH_STATIC const int need_j = 1;
+      BOOST_MATH_STATIC const int need_y = 2;
 
       // Compute J(v, x) and Y(v, x) simultaneously by Steed's method, see
       // Barnett et al, Computer Physics Communications, vol 8, 377 (1974)
       template <typename T, typename Policy>
-      int bessel_jy(T v, T x, T* J, T* Y, int kind, const Policy& pol)
+      BOOST_MATH_GPU_ENABLED int bessel_jy(T v, T x, T* J, T* Y, int kind, const Policy& pol)
       {
          BOOST_MATH_ASSERT(x >= 0);
 
@@ -273,7 +272,7 @@ namespace boost { namespace math {
          T cp = 0;
          T sp = 0;
 
-         static const char* function = "boost::math::bessel_jy<%1%>(%1%,%1%)";
+         constexpr auto function = "boost::math::bessel_jy<%1%>(%1%,%1%)";
 
          BOOST_MATH_STD_USING
             using namespace boost::math::tools;
