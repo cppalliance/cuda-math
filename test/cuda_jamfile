@@ -97,6 +97,8 @@ run test_beta_float.cu ;
 
 run test_bessel_i0_double.cu ;
 run test_bessel_i0_float.cu ;
+run test_bessel_i1_double.cu ;
+run test_bessel_i1_float.cu ;
 
 run test_cbrt_double.cu ;
 run test_cbrt_float.cu ;
