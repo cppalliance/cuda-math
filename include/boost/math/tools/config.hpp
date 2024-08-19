@@ -798,6 +798,7 @@ BOOST_MATH_GPU_ENABLED constexpr T gpu_safe_max(const T& a, const T& b) { return
 #define BOOST_MATH_FORCEINLINE __forceinline__
 #define BOOST_MATH_STD_USING  
 #define BOOST_MATH_IF_CONSTEXPR if constexpr
+#define BOOST_MATH_IS_FLOAT(T) (boost::math::is_floating_point<T>::value)
 
 // This should be defined to nothing but since it is not specifically a math macro
 // we need to undef before proceeding
