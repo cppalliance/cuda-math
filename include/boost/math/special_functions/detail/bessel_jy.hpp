@@ -18,6 +18,7 @@
 #include <boost/math/special_functions/hypot.hpp>
 #include <boost/math/special_functions/sin_pi.hpp>
 #include <boost/math/special_functions/cos_pi.hpp>
+#include <boost/math/special_functions/round.hpp>
 #include <boost/math/special_functions/detail/bessel_jy_asym.hpp>
 #include <boost/math/special_functions/detail/bessel_jy_series.hpp>
 #include <boost/math/constants/constants.hpp>

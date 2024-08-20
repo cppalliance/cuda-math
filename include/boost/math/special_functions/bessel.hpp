@@ -143,7 +143,6 @@ template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED T cyl_bessel_j_imp_final(T v, T x, const bessel_no_int_tag& t, const Policy& pol)
 {
    BOOST_MATH_STD_USING
-   constexpr auto function = "boost::math::bessel_j<%1%>(%1%,%1%)";
 
    T result_J, y; // LCOV_EXCL_LINE
    bessel_jy(v, x, &result_J, &y, need_j, pol);
