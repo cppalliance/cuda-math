@@ -424,15 +424,15 @@ namespace boost
    template <class RT>
    struct max_factorial;
    template <class RT>
-   RT factorial(unsigned int);
+   BOOST_MATH_GPU_ENABLED RT factorial(unsigned int);
    template <class RT, class Policy>
-   RT factorial(unsigned int, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED RT factorial(unsigned int, const Policy& pol);
    template <class RT>
    BOOST_MATH_GPU_ENABLED RT unchecked_factorial(unsigned int BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(RT));
    template <class RT>
-   RT double_factorial(unsigned i);
+   BOOST_MATH_GPU_ENABLED RT double_factorial(unsigned i);
    template <class RT, class Policy>
-   RT double_factorial(unsigned i, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED RT double_factorial(unsigned i, const Policy& pol);
 
    template <class RT>
    tools::promote_args_t<RT> falling_factorial(RT x, unsigned n);
@@ -558,11 +558,11 @@ namespace boost
 
    // Hypotenuse function sqrt(x ^ 2 + y ^ 2).
    template <class T1, class T2>
-   tools::promote_args_t<T1, T2>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2>
          hypot(T1 x, T2 y);
 
    template <class T1, class T2, class Policy>
-   tools::promote_args_t<T1, T2>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2>
          hypot(T1 x, T2 y, const Policy&);
 
    // cbrt - cube root.
@@ -1404,10 +1404,10 @@ namespace boost
 \
    using boost::math::max_factorial;\
    template <class RT>\
-   inline RT factorial(unsigned int i) { return boost::math::factorial<RT>(i, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline RT factorial(unsigned int i) { return boost::math::factorial<RT>(i, Policy()); }\
    using boost::math::unchecked_factorial;\
    template <class RT>\
-   inline RT double_factorial(unsigned i){ return boost::math::double_factorial<RT>(i, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline RT double_factorial(unsigned i){ return boost::math::double_factorial<RT>(i, Policy()); }\
    template <class RT>\
    inline boost::math::tools::promote_args_t<RT> falling_factorial(RT x, unsigned n){ return boost::math::falling_factorial(x, n, Policy()); }\
    template <class RT>\
@@ -1469,7 +1469,7 @@ namespace boost
    \
    template <class T1, class T2>\
    inline boost::math::tools::promote_args_t<T1, T2> \
-   hypot(T1 x, T2 y){ return boost::math::hypot(x, y, Policy()); }\
+   BOOST_MATH_GPU_ENABLED hypot(T1 x, T2 y){ return boost::math::hypot(x, y, Policy()); }\
 \
    template <class RT>\
    inline boost::math::tools::promote_args_t<RT> cbrt(RT z){ return boost::math::cbrt(z, Policy()); }\
