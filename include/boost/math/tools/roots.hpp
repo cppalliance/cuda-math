@@ -18,10 +18,11 @@
 #include <boost/math/tools/numeric_limits.hpp>
 #include <boost/math/tools/tuple.hpp>
 #include <boost/math/special_functions/sign.hpp>
-#include <boost/math/special_functions/next.hpp>
+#include <boost/math/policies/policy.hpp>
 #include <boost/math/policies/error_handling.hpp>
 
 #ifndef BOOST_MATH_HAS_GPU_SUPPORT
+#include <boost/math/special_functions/next.hpp>
 #include <boost/math/tools/toms748_solve.hpp>
 #endif
 
@@ -84,7 +85,7 @@ BOOST_MATH_GPU_ENABLED void handle_zero_derivative(F f,
    T& guess,
    const T& min,
    const T& max) noexcept(BOOST_MATH_IS_FLOAT(T) 
-   #ifndef BOOST_MATH_HAS_GPU_ENABLED
+   #ifndef BOOST_MATH_HAS_GPU_SUPPORT
    && noexcept(std::declval<F>()(std::declval<T>()))
    #endif
    )
@@ -133,7 +134,7 @@ BOOST_MATH_GPU_ENABLED void handle_zero_derivative(F f,
 } // namespace
 
 template <class F, class T, class Tol, class Policy>
-boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::math::uintmax_t& max_iter, const Policy& pol) noexcept(policies::is_noexcept_error_policy<Policy>::value && BOOST_MATH_IS_FLOAT(T) 
+BOOST_MATH_GPU_ENABLED boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::math::uintmax_t& max_iter, const Policy& pol) noexcept(policies::is_noexcept_error_policy<Policy>::value && BOOST_MATH_IS_FLOAT(T) 
 #ifndef BOOST_MATH_HAS_GPU_SUPPORT
 && noexcept(std::declval<F>()(std::declval<T>()))
 #endif
@@ -209,7 +210,7 @@ boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::math::uintmax_
 }
 
 template <class F, class T, class Tol>
-inline boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::math::uintmax_t& max_iter)  noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T)
+BOOST_MATH_GPU_ENABLED inline boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::math::uintmax_t& max_iter)  noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T)
 #ifndef BOOST_MATH_HAS_GPU_SUPPORT
 && noexcept(std::declval<F>()(std::declval<T>()))
 #endif
@@ -219,7 +220,7 @@ inline boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::math::u
 }
 
 template <class F, class T, class Tol>
-inline boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T) 
+BOOST_MATH_GPU_ENABLED inline boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T) 
 #ifndef BOOST_MATH_HAS_GPU_SUPPORT
 && noexcept(std::declval<F>()(std::declval<T>()))
 #endif
@@ -231,7 +232,7 @@ inline boost::math::pair<T, T> bisect(F f, T min, T max, Tol tol) noexcept(polic
 
 
 template <class F, class T>
-T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::math::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T)
+BOOST_MATH_GPU_ENABLED T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::math::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T)
 #ifndef BOOST_MATH_HAS_GPU_SUPPORT
 && noexcept(std::declval<F>()(std::declval<T>()))
 #endif
@@ -353,7 +354,7 @@ T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::math::ui
 }
 
 template <class F, class T>
-inline T newton_raphson_iterate(F f, T guess, T min, T max, int digits) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T)
+BOOST_MATH_GPU_ENABLED inline T newton_raphson_iterate(F f, T guess, T min, T max, int digits) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value && BOOST_MATH_IS_FLOAT(T)
 #ifndef BOOST_MATH_HAS_GPU_SUPPORT
 && noexcept(std::declval<F>()(std::declval<T>()))
 #endif
