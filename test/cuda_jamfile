@@ -117,6 +117,8 @@ run test_cyl_bessel_i_double.cu ;
 run test_cyl_bessel_i_float.cu ;
 run test_cyl_bessel_j_double.cu ;
 run test_cyl_bessel_j_float.cu ;
+run test_sph_bessel_double.cu ;
+run test_sph_bessel_float.cu ;
 
 run test_cbrt_double.cu ;
 run test_cbrt_float.cu ;
