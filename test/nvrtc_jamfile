@@ -117,6 +117,8 @@ run test_cyl_bessel_k_nvrtc_double.cpp ;
 run test_cyl_bessel_k_nvrtc_float.cpp ;
 run test_sph_bessel_nvrtc_double.cpp ;
 run test_sph_bessel_nvrtc_float.cpp ;
+run test_cyl_neumann_nvrtc_double.cpp ;
+run test_cyl_neumann_nvrtc_float.cpp ;
 
 run test_cbrt_nvrtc_double.cpp ;
 run test_cbrt_nvrtc_float.cpp ;
