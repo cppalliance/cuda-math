@@ -19,6 +19,7 @@
 #include <boost/math/tools/config.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 namespace boost{ namespace math{ namespace detail{
 
