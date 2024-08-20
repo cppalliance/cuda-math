@@ -155,7 +155,7 @@ template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED T cyl_bessel_j_imp(T v, T x, const bessel_no_int_tag& t, const Policy& pol)
 {
    BOOST_MATH_STD_USING
-   constexpr auto function = "boost::math::bessel_j<%1%>(%1%,%1%)";
+
    if(x < 0)
    {
       // better have integer v:
@@ -176,6 +176,7 @@ BOOST_MATH_GPU_ENABLED T cyl_bessel_j_imp(T v, T x, const bessel_no_int_tag& t, 
       }
       else
       {
+         constexpr auto function = "boost::math::bessel_j<%1%>(%1%,%1%)";
          return policies::raise_domain_error<T>(function, "Got x = %1%, but we need x >= 0", x, pol);
       }
    }
