@@ -109,6 +109,10 @@ run test_bessel_k1_double.cu ;
 run test_bessel_k1_float.cu ;
 run test_bessel_kn_double.cu ;
 run test_bessel_kn_float.cu ;
+run test_bessel_y0_double.cu ;
+run test_bessel_y0_float.cu ;
+run test_bessel_y1_double.cu ;
+run test_bessel_y1_float.cu ;
 run test_cyl_bessel_i_double.cu ;
 run test_cyl_bessel_i_float.cu ;
 
