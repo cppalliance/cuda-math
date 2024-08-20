@@ -158,7 +158,7 @@ BOOST_MATH_GPU_ENABLED inline bool asymptotic_bessel_large_x_limit(const T& v, c
    // error rates either side of the divide for v < 10000.
    // At double precision eps^1/8 ~= 0.01.
    //
-   return (std::max)(T(fabs(v)), T(1)) < x * sqrt(tools::forth_root_epsilon<T>());
+   return BOOST_MATH_GPU_SAFE_MAX(T(fabs(v)), T(1)) < x * sqrt(tools::forth_root_epsilon<T>());
 }
 
 template <class T, class Policy>

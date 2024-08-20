@@ -31,6 +31,10 @@
   #include <boost/math/special_functions/math_fwd.hpp>
   #endif
 
+  #ifdef BOOST_MATH_ENABLE_CUDA
+  #  pragma nv_diag_suppress 20012
+  #endif
+
   namespace boost { namespace math {
   namespace detail
   {
@@ -631,5 +635,9 @@
       } // namespace cyl_neumann_zero_detail
     } // namespace bessel_zero
   } } } // namespace boost::math::detail
+
+  #ifdef BOOST_MATH_ENABLE_CUDA
+  #  pragma nv_diag_default 20012
+  #endif
 
 #endif // BOOST_MATH_BESSEL_JY_ZERO_2013_01_18_HPP_

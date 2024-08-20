@@ -11,6 +11,8 @@
 #endif
 
 #include <boost/math/tools/config.hpp>
+#include <boost/math/tools/numeric_limits.hpp>
+#include <boost/math/tools/type_traits.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/sign.hpp>
 #include <boost/math/special_functions/hypot.hpp>
@@ -283,7 +285,7 @@ namespace boost { namespace math {
             reflect = true;
             v = -v;                             // v is non-negative from here
          }
-         if (v > static_cast<T>((std::numeric_limits<int>::max)()))
+         if (v > static_cast<T>((boost::math::numeric_limits<int>::max)()))
          {
             *J = *Y = policies::raise_evaluation_error<T>(function, "Order of Bessel function is too large to evaluate: got %1%", v, pol);
             return 1;  // LCOV_EXCL_LINE previous line will throw.
@@ -309,10 +311,10 @@ namespace boost { namespace math {
             else if(kind & need_j)
                *J = policies::raise_domain_error<T>(function, "Value of Bessel J_v(x) is complex-infinity at %1%", x, pol); // complex infinity
             else
-               *J = std::numeric_limits<T>::quiet_NaN();  // LCOV_EXCL_LINE, we should never get here, any value will do, not using J.
+               *J = boost::math::numeric_limits<T>::quiet_NaN();  // LCOV_EXCL_LINE, we should never get here, any value will do, not using J.
 
             if((kind & need_y) == 0)
-               *Y = std::numeric_limits<T>::quiet_NaN();  // any value will do, not using Y.
+               *Y = boost::math::numeric_limits<T>::quiet_NaN();  // any value will do, not using Y.
             else
             {
                // We shoud never get here:
@@ -332,7 +334,7 @@ namespace boost { namespace math {
             // and divergent which leads to large errors :-(
             //
             Jv = bessel_j_small_z_series(v, x, pol);
-            Yv = std::numeric_limits<T>::quiet_NaN();
+            Yv = boost::math::numeric_limits<T>::quiet_NaN();
          }
          else if((x < 1) && (u != 0) && (log(policies::get_epsilon<T, Policy>() / 2) > v * log((x/2) * (x/2) / v)))
          {
@@ -343,7 +345,7 @@ namespace boost { namespace math {
             if(kind&need_j)
                Jv = bessel_j_small_z_series(v, x, pol);
             else
-               Jv = std::numeric_limits<T>::quiet_NaN();
+               Jv = boost::math::numeric_limits<T>::quiet_NaN();
             if((org_kind&need_y && (!reflect || (cp != 0)))
                || (org_kind & need_j && (reflect && (sp != 0))))
             {
@@ -351,7 +353,7 @@ namespace boost { namespace math {
                Yv = bessel_y_small_z_series(v, x, &Yv_scale, pol);
             }
             else
-               Yv = std::numeric_limits<T>::quiet_NaN();
+               Yv = boost::math::numeric_limits<T>::quiet_NaN();
          }
          else if((u == 0) && (x < policies::get_epsilon<T, Policy>()))
          {
@@ -362,7 +364,7 @@ namespace boost { namespace math {
             if(kind&need_j)
                Jv = bessel_j_small_z_series(v, x, pol);
             else
-               Jv = std::numeric_limits<T>::quiet_NaN();
+               Jv = boost::math::numeric_limits<T>::quiet_NaN();
             if((org_kind&need_y && (!reflect || (cp != 0)))
                || (org_kind & need_j && (reflect && (sp != 0))))
             {
@@ -370,7 +372,7 @@ namespace boost { namespace math {
                Yv = bessel_yn_small_z(n, x, &Yv_scale, pol);
             }
             else
-               Yv = std::numeric_limits<T>::quiet_NaN();
+               Yv = boost::math::numeric_limits<T>::quiet_NaN();
             // LCOV_EXCL_STOP
          }
          else if(asymptotic_bessel_large_x_limit(v, x))
@@ -380,13 +382,13 @@ namespace boost { namespace math {
                Yv = asymptotic_bessel_y_large_x_2(v, x, pol);
             }
             else
-               Yv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
+               Yv = boost::math::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
             if(kind&need_j)
             {
                Jv = asymptotic_bessel_j_large_x_2(v, x, pol);
             }
             else
-               Jv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
+               Jv = boost::math::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
          }
          else if((x > 8) && hankel_PQ(v, x, &p, &q, pol))
          {
@@ -448,7 +450,7 @@ namespace boost { namespace math {
                Jv = scale * W / (Yv * fv - Yv1);           // Wronskian relation
             }
             else
-               Jv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
+               Jv = boost::math::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
             Yv_scale = scale;
          }
          else                                    // x in (2, \infty)
@@ -563,7 +565,7 @@ namespace boost { namespace math {
                Yv = prev;
             }
             else
-               Yv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
+               Yv = boost::math::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
          }
 
          if (reflect)
