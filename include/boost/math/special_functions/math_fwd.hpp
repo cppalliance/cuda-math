@@ -24,12 +24,16 @@
 #pragma once
 #endif
 
+#include <boost/math/tools/config.hpp>
+
+#ifndef BOOST_MATH_HAS_NVRTC
+
 #include <vector>
 #include <complex>
 #include <type_traits>
-#include <boost/math/tools/config.hpp>
 #include <boost/math/special_functions/detail/round_fwd.hpp>
 #include <boost/math/tools/promotion.hpp> // for argument promotion.
+#include <boost/math/tools/type_traits.hpp>
 #include <boost/math/policies/policy.hpp>
 
 #define BOOST_NO_MACRO_EXPAND /**/
@@ -639,36 +643,36 @@ namespace boost
 
    namespace detail{
 
-      typedef std::integral_constant<int, 0> bessel_no_int_tag;      // No integer optimisation possible.
-      typedef std::integral_constant<int, 1> bessel_maybe_int_tag;   // Maybe integer optimisation.
-      typedef std::integral_constant<int, 2> bessel_int_tag;         // Definite integer optimisation.
+      typedef boost::math::integral_constant<int, 0> bessel_no_int_tag;      // No integer optimisation possible.
+      typedef boost::math::integral_constant<int, 1> bessel_maybe_int_tag;   // Maybe integer optimisation.
+      typedef boost::math::integral_constant<int, 2> bessel_int_tag;         // Definite integer optimisation.
 
       template <class T1, class T2, class Policy>
       struct bessel_traits
       {
-         using result_type = typename std::conditional<
-            std::is_integral<T1>::value,
+         using result_type = typename boost::math::conditional<
+            boost::math::is_integral<T1>::value,
             typename tools::promote_args<T2>::type,
             tools::promote_args_t<T1, T2>
          >::type;
 
          typedef typename policies::precision<result_type, Policy>::type precision_type;
 
-         using optimisation_tag = typename std::conditional<
+         using optimisation_tag = typename boost::math::conditional<
             (precision_type::value <= 0 || precision_type::value > 64),
             bessel_no_int_tag,
-            typename std::conditional<
-               std::is_integral<T1>::value,
+            typename boost::math::conditional<
+               boost::math::is_integral<T1>::value,
                bessel_int_tag,
                bessel_maybe_int_tag
             >::type
          >::type;
 
-         using optimisation_tag128 = typename std::conditional<
+         using optimisation_tag128 = typename boost::math::conditional<
             (precision_type::value <= 0 || precision_type::value > 113),
             bessel_no_int_tag,
-            typename std::conditional<
-               std::is_integral<T1>::value,
+            typename boost::math::conditional<
+               boost::math::is_integral<T1>::value,
                bessel_int_tag,
                bessel_maybe_int_tag
             >::type
@@ -1817,6 +1821,6 @@ template <class OutputIterator, class T>\
 
 
 
-
+#endif // BOOST_MATH_HAS_NVRTC
 
 #endif // BOOST_MATH_SPECIAL_MATH_FWD_HPP

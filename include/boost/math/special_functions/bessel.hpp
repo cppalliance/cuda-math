@@ -38,10 +38,7 @@
 #include <boost/math/special_functions/trunc.hpp>
 #include <boost/math/special_functions/round.hpp>
 #include <boost/math/policies/error_handling.hpp>
-
-#ifndef BOOST_MATH_HAS_NVRTC
 #include <boost/math/special_functions/math_fwd.hpp>
-#endif
 
 #ifdef _MSC_VER
 # pragma warning(push)
@@ -49,6 +46,50 @@
 #endif
 
 namespace boost{ namespace math{
+
+// Since we cannot pull this in from math fwd we need a copy
+#ifdef BOOST_MATH_HAS_NVRTC
+
+namespace detail{
+
+      typedef boost::math::integral_constant<int, 0> bessel_no_int_tag;      // No integer optimisation possible.
+      typedef boost::math::integral_constant<int, 1> bessel_maybe_int_tag;   // Maybe integer optimisation.
+      typedef boost::math::integral_constant<int, 2> bessel_int_tag;         // Definite integer optimisation.
+
+      template <class T1, class T2, class Policy>
+      struct bessel_traits
+      {
+         using result_type = typename boost::math::conditional<
+            boost::math::is_integral<T1>::value,
+            typename tools::promote_args<T2>::type,
+            tools::promote_args_t<T1, T2>
+         >::type;
+
+         typedef typename policies::precision<result_type, Policy>::type precision_type;
+
+         using optimisation_tag = typename boost::math::conditional<
+            (precision_type::value <= 0 || precision_type::value > 64),
+            bessel_no_int_tag,
+            typename boost::math::conditional<
+               boost::math::is_integral<T1>::value,
+               bessel_int_tag,
+               bessel_maybe_int_tag
+            >::type
+         >::type;
+
+         using optimisation_tag128 = typename boost::math::conditional<
+            (precision_type::value <= 0 || precision_type::value > 113),
+            bessel_no_int_tag,
+            typename boost::math::conditional<
+               boost::math::is_integral<T1>::value,
+               bessel_int_tag,
+               bessel_maybe_int_tag
+            >::type
+         >::type;
+      };
+   } // detail
+
+#endif
 
 namespace detail{
 
@@ -71,7 +112,7 @@ struct sph_bessel_j_small_z_series_term
          term = pow(mult, T(v)) / boost::math::tgamma(v+1+T(0.5f), Policy());
       mult *= -mult;
    }
-   T operator()()
+   BOOST_MATH_GPU_ENABLED T operator()()
    {
       T r = term;
       ++N;
