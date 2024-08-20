@@ -2323,6 +2323,12 @@ BOOST_MATH_GPU_ENABLED T tgamma1pm1(T z)
    return expm1(lgamma(1 + z));
 }
 
+template <typename T, typename Policy>
+BOOST_MATH_GPU_ENABLED T tgamma1pm1(T x, const Policy&)
+{
+   return tgamma1pm1(x);
+}
+
 } // namespace math
 } // namespace boost
 
