@@ -13,6 +13,10 @@
 #pragma once
 #endif
 
+#include <boost/math/tools/config.hpp>
+
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 #include <boost/math/tools/assert.hpp>
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/cxx03_warn.hpp>
@@ -858,5 +862,7 @@ BOOST_MATH_GPU_ENABLED inline std::basic_ostream<charT, traits>& operator << (st
 // Polynomial specific overload of gcd algorithm:
 //
 #include <boost/math/tools/polynomial_gcd.hpp>
+
+#endif // GPU
 
 #endif // BOOST_MATH_TOOLS_POLYNOMIAL_HPP
