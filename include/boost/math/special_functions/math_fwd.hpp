@@ -512,28 +512,28 @@ namespace boost
 
    // gamma inverse.
    template <class T1, class T2>
-   tools::promote_args_t<T1, T2> gamma_p_inv(T1 a, T2 p);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_p_inv(T1 a, T2 p);
 
    template <class T1, class T2, class Policy>
-   tools::promote_args_t<T1, T2> gamma_p_inva(T1 a, T2 p, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_p_inva(T1 a, T2 p, const Policy&);
 
    template <class T1, class T2>
-   tools::promote_args_t<T1, T2> gamma_p_inva(T1 a, T2 p);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_p_inva(T1 a, T2 p);
 
    template <class T1, class T2, class Policy>
-   tools::promote_args_t<T1, T2> gamma_p_inv(T1 a, T2 p, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_p_inv(T1 a, T2 p, const Policy&);
 
    template <class T1, class T2>
-   tools::promote_args_t<T1, T2> gamma_q_inv(T1 a, T2 q);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_q_inv(T1 a, T2 q);
 
    template <class T1, class T2, class Policy>
-   tools::promote_args_t<T1, T2> gamma_q_inv(T1 a, T2 q, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_q_inv(T1 a, T2 q, const Policy&);
 
    template <class T1, class T2>
-   tools::promote_args_t<T1, T2> gamma_q_inva(T1 a, T2 q);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_q_inva(T1 a, T2 q);
 
    template <class T1, class T2, class Policy>
-   tools::promote_args_t<T1, T2> gamma_q_inva(T1 a, T2 q, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> gamma_q_inva(T1 a, T2 q, const Policy&);
 
    // digamma:
    template <class T>
@@ -1133,31 +1133,31 @@ namespace boost
    tools::promote_args_t<T, U> epsilon_difference(const T&, const U&);
 
    template<class T>
-   BOOST_MATH_CONSTEXPR_TABLE_FUNCTION T unchecked_bernoulli_b2n(const std::size_t n);
+   BOOST_MATH_GPU_ENABLED BOOST_MATH_CONSTEXPR_TABLE_FUNCTION T unchecked_bernoulli_b2n(const std::size_t n);
    template <class T, class Policy>
-   T bernoulli_b2n(const int i, const Policy &pol);
+   BOOST_MATH_GPU_ENABLED T bernoulli_b2n(const int i, const Policy &pol);
    template <class T>
-   T bernoulli_b2n(const int i);
+   BOOST_MATH_GPU_ENABLED T bernoulli_b2n(const int i);
    template <class T, class OutputIterator, class Policy>
-   OutputIterator bernoulli_b2n(const int start_index,
+   BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_b2n(const int start_index,
                                        const unsigned number_of_bernoullis_b2n,
                                        OutputIterator out_it,
                                        const Policy& pol);
    template <class T, class OutputIterator>
-   OutputIterator bernoulli_b2n(const int start_index,
+   BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_b2n(const int start_index,
                                        const unsigned number_of_bernoullis_b2n,
                                        OutputIterator out_it);
    template <class T, class Policy>
-   T tangent_t2n(const int i, const Policy &pol);
+   BOOST_MATH_GPU_ENABLED T tangent_t2n(const int i, const Policy &pol);
    template <class T>
-   T tangent_t2n(const int i);
+   BOOST_MATH_GPU_ENABLED T tangent_t2n(const int i);
    template <class T, class OutputIterator, class Policy>
-   OutputIterator tangent_t2n(const int start_index,
+   BOOST_MATH_GPU_ENABLED OutputIterator tangent_t2n(const int start_index,
                                        const unsigned number_of_bernoullis_b2n,
                                        OutputIterator out_it,
                                        const Policy& pol);
    template <class T, class OutputIterator>
-   OutputIterator tangent_t2n(const int start_index,
+   BOOST_MATH_GPU_ENABLED OutputIterator tangent_t2n(const int start_index,
                                        const unsigned number_of_bernoullis_b2n,
                                        OutputIterator out_it);
 
@@ -1447,16 +1447,16 @@ namespace boost
    BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> gamma_p_derivative(T1 a, T2 x){ return boost::math::gamma_p_derivative(a, x, Policy()); }\
 \
    template <class T1, class T2>\
-   inline boost::math::tools::promote_args_t<T1, T2> gamma_p_inv(T1 a, T2 p){ return boost::math::gamma_p_inv(a, p, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> gamma_p_inv(T1 a, T2 p){ return boost::math::gamma_p_inv(a, p, Policy()); }\
 \
    template <class T1, class T2>\
-   inline boost::math::tools::promote_args_t<T1, T2> gamma_p_inva(T1 a, T2 p){ return boost::math::gamma_p_inva(a, p, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> gamma_p_inva(T1 a, T2 p){ return boost::math::gamma_p_inva(a, p, Policy()); }\
 \
    template <class T1, class T2>\
-   inline boost::math::tools::promote_args_t<T1, T2> gamma_q_inv(T1 a, T2 q){ return boost::math::gamma_q_inv(a, q, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> gamma_q_inv(T1 a, T2 q){ return boost::math::gamma_q_inv(a, q, Policy()); }\
 \
    template <class T1, class T2>\
-   inline boost::math::tools::promote_args_t<T1, T2> gamma_q_inva(T1 a, T2 q){ return boost::math::gamma_q_inva(a, q, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> gamma_q_inva(T1 a, T2 q){ return boost::math::gamma_q_inva(a, q, Policy()); }\
 \
    template <class T>\
    BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> digamma(T x){ return boost::math::digamma(x, Policy()); }\
@@ -1787,17 +1787,17 @@ template <class OutputIterator, class T>\
    { return boost::math::airy_bi_zero<T>(start_index, number_of_zeros, out_it, Policy()); }\
    \
    template <class T>\
-   T bernoulli_b2n(const int i)\
+   BOOST_MATH_GPU_ENABLED T bernoulli_b2n(const int i)\
    { return boost::math::bernoulli_b2n<T>(i, Policy()); }\
    template <class T, class OutputIterator>\
-   OutputIterator bernoulli_b2n(int start_index, unsigned number_of_bernoullis_b2n, OutputIterator out_it)\
+   BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_b2n(int start_index, unsigned number_of_bernoullis_b2n, OutputIterator out_it)\
    { return boost::math::bernoulli_b2n<T>(start_index, number_of_bernoullis_b2n, out_it, Policy()); }\
    \
    template <class T>\
-   T tangent_t2n(const int i)\
+   BOOST_MATH_GPU_ENABLED T tangent_t2n(const int i)\
    { return boost::math::tangent_t2n<T>(i, Policy()); }\
    template <class T, class OutputIterator>\
-   OutputIterator tangent_t2n(int start_index, unsigned number_of_bernoullis_b2n, OutputIterator out_it)\
+   BOOST_MATH_GPU_ENABLED OutputIterator tangent_t2n(int start_index, unsigned number_of_bernoullis_b2n, OutputIterator out_it)\
    { return boost::math::tangent_t2n<T>(start_index, number_of_bernoullis_b2n, out_it, Policy()); }\
    \
    template <class T> inline boost::math::tools::promote_args_t<T> lambert_w0(T z) { return boost::math::lambert_w0(z, Policy()); }\
