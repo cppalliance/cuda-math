@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright 2013 John Maddock
+//  Copyright 2024 Matt Borland
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -7,16 +8,23 @@
 #ifndef BOOST_MATH_BERNOULLI_DETAIL_HPP
 #define BOOST_MATH_BERNOULLI_DETAIL_HPP
 
-#include <boost/math/tools/atomic.hpp>
-#include <boost/math/tools/toms748_solve.hpp>
-#include <boost/math/tools/cxx03_warn.hpp>
-#include <boost/math/tools/throw_exception.hpp>
 #include <boost/math/tools/config.hpp>
+#include <boost/math/tools/toms748_solve.hpp>
+#include <boost/math/tools/type_traits.hpp>
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/vector.hpp>
+#include <boost/math/tools/precision.hpp>
+#include <boost/math/tools/algorithm.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
-#include <vector>
-#include <type_traits>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/policies/error_handling.hpp>
 
-#if defined(BOOST_MATH_HAS_THREADS) && !defined(BOOST_NO_CXX11_HDR_MUTEX) && !defined(BOOST_MATH_NO_ATOMIC_INT)
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+#include <boost/math/tools/atomic.hpp>
+#include <boost/math/tools/throw_exception.hpp>
+#endif
+
+#if defined(BOOST_MATH_HAS_THREADS) && !defined(BOOST_NO_CXX11_HDR_MUTEX) && !defined(BOOST_MATH_NO_ATOMIC_INT) && !defined(BOOST_MATH_HAS_GPU_SUPPORT)
 #include <mutex>
 #else
 #  define BOOST_MATH_BERNOULLI_NOTHREADS
@@ -28,7 +36,7 @@ namespace boost{ namespace math{ namespace detail{
 // Luschny LogB3 formula (http://www.luschny.de/math/primes/bernincl.html)
 //
 template <class T, class Policy>
-T b2n_asymptotic(int n)
+BOOST_MATH_GPU_ENABLED T b2n_asymptotic(int n)
 {
    BOOST_MATH_STD_USING
    const auto nx = static_cast<T>(n);
@@ -40,12 +48,12 @@ T b2n_asymptotic(int n)
         + (((T(3) / 2) - nx) * boost::math::constants::ln_two<T>())
         + ((nx * (T(2) - (nx2 * 7) * (1 + ((nx2 * 30) * ((nx2 * 12) - 1))))) / (((nx2 * nx2) * nx2) * 2520));
    return ((n / 2) & 1 ? 1 : -1) * (approximate_log_of_bernoulli_bn > tools::log_max_value<T>()
-      ? policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, nx, Policy())
+      ? policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, nx, Policy())
       : static_cast<T>(exp(approximate_log_of_bernoulli_bn)));
 }
 
 template <class T, class Policy>
-T t2n_asymptotic(int n)
+BOOST_MATH_GPU_ENABLED T t2n_asymptotic(int n)
 {
    BOOST_MATH_STD_USING
    // Just get B2n and convert to a Tangent number:
@@ -53,13 +61,13 @@ T t2n_asymptotic(int n)
    T p2 = ldexp(T(1), n);
    if(tools::max_value<T>() / p2 < t2n)
    {
-      return policies::raise_overflow_error<T>("boost::math::tangent_t2n<%1%>(std::size_t)", nullptr, T(n), Policy());
+      return policies::raise_overflow_error<T>("boost::math::tangent_t2n<%1%>(boost::math::size_t)", nullptr, T(n), Policy());
    }
    t2n *= p2;
    p2 -= 1;
    if(tools::max_value<T>() / p2 < t2n)
    {
-      return policies::raise_overflow_error<T>("boost::math::tangent_t2n<%1%>(std::size_t)", nullptr, Policy());
+      return policies::raise_overflow_error<T>("boost::math::tangent_t2n<%1%>(boost::math::size_t)", nullptr, Policy());
    }
    t2n *= p2;
    return t2n;
@@ -81,8 +89,8 @@ T t2n_asymptotic(int n)
 //
 struct max_bernoulli_root_functor
 {
-   explicit max_bernoulli_root_functor(unsigned long long t) : target(static_cast<double>(t)) {}
-   double operator()(double n) const
+   BOOST_MATH_GPU_ENABLED explicit max_bernoulli_root_functor(unsigned long long t) : target(static_cast<double>(t)) {}
+   BOOST_MATH_GPU_ENABLED double operator()(double n) const
    {
       BOOST_MATH_STD_USING
 
@@ -103,37 +111,37 @@ private:
 };
 
 template <class T, class Policy>
-inline std::size_t find_bernoulli_overflow_limit(const std::false_type&)
+BOOST_MATH_GPU_ENABLED inline boost::math::size_t find_bernoulli_overflow_limit(const boost::math::false_type&)
 {
    // Set a limit on how large the result can ever be:
-   static const auto max_result = static_cast<double>((std::numeric_limits<std::size_t>::max)() - 1000u);
+   static const auto max_result = static_cast<double>((boost::math::numeric_limits<boost::math::size_t>::max)() - 1000u);
 
    unsigned long long t = lltrunc(boost::math::tools::log_max_value<T>());
    max_bernoulli_root_functor fun(t);
    boost::math::tools::equal_floor tol;
-   std::uintmax_t max_iter = boost::math::policies::get_max_root_iterations<Policy>();
+   boost::math::uintmax_t max_iter = boost::math::policies::get_max_root_iterations<Policy>();
    double result = boost::math::tools::toms748_solve(fun, sqrt(static_cast<double>(t)), static_cast<double>(t), tol, max_iter).first / 2;
    if (result > max_result)
    {
       result = max_result;
    }
 
-   return static_cast<std::size_t>(result);
+   return static_cast<boost::math::size_t>(result);
 }
 
 template <class T, class Policy>
-inline std::size_t find_bernoulli_overflow_limit(const std::true_type&)
+inline boost::math::size_t find_bernoulli_overflow_limit(const boost::math::true_type&)
 {
    return max_bernoulli_index<bernoulli_imp_variant<T>::value>::value;
 }
 
 template <class T, class Policy>
-std::size_t b2n_overflow_limit()
+boost::math::size_t b2n_overflow_limit()
 {
    // This routine is called at program startup if it's called at all:
    // that guarantees safe initialization of the static variable.
-   using tag_type = std::integral_constant<bool, (bernoulli_imp_variant<T>::value >= 1) && (bernoulli_imp_variant<T>::value <= 3)>;
-   static const std::size_t lim = find_bernoulli_overflow_limit<T, Policy>(tag_type());
+   using tag_type = boost::math::integral_constant<bool, (bernoulli_imp_variant<T>::value >= 1) && (bernoulli_imp_variant<T>::value <= 3)>;
+   static const boost::math::size_t lim = find_bernoulli_overflow_limit<T, Policy>(tag_type());
    return lim;
 }
 
@@ -142,14 +150,14 @@ std::size_t b2n_overflow_limit()
 // so to compute the Bernoulli numbers from the tangent numbers, we need to avoid spurious
 // overflow in the calculation, we can do this by scaling all the tangent number by some scale factor:
 //
-template <class T, typename std::enable_if<std::numeric_limits<T>::is_specialized && (std::numeric_limits<T>::radix == 2), bool>::type = true>
+template <class T, typename boost::math::enable_if<boost::math::numeric_limits<T>::is_specialized && (boost::math::numeric_limits<T>::radix == 2), bool>::type = true>
 inline T tangent_scale_factor()
 {
    BOOST_MATH_STD_USING
-   return ldexp(T(1), std::numeric_limits<T>::min_exponent + 5);
+   return ldexp(T(1), boost::math::numeric_limits<T>::min_exponent + 5);
 }
 
-template <class T, typename std::enable_if<!std::numeric_limits<T>::is_specialized || !(std::numeric_limits<T>::radix == 2), bool>::type = true>
+template <class T, typename boost::math::enable_if<!boost::math::numeric_limits<T>::is_specialized || !(boost::math::numeric_limits<T>::radix == 2), bool>::type = true>
 inline T tangent_scale_factor()
 {
    return tools::min_value<T>() * 16;
@@ -165,6 +173,9 @@ inline T tangent_scale_factor()
 // boost::container::static_vector here, but that allocates on the stack, which may well
 // cause issues for the amount of memory we want in the extreme case...
 //
+// In the CUDA case we just use our existing CUDA capable vector
+//
+#ifndef BOOST_MATH_ENABLE_CUDA
 template <class T>
 struct fixed_vector : private std::allocator<T>
 {
@@ -173,8 +184,8 @@ struct fixed_vector : private std::allocator<T>
    using const_iterator = const T*;
    fixed_vector() : m_used(0)
    {
-      std::size_t overflow_limit = 5 + b2n_overflow_limit<T, policies::policy<> >();
-      m_capacity = static_cast<unsigned>((std::min)(overflow_limit, static_cast<std::size_t>(100000u)));
+      boost::math::size_t overflow_limit = 5 + b2n_overflow_limit<T, policies::policy<> >();
+      m_capacity = static_cast<unsigned>(BOOST_MATH_GPU_SAFE_MIN(overflow_limit, static_cast<boost::math::size_t>(100000u)));
       m_data = this->allocate(m_capacity);
    }
    ~fixed_vector()
@@ -219,21 +230,52 @@ private:
    unsigned m_used {};
    unsigned m_capacity;
 };
+#else
+template <class T>
+struct fixed_vector : public boost::math::vector<T>
+{
+   BOOST_MATH_GPU_ENABLED bool resize(boost::math::size_t new_size, T default_elem)
+   {
+      if (data != nullptr)
+      {
+         cudaFree(data);
+      }
+
+      data = cudaMalloc(&data, new_size * sizeof(T));
+      
+      if (data != nullptr)
+      {
+         current_ = 0;
+         capacity_ = new_size;
+
+         // cudaMemset only works with ints so we need to loop
+         for (boost::math::size_t i = 0; i < capacity_; ++i)
+         {
+               data[i] = default_elem;
+         }
+
+         return true;
+      }
+
+      return false;
+   }
+};
+#endif
 
 template <class T, class Policy>
 class bernoulli_numbers_cache
 {
 public:
-   bernoulli_numbers_cache() : m_overflow_limit((std::numeric_limits<std::size_t>::max)())
+   BOOST_MATH_GPU_ENABLED bernoulli_numbers_cache() : m_overflow_limit((boost::math::numeric_limits<boost::math::size_t>::max)())
       , m_counter(0)
       , m_current_precision(boost::math::tools::digits<T>())
    {}
 
    using container_type = fixed_vector<T>;
 
-   bool tangent(std::size_t m)
+   BOOST_MATH_GPU_ENABLED bool tangent(boost::math::size_t m)
    {
-      static const std::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
+      static const boost::math::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
 
       if (!tn.resize(static_cast<typename container_type::size_type>(m), T(0U)))
       {
@@ -242,7 +284,7 @@ public:
 
       BOOST_MATH_INSTRUMENT_VARIABLE(min_overflow_index);
 
-      std::size_t prev_size = m_intermediates.size();
+      boost::math::size_t prev_size = m_intermediates.size();
       m_intermediates.resize(m, T(0U));
 
       if(prev_size == 0)
@@ -254,16 +296,16 @@ public:
          BOOST_MATH_INSTRUMENT_VARIABLE(tn[1]);
       }
 
-      for(std::size_t i = std::max<size_t>(2, prev_size); i < m; i++)
+      for(boost::math::size_t i = BOOST_MATH_GPU_SAFE_MAX(2, prev_size); i < m; i++)
       {
          bool overflow_check = false;
          if(i >= min_overflow_index && (boost::math::tools::max_value<T>() / (i-1) < m_intermediates[1]) )
          {
-            std::fill(tn.begin() + i, tn.end(), boost::math::tools::max_value<T>());
+            boost::math::fill(tn.begin() + i, tn.end(), boost::math::tools::max_value<T>());
             break;
          }
          m_intermediates[1] = m_intermediates[1] * (i-1);
-         for(std::size_t j = 2; j <= i; j++)
+         for(boost::math::size_t j = 2; j <= i; j++)
          {
             overflow_check =
                   (i >= min_overflow_index) && (
@@ -275,7 +317,7 @@ public:
 
             if(overflow_check)
             {
-               std::fill(tn.begin() + i, tn.end(), boost::math::tools::max_value<T>());
+               boost::math::fill(tn.begin() + i, tn.end(), boost::math::tools::max_value<T>());
                break;
             }
             m_intermediates[j] = m_intermediates[j] * (i - j) + m_intermediates[j-1] * (i - j + 2);
@@ -289,10 +331,10 @@ public:
       return true;
    }
 
-   bool tangent_numbers_series(const std::size_t m)
+   BOOST_MATH_GPU_ENABLED bool tangent_numbers_series(const boost::math::size_t m)
    {
       BOOST_MATH_STD_USING
-      static const std::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
+      static const boost::math::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
 
       typename container_type::size_type old_size = bn.size();
 
@@ -309,7 +351,7 @@ public:
 
       T power_two(ldexp(T(1), static_cast<int>(2 * old_size)));
 
-      for(std::size_t i = old_size; i < m; i++)
+      for(boost::math::size_t i = old_size; i < m; i++)
       {
          T b(static_cast<T>(i * 2));
          //
@@ -325,7 +367,7 @@ public:
             m_overflow_limit = i;
             while(i < m)
             {
-               b = std::numeric_limits<T>::has_infinity ? std::numeric_limits<T>::infinity() : tools::max_value<T>();
+               b = boost::math::numeric_limits<T>::has_infinity ? boost::math::numeric_limits<T>::infinity() : tools::max_value<T>();
                bn[static_cast<typename container_type::size_type>(i)] = ((i % 2U) ? b : T(-b));
                ++i;
             }
@@ -346,7 +388,7 @@ public:
    }
 
    template <class OutputIterator>
-   OutputIterator copy_bernoulli_numbers(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol)
+   BOOST_MATH_GPU_ENABLED OutputIterator copy_bernoulli_numbers(OutputIterator out, boost::math::size_t start, boost::math::size_t n, const Policy& pol)
    {
       //
       // There are basically 3 thread safety options:
@@ -366,7 +408,7 @@ public:
          {
             out = copy_bernoulli_numbers(out, start, bn.capacity() - start, pol);
             n -= bn.capacity() - start;
-            start = static_cast<std::size_t>(bn.capacity());
+            start = static_cast<boost::math::size_t>(bn.capacity());
          }
          if(start < b2n_overflow_limit<T, Policy>() + 2u)
          {
@@ -378,7 +420,7 @@ public:
          }
          for(; n; ++start, --n)
          {
-            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(start), pol);
+            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(start), pol);
             ++out;
          }
          return out;
@@ -400,16 +442,16 @@ public:
       }
       if(start + n >= bn.size())
       {
-         std::size_t new_size = (std::min)((std::max)((std::max)(std::size_t(start + n), std::size_t(bn.size() + 20)), std::size_t(50)), std::size_t(bn.capacity()));
+         boost::math::size_t new_size = BOOST_MATH_GPU_SAFE_MIN(BOOST_MATH_GPU_SAFE_MAX(BOOST_MATH_GPU_SAFE_MAX(boost::math::size_t(start + n), boost::math::size_t(bn.size() + 20)), boost::math::size_t(50)), boost::math::size_t(bn.capacity()));
          if (!tangent_numbers_series(new_size))
          {
-            return std::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(start + n), pol));
+            return boost::math::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(start + n), pol));
          }
       }
 
-      for(std::size_t i = (std::max)(std::size_t(max_bernoulli_b2n<T>::value + 1), start); i < start + n; ++i)
+      for(boost::math::size_t i = BOOST_MATH_GPU_SAFE_MAX(boost::math::size_t(max_bernoulli_b2n<T>::value + 1), start); i < start + n; ++i)
       {
-         *out = (i >= m_overflow_limit) ? policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(i), pol) : bn[i];
+         *out = (i >= m_overflow_limit) ? policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(i), pol) : bn[i];
          ++out;
       }
       #else
@@ -419,12 +461,12 @@ public:
       //
       // Get the counter and see if we need to calculate more constants:
       //
-      if((static_cast<std::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
+      if((static_cast<boost::math::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
          || (static_cast<int>(m_current_precision.load(std::memory_order_consume)) < boost::math::tools::digits<T>()))
       {
          std::lock_guard<std::mutex> l(m_mutex);
 
-         if((static_cast<std::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
+         if((static_cast<boost::math::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
             || (static_cast<int>(m_current_precision.load(std::memory_order_consume)) < boost::math::tools::digits<T>()))
          {
             if(static_cast<int>(m_current_precision.load(std::memory_order_consume)) < boost::math::tools::digits<T>())
@@ -437,17 +479,17 @@ public:
             }
             if(start + n >= bn.size())
             {
-               std::size_t new_size = (std::min)((std::max)((std::max)(std::size_t(start + n), std::size_t(bn.size() + 20)), std::size_t(50)), std::size_t(bn.capacity()));
+               boost::math::size_t new_size = BOOST_MATH_GPU_SAFE_MIN(BOOST_MATH_GPU_SAFE_MAX(BOOST_MATH_GPU_SAFE_MAX(boost::math::size_t(start + n), boost::math::size_t(bn.size() + 20)), boost::math::size_t(50)), boost::math::size_t(bn.capacity()));
                if (!tangent_numbers_series(new_size))
-                  return std::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(new_size), pol));
+                  return boost::math::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(new_size), pol));
             }
             m_counter.store(static_cast<atomic_integer_type>(bn.size()), std::memory_order_release);
          }
       }
 
-      for(std::size_t i = (std::max)(static_cast<std::size_t>(max_bernoulli_b2n<T>::value + 1), start); i < start + n; ++i)
+      for(boost::math::size_t i = BOOST_MATH_GPU_SAFE_MAX(static_cast<boost::math::size_t>(max_bernoulli_b2n<T>::value + 1), start); i < start + n; ++i)
       {
-         *out = (i >= m_overflow_limit) ? policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(i), pol) : bn[static_cast<typename container_type::size_type>(i)];
+         *out = (i >= m_overflow_limit) ? policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(i), pol) : bn[static_cast<typename container_type::size_type>(i)];
          ++out;
       }
 
@@ -456,7 +498,7 @@ public:
    }
 
    template <class OutputIterator>
-   OutputIterator copy_tangent_numbers(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol)
+   BOOST_MATH_GPU_ENABLED OutputIterator copy_tangent_numbers(OutputIterator out, boost::math::size_t start, boost::math::size_t n, const Policy& pol)
    {
       //
       // There are basically 3 thread safety options:
@@ -477,7 +519,7 @@ public:
          {
             out = copy_tangent_numbers(out, start, bn.capacity() - start, pol);
             n -= bn.capacity() - start;
-            start = static_cast<std::size_t>(bn.capacity());
+            start = static_cast<boost::math::size_t>(bn.capacity());
          }
          if(start < b2n_overflow_limit<T, Policy>() + 2u)
          {
@@ -489,7 +531,7 @@ public:
          }
          for(; n; ++start, --n)
          {
-            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", 0, T(start), pol);
+            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", 0, T(start), pol);
             ++out;
          }
          return out;
@@ -508,19 +550,19 @@ public:
       }
       if(start + n >= bn.size())
       {
-         std::size_t new_size = (std::min)((std::max)((std::max)(start + n, std::size_t(bn.size() + 20)), std::size_t(50)), std::size_t(bn.capacity()));
+         boost::math::size_t new_size = BOOST_MATH_GPU_SAFE_MIN(BOOST_MATH_GPU_SAFE_MAX(BOOST_MATH_GPU_SAFE_MAX(start + n, boost::math::size_t(bn.size() + 20)), boost::math::size_t(50)), boost::math::size_t(bn.capacity()));
          if (!tangent_numbers_series(new_size))
-            return std::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(start + n), pol));
+            return boost::math::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(start + n), pol));
       }
 
-      for(std::size_t i = start; i < start + n; ++i)
+      for(boost::math::size_t i = start; i < start + n; ++i)
       {
          if(i >= m_overflow_limit)
-            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(i), pol);
+            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(i), pol);
          else
          {
             if(tools::max_value<T>() * tangent_scale_factor<T>() < tn[static_cast<typename container_type::size_type>(i)])
-               *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(i), pol);
+               *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(i), pol);
             else
                *out = tn[static_cast<typename container_type::size_type>(i)] / tangent_scale_factor<T>();
          }
@@ -535,12 +577,12 @@ public:
       //
       // Get the counter and see if we need to calculate more constants:
       //
-      if((static_cast<std::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
+      if((static_cast<boost::math::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
          || (static_cast<int>(m_current_precision.load(std::memory_order_consume)) < boost::math::tools::digits<T>()))
       {
          std::lock_guard<std::mutex> l(m_mutex);
 
-         if((static_cast<std::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
+         if((static_cast<boost::math::size_t>(m_counter.load(std::memory_order_consume)) < start + n)
             || (static_cast<int>(m_current_precision.load(std::memory_order_consume)) < boost::math::tools::digits<T>()))
          {
             if(static_cast<int>(m_current_precision.load(std::memory_order_consume)) < boost::math::tools::digits<T>())
@@ -553,22 +595,22 @@ public:
             }
             if(start + n >= bn.size())
             {
-               std::size_t new_size = (std::min)((std::max)((std::max)(start + n, std::size_t(bn.size() + 20)), std::size_t(50)), std::size_t(bn.capacity()));
+               boost::math::size_t new_size = BOOST_MATH_GPU_SAFE_MIN(BOOST_MATH_GPU_SAFE_MAX(BOOST_MATH_GPU_SAFE_MAX(start + n, boost::math::size_t(bn.size() + 20)), boost::math::size_t(50)), boost::math::size_t(bn.capacity()));
                if (!tangent_numbers_series(new_size))
-                  return std::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(start + n), pol));
+                  return boost::math::fill_n(out, n, policies::raise_evaluation_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", "Unable to allocate Bernoulli numbers cache for %1% values", T(start + n), pol));
             }
             m_counter.store(static_cast<atomic_integer_type>(bn.size()), std::memory_order_release);
          }
       }
 
-      for(std::size_t i = start; i < start + n; ++i)
+      for(boost::math::size_t i = start; i < start + n; ++i)
       {
          if(i >= m_overflow_limit)
-            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(i), pol);
+            *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(i), pol);
          else
          {
             if(tools::max_value<T>() * tangent_scale_factor<T>() < tn[static_cast<typename container_type::size_type>(i)])
-               *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(std::size_t)", nullptr, T(i), pol);
+               *out = policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(boost::math::size_t)", nullptr, T(i), pol);
             else
                *out = tn[static_cast<typename container_type::size_type>(i)] / tangent_scale_factor<T>();
          }
@@ -586,9 +628,9 @@ private:
    // safety guarantees:
    //
    fixed_vector<T> bn, tn;
-   std::vector<T> m_intermediates;
+   boost::math::vector<T> m_intermediates;
    // The value at which we know overflow has already occurred for the Bn:
-   std::size_t m_overflow_limit;
+   boost::math::size_t m_overflow_limit;
 
    #if !defined(BOOST_MATH_BERNOULLI_NOTHREADS)
    std::mutex m_mutex;
@@ -600,14 +642,14 @@ private:
 };
 
 template <class T, class Policy>
-inline typename std::enable_if<(std::numeric_limits<T>::digits == 0) || (std::numeric_limits<T>::digits >= INT_MAX), bernoulli_numbers_cache<T, Policy>&>::type get_bernoulli_numbers_cache()
+BOOST_MATH_GPU_ENABLED inline typename boost::math::enable_if<(boost::math::numeric_limits<T>::digits == 0) || (boost::math::numeric_limits<T>::digits >= INT_MAX), bernoulli_numbers_cache<T, Policy>&>::type get_bernoulli_numbers_cache()
 {
    //
    // When numeric_limits<>::digits is zero, the type has either not specialized numeric_limits at all
    // or it's precision can vary at runtime.  So make the cache thread_local so that each thread can
    // have it's own precision if required:
    //
-   static
+   BOOST_MATH_STATIC
 #ifndef BOOST_MATH_NO_THREAD_LOCAL_WITH_NON_TRIVIAL_TYPES
       BOOST_MATH_THREAD_LOCAL
 #endif
@@ -615,12 +657,12 @@ inline typename std::enable_if<(std::numeric_limits<T>::digits == 0) || (std::nu
    return data;
 }
 template <class T, class Policy>
-inline typename std::enable_if<std::numeric_limits<T>::digits && (std::numeric_limits<T>::digits < INT_MAX), bernoulli_numbers_cache<T, Policy>&>::type get_bernoulli_numbers_cache()
+BOOST_MATH_GPU_ENABLED inline typename boost::math::enable_if<boost::math::numeric_limits<T>::digits && (boost::math::numeric_limits<T>::digits < INT_MAX), bernoulli_numbers_cache<T, Policy>&>::type get_bernoulli_numbers_cache()
 {
    //
    // Note that we rely on C++11 thread-safe initialization here:
    //
-   static bernoulli_numbers_cache<T, Policy> data;
+   BOOST_MATH_STATIC bernoulli_numbers_cache<T, Policy> data;
    return data;
 }
 
