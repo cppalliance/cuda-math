@@ -33,7 +33,7 @@ namespace math {
 
 template <typename T>
 class vector {
-private:
+protected:
     T* data;
     boost::math::size_t capacity_;
     boost::math::size_t current_;
@@ -162,6 +162,25 @@ public:
         return current_ == 0;
     }
 
+    BOOST_MATH_GPU_ENABLED T* begin()
+    {
+        return data;
+    }
+
+    BOOST_MATH_GPU_ENABLED T* begin() const
+    {
+        return data;
+    }
+
+    BOOST_MATH_GPU_ENABLED T* end()
+    {
+        return data + current_;
+    }
+
+    BOOST_MATH_GPU_ENABLED T* end() const
+    {
+        return data + current_;
+    }
 };
 
 } // Namespace math
