@@ -95,6 +95,9 @@ run test_saspoint5_quan_float.cu ;
 run test_beta_double.cu ;
 run test_beta_float.cu ;
 
+run test_bernoulli_constants_double.cu ;
+run test_bernoulli_constants_float.cu ;
+
 run test_bessel_i0_double.cu ;
 run test_bessel_i0_float.cu ;
 run test_bessel_i1_double.cu ;
