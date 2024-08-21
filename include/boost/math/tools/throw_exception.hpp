@@ -6,6 +6,10 @@
 #ifndef BOOST_MATH_TOOLS_THROW_EXCEPTION_HPP
 #define BOOST_MATH_TOOLS_THROW_EXCEPTION_HPP
 
+#include <boost/math/tools/config.hpp>
+
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 #include <boost/math/tools/is_standalone.hpp>
 
 #ifndef BOOST_MATH_STANDALONE
@@ -39,5 +43,11 @@
 #endif
 
 #endif // BOOST_MATH_STANDALONE
+
+#else // BOOST_MATH_GPU_SUPPORT
+
+#define BOOST_MATH_THROW_EXCEPTION(expr)
+
+#endif 
 
 #endif // BOOST_MATH_TOOLS_THROW_EXCEPTION_HPP
