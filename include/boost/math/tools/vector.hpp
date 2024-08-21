@@ -33,17 +33,22 @@ namespace math {
 
 template <typename T>
 class vector {
-protected:
+private:
     T* data;
     boost::math::size_t capacity_;
     boost::math::size_t current_;
 
 public:
+    using size_type = boost::math::size_t;
+    using iterator = T*;
+    using const_iterator = const T*;
+
     BOOST_MATH_GPU_ENABLED vector()
     {
         // cudaMalloc takes void** instead of void* like malloc
-        data = cudaMalloc(&data, sizeof(T));
-        if (data != nullptr)
+        const auto res = cudaMalloc(&data, sizeof(T));
+        
+        if (res == cudaError::cudaSuccess)
         {
             capacity_ = 1;
         }
@@ -65,18 +70,19 @@ public:
         }
     }
 
-    BOOST_MATH_GPU_ENABLED void push_back(T element)
+    // Returns true or false based on if the operation succeeded or not
+    BOOST_MATH_GPU_ENABLED bool push_back(T element)
     {
         if (current_ == capacity_)
         {
             T* temp;
-            temp = cudaMalloc(&temp, 2 * capacity_ * sizeof(T));
+            const auto res = cudaMalloc(&temp, 2 * capacity_ * sizeof(T));
 
-            if (temp == nullptr)
+            if (res == cudaError::cudaSuccess)
             {
                 // We have no more memory so we can't add the element
                 // We also can't throw or write to errno to signal ENOMEM
-                return;
+                return false;
             }
 
             for (boost::math::size_t i = 0; i < capacity_; ++ i)
@@ -91,18 +97,21 @@ public:
 
         data[current_] = element;
         ++current_;
+
+        return true;
     }
 
-    BOOST_MATH_GPU_ENABLED void resize(boost::math::size_t new_size, T default_elem)
+    // Returns true or false based on if the operation succedded or not)
+    BOOST_MATH_GPU_ENABLED bool resize(boost::math::size_t new_size, T default_elem)
     {
         if (data != nullptr)
         {
             cudaFree(data);
         }
 
-        data = cudaMalloc(&data, new_size * sizeof(T));
+        const auto res = cudaMalloc(&data, new_size * sizeof(T));
         
-        if (data != nullptr)
+        if (res == cudaError::cudaSuccess)
         {
             current_ = 0;
             capacity_ = new_size;
@@ -112,7 +121,16 @@ public:
             {
                 data[i] = default_elem;
             }
+
+            return true;
         }
+
+        return false;
+    }
+
+    BOOST_MATH_GPU_ENABLED bool resize(boost::math::size_t new_size)
+    {
+        return resize(new_size, static_cast<T>(0));
     }
 
     BOOST_MATH_GPU_ENABLED void clear()
@@ -127,11 +145,6 @@ public:
         }
 
         current_ = 0;
-    }
-
-    BOOST_MATH_GPU_ENABLED void resize(boost::math::size_t new_size)
-    {
-        resize(new_size, static_cast<T>(0));
     }
 
     BOOST_MATH_GPU_ENABLED void pop_back()
