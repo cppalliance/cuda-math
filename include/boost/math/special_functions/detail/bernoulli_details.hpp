@@ -114,7 +114,7 @@ template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED inline boost::math::size_t find_bernoulli_overflow_limit(const boost::math::false_type&)
 {
    // Set a limit on how large the result can ever be:
-   static const auto max_result = static_cast<double>((boost::math::numeric_limits<boost::math::size_t>::max)() - 1000u);
+   BOOST_MATH_STATIC const auto max_result = static_cast<double>((boost::math::numeric_limits<boost::math::size_t>::max)() - 1000u);
 
    unsigned long long t = lltrunc(boost::math::tools::log_max_value<T>());
    max_bernoulli_root_functor fun(t);
@@ -130,18 +130,18 @@ BOOST_MATH_GPU_ENABLED inline boost::math::size_t find_bernoulli_overflow_limit(
 }
 
 template <class T, class Policy>
-inline boost::math::size_t find_bernoulli_overflow_limit(const boost::math::true_type&)
+BOOST_MATH_GPU_ENABLED inline boost::math::size_t find_bernoulli_overflow_limit(const boost::math::true_type&)
 {
    return max_bernoulli_index<bernoulli_imp_variant<T>::value>::value;
 }
 
 template <class T, class Policy>
-boost::math::size_t b2n_overflow_limit()
+BOOST_MATH_GPU_ENABLED boost::math::size_t b2n_overflow_limit()
 {
    // This routine is called at program startup if it's called at all:
    // that guarantees safe initialization of the static variable.
    using tag_type = boost::math::integral_constant<bool, (bernoulli_imp_variant<T>::value >= 1) && (bernoulli_imp_variant<T>::value <= 3)>;
-   static const boost::math::size_t lim = find_bernoulli_overflow_limit<T, Policy>(tag_type());
+   BOOST_MATH_STATIC_LOCAL_VARIABLE const boost::math::size_t lim = find_bernoulli_overflow_limit<T, Policy>(tag_type());
    return lim;
 }
 
@@ -151,14 +151,14 @@ boost::math::size_t b2n_overflow_limit()
 // overflow in the calculation, we can do this by scaling all the tangent number by some scale factor:
 //
 template <class T, typename boost::math::enable_if<boost::math::numeric_limits<T>::is_specialized && (boost::math::numeric_limits<T>::radix == 2), bool>::type = true>
-inline T tangent_scale_factor()
+BOOST_MATH_GPU_ENABLED inline T tangent_scale_factor()
 {
    BOOST_MATH_STD_USING
    return ldexp(T(1), boost::math::numeric_limits<T>::min_exponent + 5);
 }
 
 template <class T, typename boost::math::enable_if<!boost::math::numeric_limits<T>::is_specialized || !(boost::math::numeric_limits<T>::radix == 2), bool>::type = true>
-inline T tangent_scale_factor()
+BOOST_MATH_GPU_ENABLED inline T tangent_scale_factor()
 {
    return tools::min_value<T>() * 16;
 }
@@ -232,34 +232,7 @@ private:
 };
 #else
 template <class T>
-struct fixed_vector : public boost::math::vector<T>
-{
-   BOOST_MATH_GPU_ENABLED bool resize(boost::math::size_t new_size, T default_elem)
-   {
-      if (data != nullptr)
-      {
-         cudaFree(data);
-      }
-
-      data = cudaMalloc(&data, new_size * sizeof(T));
-      
-      if (data != nullptr)
-      {
-         current_ = 0;
-         capacity_ = new_size;
-
-         // cudaMemset only works with ints so we need to loop
-         for (boost::math::size_t i = 0; i < capacity_; ++i)
-         {
-               data[i] = default_elem;
-         }
-
-         return true;
-      }
-
-      return false;
-   }
-};
+struct fixed_vector : public boost::math::vector<T> {};
 #endif
 
 template <class T, class Policy>
@@ -275,7 +248,7 @@ public:
 
    BOOST_MATH_GPU_ENABLED bool tangent(boost::math::size_t m)
    {
-      static const boost::math::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
+      BOOST_MATH_STATIC_LOCAL_VARIABLE const boost::math::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
 
       if (!tn.resize(static_cast<typename container_type::size_type>(m), T(0U)))
       {
@@ -296,7 +269,7 @@ public:
          BOOST_MATH_INSTRUMENT_VARIABLE(tn[1]);
       }
 
-      for(boost::math::size_t i = BOOST_MATH_GPU_SAFE_MAX(2, prev_size); i < m; i++)
+      for(boost::math::size_t i = BOOST_MATH_GPU_SAFE_MAX(static_cast<boost::math::size_t>(2), prev_size); i < m; i++)
       {
          bool overflow_check = false;
          if(i >= min_overflow_index && (boost::math::tools::max_value<T>() / (i-1) < m_intermediates[1]) )
@@ -334,7 +307,7 @@ public:
    BOOST_MATH_GPU_ENABLED bool tangent_numbers_series(const boost::math::size_t m)
    {
       BOOST_MATH_STD_USING
-      static const boost::math::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
+      BOOST_MATH_STATIC_LOCAL_VARIABLE const boost::math::size_t min_overflow_index = b2n_overflow_limit<T, Policy>() - 1;
 
       typename container_type::size_type old_size = bn.size();
 
@@ -513,6 +486,7 @@ public:
       //
       // First off handle the common case for overflow and/or asymptotic expansion:
       //
+      #ifndef BOOST_MATH_HAS_GPU_SUPPORT
       if(start + n > bn.capacity())
       {
          if(start < bn.capacity())
@@ -536,6 +510,7 @@ public:
          }
          return out;
       }
+      #endif
 
       #if defined(BOOST_MATH_BERNOULLI_NOTHREADS)
       //
@@ -641,28 +616,40 @@ private:
    #endif // BOOST_MATH_HAS_THREADS
 };
 
+// On device there is no way to maintain a static cache of data and then get a reference to it
+// Unfortunately that means building the cache and passing it to the caller every time...
+
 template <class T, class Policy>
+#ifdef BOOST_MATH_ENABLE_CUDA
+BOOST_MATH_GPU_ENABLED inline typename boost::math::enable_if<(boost::math::numeric_limits<T>::digits == 0) || (boost::math::numeric_limits<T>::digits >= INT_MAX), bernoulli_numbers_cache<T, Policy>>::type get_bernoulli_numbers_cache()
+#else
 BOOST_MATH_GPU_ENABLED inline typename boost::math::enable_if<(boost::math::numeric_limits<T>::digits == 0) || (boost::math::numeric_limits<T>::digits >= INT_MAX), bernoulli_numbers_cache<T, Policy>&>::type get_bernoulli_numbers_cache()
+#endif
 {
    //
    // When numeric_limits<>::digits is zero, the type has either not specialized numeric_limits at all
    // or it's precision can vary at runtime.  So make the cache thread_local so that each thread can
    // have it's own precision if required:
    //
-   BOOST_MATH_STATIC
+   BOOST_MATH_STATIC_LOCAL_VARIABLE
 #ifndef BOOST_MATH_NO_THREAD_LOCAL_WITH_NON_TRIVIAL_TYPES
       BOOST_MATH_THREAD_LOCAL
 #endif
       bernoulli_numbers_cache<T, Policy> data;
    return data;
 }
+
 template <class T, class Policy>
+#ifdef BOOST_MATH_ENABLE_CUDA
+BOOST_MATH_GPU_ENABLED inline typename boost::math::enable_if<boost::math::numeric_limits<T>::digits && (boost::math::numeric_limits<T>::digits < INT_MAX), bernoulli_numbers_cache<T, Policy>>::type get_bernoulli_numbers_cache()
+#else
 BOOST_MATH_GPU_ENABLED inline typename boost::math::enable_if<boost::math::numeric_limits<T>::digits && (boost::math::numeric_limits<T>::digits < INT_MAX), bernoulli_numbers_cache<T, Policy>&>::type get_bernoulli_numbers_cache()
+#endif
 {
    //
    // Note that we rely on C++11 thread-safe initialization here:
    //
-   BOOST_MATH_STATIC bernoulli_numbers_cache<T, Policy> data;
+   BOOST_MATH_STATIC_LOCAL_VARIABLE bernoulli_numbers_cache<T, Policy> data;
    return data;
 }
 

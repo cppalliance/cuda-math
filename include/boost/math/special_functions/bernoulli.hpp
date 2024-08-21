@@ -12,6 +12,8 @@
 #define _BOOST_BERNOULLI_B2N_2013_05_30_HPP_
 
 #include <boost/math/tools/config.hpp>
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/type_traits.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/detail/unchecked_bernoulli.hpp>
 #include <boost/math/special_functions/detail/bernoulli_details.hpp>
@@ -22,15 +24,15 @@ namespace boost { namespace math {
 namespace detail {
 
 template <class T, class OutputIterator, class Policy, int N>
-BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol, const std::integral_constant<int, N>& tag)
+BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, boost::math::size_t start, boost::math::size_t n, const Policy& pol, const boost::math::integral_constant<int, N>& tag)
 {
-   for(std::size_t i = start; (i <= max_bernoulli_b2n<T>::value) && (i < start + n); ++i)
+   for(boost::math::size_t i = start; (i <= max_bernoulli_b2n<T>::value) && (i < start + n); ++i)
    {
       *out = unchecked_bernoulli_imp<T>(i, tag);
       ++out;
    }
 
-   for(std::size_t i = (std::max)(static_cast<std::size_t>(max_bernoulli_b2n<T>::value + 1), start); i < start + n; ++i)
+   for(boost::math::size_t i = BOOST_MATH_GPU_SAFE_MAX(static_cast<boost::math::size_t>(max_bernoulli_b2n<T>::value + 1), start); i < start + n; ++i)
    {
       // We must overflow:
       *out = (i & 1 ? 1 : -1) * policies::raise_overflow_error<T>("boost::math::bernoulli_b2n<%1%>(n)", nullptr, T(i), pol);
@@ -40,11 +42,11 @@ BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, s
 }
 
 template <class T, class OutputIterator, class Policy>
-BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol, const std::integral_constant<int, 0>& tag)
+BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, boost::math::size_t start, boost::math::size_t n, const Policy& pol, const boost::math::integral_constant<int, 0>& tag)
 {
-   for(std::size_t i = start; (i <= max_bernoulli_b2n<T>::value) && (i < start + n); ++i)
+   for(boost::math::size_t i = start; (i <= max_bernoulli_b2n<T>::value) && (i < start + n); ++i)
    {
-      *out = unchecked_bernoulli_imp<T>(i, tag);
+      *out = unchecked_bernoulli_imp<T>(i, tag());
       ++out;
    }
    //
@@ -63,14 +65,14 @@ BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, s
 template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED inline T bernoulli_b2n(const int i, const Policy &pol)
 {
-   using tag_type = std::integral_constant<int, detail::bernoulli_imp_variant<T>::value>;
+   using tag_type = boost::math::integral_constant<int, detail::bernoulli_imp_variant<T>::value>;
    if(i < 0)
    {
       return policies::raise_domain_error<T>("boost::math::bernoulli_b2n<%1%>", "Index should be >= 0 but got %1%", T(i), pol);
    }
 
    T result {};
-   boost::math::detail::bernoulli_number_imp<T>(&result, static_cast<std::size_t>(i), 1u, pol, tag_type());
+   boost::math::detail::bernoulli_number_imp<T>(&result, static_cast<boost::math::size_t>(i), 1u, pol, tag_type());
    return result;
 }
 
@@ -86,7 +88,7 @@ BOOST_MATH_GPU_ENABLED inline OutputIterator bernoulli_b2n(const int start_index
                                     OutputIterator out_it,
                                     const Policy& pol)
 {
-   using tag_type = std::integral_constant<int, detail::bernoulli_imp_variant<T>::value>;
+   using tag_type = boost::math::integral_constant<int, detail::bernoulli_imp_variant<T>::value>;
    if(start_index < 0)
    {
       *out_it = policies::raise_domain_error<T>("boost::math::bernoulli_b2n<%1%>", "Index should be >= 0 but got %1%", T(start_index), pol);

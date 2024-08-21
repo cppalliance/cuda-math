@@ -209,7 +209,7 @@ namespace detail {
 #else // GPU Handling
 
    template <class T>
-   inline BOOST_MATH_CONSTEXPR_TABLE_FUNCTION T unchecked_bernoulli_imp(boost::math::size_t n, const boost::math::integral_constant<int, 0>&)
+   BOOST_MATH_GPU_ENABLED inline BOOST_MATH_CONSTEXPR_TABLE_FUNCTION T unchecked_bernoulli_imp(boost::math::size_t n, const boost::math::integral_constant<int, 0>&)
    {
       constexpr std::int64_t numerators[] = {
          boost::math::int64_t(+1LL),
@@ -393,7 +393,7 @@ namespace detail {
          -2.13999492572253336658107447651910973926742e34F,
          +2.05009757234780975699217330956723102516667e36F,
          -2.09380059113463784090951852900279701847092e38F,
-      }
+      };
 
       return bernoulli_data[n];
    }
@@ -690,10 +690,10 @@ namespace detail {
       return unchecked_bernoulli_data<T, 2>::bernoulli_data[n];
    }
 
-#else 
+#else // GPU Support
 
    template <class T>
-   inline BOOST_MATH_CONSTEXPR_TABLE_FUNCTION T unchecked_bernoulli_imp(boost::math::size_t n, const boost::math::integral_constant<int, 2>&)
+   BOOST_MATH_GPU_ENABLED inline BOOST_MATH_CONSTEXPR_TABLE_FUNCTION T unchecked_bernoulli_imp(boost::math::size_t n, const boost::math::integral_constant<int, 2>&)
    {
       constexpr double bernoulli_data[] = {
          +1.00000000000000000000000000000000000000000,
