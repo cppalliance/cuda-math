@@ -411,7 +411,7 @@ BOOST_MATH_GPU_ENABLED inline T lower_gamma_series(T a, T z, const Policy& pol, 
 // with Bernoulli numbers.
 //
 template<class T>
-std::size_t highest_bernoulli_index()
+BOOST_MATH_GPU_ENABLED boost::math::size_t highest_bernoulli_index()
 {
    const float digits10_of_type = (std::numeric_limits<T>::is_specialized
                                       ? static_cast<float>(std::numeric_limits<T>::digits10)
@@ -422,7 +422,7 @@ std::size_t highest_bernoulli_index()
 }
 
 template<class T>
-int minimum_argument_for_bernoulli_recursion()
+BOOST_MATH_GPU_ENABLED int minimum_argument_for_bernoulli_recursion()
 {
    BOOST_MATH_STD_USING
 
@@ -456,7 +456,7 @@ int minimum_argument_for_bernoulli_recursion()
 }
 
 template <class T, class Policy>
-T scaled_tgamma_no_lanczos(const T& z, const Policy& pol, bool islog = false)
+BOOST_MATH_GPU_ENABLED T scaled_tgamma_no_lanczos(const T& z, const Policy& pol, bool islog = false)
 {
    BOOST_MATH_STD_USING
    //
