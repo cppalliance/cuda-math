@@ -11,16 +11,18 @@
 #ifndef _BOOST_BERNOULLI_B2N_2013_05_30_HPP_
 #define _BOOST_BERNOULLI_B2N_2013_05_30_HPP_
 
+#include <boost/math/tools/config.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/detail/unchecked_bernoulli.hpp>
 #include <boost/math/special_functions/detail/bernoulli_details.hpp>
+#include <boost/math/policies/error_handling.hpp>
 
 namespace boost { namespace math {
 
 namespace detail {
 
 template <class T, class OutputIterator, class Policy, int N>
-OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol, const std::integral_constant<int, N>& tag)
+BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol, const std::integral_constant<int, N>& tag)
 {
    for(std::size_t i = start; (i <= max_bernoulli_b2n<T>::value) && (i < start + n); ++i)
    {
@@ -38,7 +40,7 @@ OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::
 }
 
 template <class T, class OutputIterator, class Policy>
-OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol, const std::integral_constant<int, 0>& tag)
+BOOST_MATH_GPU_ENABLED OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::size_t n, const Policy& pol, const std::integral_constant<int, 0>& tag)
 {
    for(std::size_t i = start; (i <= max_bernoulli_b2n<T>::value) && (i < start + n); ++i)
    {
@@ -59,7 +61,7 @@ OutputIterator bernoulli_number_imp(OutputIterator out, std::size_t start, std::
 } // namespace detail
 
 template <class T, class Policy>
-inline T bernoulli_b2n(const int i, const Policy &pol)
+BOOST_MATH_GPU_ENABLED inline T bernoulli_b2n(const int i, const Policy &pol)
 {
    using tag_type = std::integral_constant<int, detail::bernoulli_imp_variant<T>::value>;
    if(i < 0)
@@ -73,13 +75,13 @@ inline T bernoulli_b2n(const int i, const Policy &pol)
 }
 
 template <class T>
-inline T bernoulli_b2n(const int i)
+BOOST_MATH_GPU_ENABLED inline T bernoulli_b2n(const int i)
 {
    return boost::math::bernoulli_b2n<T>(i, policies::policy<>());
 }
 
 template <class T, class OutputIterator, class Policy>
-inline OutputIterator bernoulli_b2n(const int start_index,
+BOOST_MATH_GPU_ENABLED inline OutputIterator bernoulli_b2n(const int start_index,
                                     const unsigned number_of_bernoullis_b2n,
                                     OutputIterator out_it,
                                     const Policy& pol)
@@ -95,7 +97,7 @@ inline OutputIterator bernoulli_b2n(const int start_index,
 }
 
 template <class T, class OutputIterator>
-inline OutputIterator bernoulli_b2n(const int start_index,
+BOOST_MATH_GPU_ENABLED inline OutputIterator bernoulli_b2n(const int start_index,
                                     const unsigned number_of_bernoullis_b2n,
                                     OutputIterator out_it)
 {
@@ -103,7 +105,7 @@ inline OutputIterator bernoulli_b2n(const int start_index,
 }
 
 template <class T, class Policy>
-inline T tangent_t2n(const int i, const Policy &pol)
+BOOST_MATH_GPU_ENABLED inline T tangent_t2n(const int i, const Policy &pol)
 {
    if(i < 0)
    {
@@ -116,13 +118,13 @@ inline T tangent_t2n(const int i, const Policy &pol)
 }
 
 template <class T>
-inline T tangent_t2n(const int i)
+BOOST_MATH_GPU_ENABLED inline T tangent_t2n(const int i)
 {
    return boost::math::tangent_t2n<T>(i, policies::policy<>());
 }
 
 template <class T, class OutputIterator, class Policy>
-inline OutputIterator tangent_t2n(const int start_index,
+BOOST_MATH_GPU_ENABLED inline OutputIterator tangent_t2n(const int start_index,
                                     const unsigned number_of_tangent_t2n,
                                     OutputIterator out_it,
                                     const Policy& pol)
@@ -137,7 +139,7 @@ inline OutputIterator tangent_t2n(const int start_index,
 }
 
 template <class T, class OutputIterator>
-inline OutputIterator tangent_t2n(const int start_index,
+BOOST_MATH_GPU_ENABLED inline OutputIterator tangent_t2n(const int start_index,
                                     const unsigned number_of_tangent_t2n,
                                     OutputIterator out_it)
 {
