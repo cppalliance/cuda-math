@@ -15,9 +15,6 @@
 #endif
 
 #include <boost/math/tools/config.hpp>
-
-#ifndef BOOST_MATH_HAS_NVRTC
-
 #include <boost/math/tools/series.hpp>
 #include <boost/math/tools/fraction.hpp>
 #include <boost/math/tools/precision.hpp>
@@ -60,13 +57,13 @@ namespace boost{ namespace math{
 namespace detail{
 
 template <class T>
-BOOST_MATH_GPU_ENABLED inline bool is_odd(T v, const std::true_type&)
+BOOST_MATH_GPU_ENABLED inline bool is_odd(T v, const boost::math::true_type&)
 {
    int i = static_cast<int>(v);
    return i&1;
 }
 template <class T>
-BOOST_MATH_GPU_ENABLED inline bool is_odd(T v, const std::false_type&)
+BOOST_MATH_GPU_ENABLED inline bool is_odd(T v, const boost::math::false_type&)
 {
    // Oh dear can't cast T to int!
    BOOST_MATH_STD_USING
@@ -76,7 +73,7 @@ BOOST_MATH_GPU_ENABLED inline bool is_odd(T v, const std::false_type&)
 template <class T>
 BOOST_MATH_GPU_ENABLED inline bool is_odd(T v)
 {
-   return is_odd(v, ::std::is_convertible<T, int>());
+   return is_odd(v, ::boost::math::is_convertible<T, int>());
 }
 
 template <class T>
@@ -259,7 +256,7 @@ BOOST_MATH_GPU_ENABLED T lgamma_imp_final(T z, const Policy& pol, const Lanczos&
    else if(z < 15)
    {
       typedef typename policies::precision<T, Policy>::type precision_type;
-      typedef std::integral_constant<int,
+      typedef boost::math::integral_constant<int,
          precision_type::value <= 0 ? 0 :
          precision_type::value <= 64 ? 64 :
          precision_type::value <= 113 ? 113 : 0
@@ -267,7 +264,7 @@ BOOST_MATH_GPU_ENABLED T lgamma_imp_final(T z, const Policy& pol, const Lanczos&
 
       result = lgamma_small_imp<T>(z, T(z - 1), T(z - 2), tag_type(), pol, l);
    }
-   else if((z >= 3) && (z < 100) && (std::numeric_limits<T>::max_exponent >= 1024))
+   else if((z >= 3) && (z < 100) && (boost::math::numeric_limits<T>::max_exponent >= 1024))
    {
       // taking the log of tgamma reduces the error, no danger of overflow here:
       result = log(gamma_imp(z, pol, l));
@@ -349,7 +346,7 @@ private:
    T z, a;
    int k;
 public:
-   typedef std::pair<T,T> result_type;
+   typedef boost::math::pair<T,T> result_type;
 
    BOOST_MATH_GPU_ENABLED upper_incomplete_gamma_fract(T a1, T z1)
       : z(z1-a1+1), a(a1), k(0)
@@ -399,7 +396,7 @@ BOOST_MATH_GPU_ENABLED inline T lower_gamma_series(T a, T z, const Policy& pol, 
    // lower incomplete integral. Then divide by tgamma(a)
    // to get the normalised value.
    lower_incomplete_gamma_series<T> s(a, z);
-   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   boost::math::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
    T factor = policies::get_epsilon<T, Policy>();
    T result = boost::math::tools::sum_series(s, factor, max_iter, init_value);
    policies::check_series_iterations<T>("boost::math::detail::lower_gamma_series<%1%>(%1%)", max_iter, pol);
@@ -413,12 +410,12 @@ BOOST_MATH_GPU_ENABLED inline T lower_gamma_series(T a, T z, const Policy& pol, 
 template<class T>
 BOOST_MATH_GPU_ENABLED boost::math::size_t highest_bernoulli_index()
 {
-   const float digits10_of_type = (std::numeric_limits<T>::is_specialized
-                                      ? static_cast<float>(std::numeric_limits<T>::digits10)
+   const float digits10_of_type = (boost::math::numeric_limits<T>::is_specialized
+                                      ? static_cast<float>(boost::math::numeric_limits<T>::digits10)
                                       : static_cast<float>(boost::math::tools::digits<T>() * 0.301F));
 
    // Find the high index n for Bn to produce the desired precision in Stirling's calculation.
-   return static_cast<std::size_t>(18.0F + (0.6F * digits10_of_type));
+   return static_cast<boost::math::size_t>(18.0F + (0.6F * digits10_of_type));
 }
 
 template<class T>
@@ -426,8 +423,8 @@ BOOST_MATH_GPU_ENABLED int minimum_argument_for_bernoulli_recursion()
 {
    BOOST_MATH_STD_USING
 
-   const float digits10_of_type = (std::numeric_limits<T>::is_specialized
-                                    ? (float) std::numeric_limits<T>::digits10
+   const float digits10_of_type = (boost::math::numeric_limits<T>::is_specialized
+                                    ? (float) boost::math::numeric_limits<T>::digits10
                                     : (float) (boost::math::tools::digits<T>() * 0.301F));
 
    int min_arg = (int) (digits10_of_type * 1.7F);
@@ -449,7 +446,7 @@ BOOST_MATH_GPU_ENABLED int minimum_argument_for_bernoulli_recursion()
       const float d2_minus_one = ((digits10_of_type / 0.301F) - 1.0F);
       const float limit        = ceil(exp((d2_minus_one * log(2.0F)) / 20.0F));
 
-      min_arg = (int) ((std::min)(digits10_of_type * 1.7F, limit));
+      min_arg = (int) (BOOST_MATH_GPU_SAFE_MIN(digits10_of_type * 1.7F, limit));
    }
 
    return min_arg;
@@ -468,7 +465,7 @@ BOOST_MATH_GPU_ENABLED T scaled_tgamma_no_lanczos(const T& z, const Policy& pol,
 
    // Perform the Bernoulli series expansion of Stirling's approximation.
 
-   const std::size_t number_of_bernoullis_b2n = policies::get_max_series_iterations<Policy>();
+   const boost::math::size_t number_of_bernoullis_b2n = policies::get_max_series_iterations<Policy>();
 
    T one_over_x_pow_two_n_minus_one = 1 / z;
    const T one_over_x2 = one_over_x_pow_two_n_minus_one * one_over_x_pow_two_n_minus_one;
@@ -477,11 +474,11 @@ BOOST_MATH_GPU_ENABLED T scaled_tgamma_no_lanczos(const T& z, const Policy& pol,
    const T half_ln_two_pi_over_z = sqrt(boost::math::constants::two_pi<T>() / z);
    T last_term = 2 * sum;
 
-   for (std::size_t n = 2U;; ++n)
+   for (boost::math::size_t n = 2U;; ++n)
    {
       one_over_x_pow_two_n_minus_one *= one_over_x2;
 
-      const std::size_t n2 = static_cast<std::size_t>(n * 2U);
+      const boost::math::size_t n2 = static_cast<boost::math::size_t>(n * 2U);
 
       const T term = (boost::math::bernoulli_b2n<T>(static_cast<int>(n)) * one_over_x_pow_two_n_minus_one) / (n2 * (n2 - 1U));
 
@@ -786,7 +783,7 @@ BOOST_MATH_GPU_ENABLED T tgammap1m1_imp(T dz, Policy const& pol, const Lanczos& 
 
    typedef typename policies::precision<T,Policy>::type precision_type;
 
-   typedef std::integral_constant<int,
+   typedef boost::math::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 64 ? 64 :
       precision_type::value <= 113 ? 113 : 0
@@ -971,16 +968,16 @@ BOOST_MATH_GPU_ENABLED T regularised_gamma_prefix(T a, T z, const Policy& pol, c
       //
       T alz = a * log(z / agh);
       T amz = a - z;
-      if(((std::min)(alz, amz) <= tools::log_min_value<T>()) || ((std::max)(alz, amz) >= tools::log_max_value<T>()))
+      if((BOOST_MATH_GPU_SAFE_MIN(alz, amz) <= tools::log_min_value<T>()) || (BOOST_MATH_GPU_SAFE_MAX(alz, amz) >= tools::log_max_value<T>()))
       {
          T amza = amz / a;
-         if(((std::min)(alz, amz)/2 > tools::log_min_value<T>()) && ((std::max)(alz, amz)/2 < tools::log_max_value<T>()))
+         if((BOOST_MATH_GPU_SAFE_MIN(alz, amz)/2 > tools::log_min_value<T>()) && (BOOST_MATH_GPU_SAFE_MAX(alz, amz)/2 < tools::log_max_value<T>()))
          {
             // compute square root of the result and then square it:
             T sq = pow(z / agh, a / 2) * exp(amz / 2);
             prefix = sq * sq;
          }
-         else if(((std::min)(alz, amz)/4 > tools::log_min_value<T>()) && ((std::max)(alz, amz)/4 < tools::log_max_value<T>()) && (z > a))
+         else if((BOOST_MATH_GPU_SAFE_MIN(alz, amz)/4 > tools::log_min_value<T>()) && (BOOST_MATH_GPU_SAFE_MAX(alz, amz)/4 < tools::log_max_value<T>()) && (z > a))
          {
             // compute the 4th root of the result then square it twice:
             T sq = pow(z / agh, a / 4) * exp(amz / 4);
@@ -1092,7 +1089,7 @@ BOOST_MATH_GPU_ENABLED inline T tgamma_small_upper_part(T a, T x, const Policy& 
    result -= p;
    result /= a;
    detail::small_gamma2_series<T> s(a, x);
-   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>() - 10;
+   boost::math::uintmax_t max_iter = policies::get_max_series_iterations<Policy>() - 10;
    p += 1;
    if(pderivative)
       *pderivative = p / (*pgam * exp(x));
@@ -1192,7 +1189,7 @@ BOOST_MATH_GPU_ENABLED T incomplete_tgamma_large_x(const T& a, const T& x, const
 {
    BOOST_MATH_STD_USING
    incomplete_tgamma_large_x_series<T> s(a, x);
-   std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+   boost::math::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
    T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
    boost::math::policies::check_series_iterations<T>("boost::math::tgamma<%1%>(%1%,%1%)", max_iter, pol);
    return result;
@@ -1357,7 +1354,7 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool in
       // series and continued fractions are slow to converge:
       //
       bool use_temme = false;
-      if(normalised && std::numeric_limits<T>::is_specialized && (a > 20))
+      if(normalised && boost::math::numeric_limits<T>::is_specialized && (a > 20))
       {
          T sigma = fabs((x-a)/a);
          if((a > 200) && (policies::digits<T, Policy>() <= 113))
@@ -1507,7 +1504,7 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool in
          //
          typedef typename policies::precision<T, Policy>::type precision_type;
 
-         typedef std::integral_constant<int,
+         typedef boost::math::integral_constant<int,
             precision_type::value <= 0 ? 0 :
             precision_type::value <= 53 ? 53 :
             precision_type::value <= 64 ? 64 :
@@ -1901,7 +1898,7 @@ struct igamma_initializer
       {
          typedef typename policies::precision<T, Policy>::type precision_type;
 
-         typedef std::integral_constant<int,
+         typedef boost::math::integral_constant<int,
             precision_type::value <= 0 ? 0 :
             precision_type::value <= 53 ? 53 :
             precision_type::value <= 64 ? 64 :
@@ -1911,18 +1908,18 @@ struct igamma_initializer
          do_init(tag_type());
       }
       template <int N>
-      BOOST_MATH_GPU_ENABLED static void do_init(const std::integral_constant<int, N>&)
+      BOOST_MATH_GPU_ENABLED static void do_init(const boost::math::integral_constant<int, N>&)
       {
          // If std::numeric_limits<T>::digits is zero, we must not call
          // our initialization code here as the precision presumably
          // varies at runtime, and will not have been set yet.  Plus the
          // code requiring initialization isn't called when digits == 0.
-         if (std::numeric_limits<T>::digits)
+         if (boost::math::numeric_limits<T>::digits)
          {
             boost::math::gamma_p(static_cast<T>(400), static_cast<T>(400), Policy());
          }
       }
-      BOOST_MATH_GPU_ENABLED static void do_init(const std::integral_constant<int, 53>&){}
+      BOOST_MATH_GPU_ENABLED static void do_init(const boost::math::integral_constant<int, 53>&){}
       void force_instantiate()const{}
    };
    BOOST_MATH_STATIC const init initializer;
@@ -1945,7 +1942,7 @@ struct lgamma_initializer
       BOOST_MATH_GPU_ENABLED init()
       {
          typedef typename policies::precision<T, Policy>::type precision_type;
-         typedef std::integral_constant<int,
+         typedef boost::math::integral_constant<int,
             precision_type::value <= 0 ? 0 :
             precision_type::value <= 64 ? 64 :
             precision_type::value <= 113 ? 113 : 0
@@ -1953,20 +1950,20 @@ struct lgamma_initializer
 
          do_init(tag_type());
       }
-      BOOST_MATH_GPU_ENABLED static void do_init(const std::integral_constant<int, 64>&)
+      BOOST_MATH_GPU_ENABLED static void do_init(const boost::math::integral_constant<int, 64>&)
       {
          boost::math::lgamma(static_cast<T>(2.5), Policy());
          boost::math::lgamma(static_cast<T>(1.25), Policy());
          boost::math::lgamma(static_cast<T>(1.75), Policy());
       }
-      BOOST_MATH_GPU_ENABLED static void do_init(const std::integral_constant<int, 113>&)
+      BOOST_MATH_GPU_ENABLED static void do_init(const boost::math::integral_constant<int, 113>&)
       {
          boost::math::lgamma(static_cast<T>(2.5), Policy());
          boost::math::lgamma(static_cast<T>(1.25), Policy());
          boost::math::lgamma(static_cast<T>(1.5), Policy());
          boost::math::lgamma(static_cast<T>(1.75), Policy());
       }
-      BOOST_MATH_GPU_ENABLED static void do_init(const std::integral_constant<int, 0>&)
+      BOOST_MATH_GPU_ENABLED static void do_init(const boost::math::integral_constant<int, 0>&)
       {
       }
       BOOST_MATH_GPU_ENABLED void force_instantiate()const{}
@@ -2079,7 +2076,7 @@ BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   return policies::checked_narrowing_cast<typename std::remove_cv<result_type>::type, forwarding_policy>(detail::tgammap1m1_imp(static_cast<value_type>(z), forwarding_policy(), evaluation_type()), "boost::math::tgamma1pm1<%!%>(%1%)");
+   return policies::checked_narrowing_cast<typename boost::math::remove_cv<result_type>::type, forwarding_policy>(detail::tgammap1m1_imp(static_cast<value_type>(z), forwarding_policy(), evaluation_type()), "boost::math::tgamma1pm1<%!%>(%1%)");
 }
 
 template <class T>
@@ -2283,74 +2280,5 @@ BOOST_MATH_GPU_ENABLED inline tools::promote_args_t<T1, T2>
 #include <boost/math/special_functions/detail/igamma_inverse.hpp>
 #include <boost/math/special_functions/detail/gamma_inva.hpp>
 #include <boost/math/special_functions/erf.hpp>
-
-#else
-
-#include <boost/math/tools/config.hpp>
-#include <boost/math/special_functions/expm1.hpp>
-
-namespace boost {
-namespace math {
-
-inline BOOST_MATH_GPU_ENABLED float tgamma(float x) { return ::tgammaf(x); }
-inline BOOST_MATH_GPU_ENABLED double tgamma(double x) { return ::tgamma(x); }
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T tgamma(T x, const Policy&)
-{
-   return boost::math::tgamma(x);
-}
-
-inline BOOST_MATH_GPU_ENABLED float lgamma(float x) { return ::lgammaf(x); }
-inline BOOST_MATH_GPU_ENABLED double lgamma(double x) { return ::lgamma(x); }
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T lgamma(T x, const Policy&)
-{
-   return boost::math::lgamma(x);
-}
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T lgamma(T x, int* sign, const Policy&)
-{
-   auto res = boost::math::lgamma(x);
-   if (sign != nullptr)
-   {
-      if (res < 0)
-      {
-         *sign = -1;
-      }
-      else
-      {
-         *sign = 1;
-      }
-   }
-
-   return res;
-}
-
-template <typename T>
-BOOST_MATH_GPU_ENABLED T tgamma1pm1(T z)
-{
-   using namespace boost::math;
-
-   if (fabs(z) < T(0.55))
-   {
-      return expm1(lgamma(z));
-   }
-
-   return expm1(lgamma(1 + z));
-}
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T tgamma1pm1(T x, const Policy&)
-{
-   return tgamma1pm1(x);
-}
-
-} // namespace math
-} // namespace boost
-
-#endif // __CUDACC_RTC__
 
 #endif // BOOST_MATH_SF_GAMMA_HPP
