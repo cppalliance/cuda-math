@@ -207,7 +207,7 @@ BOOST_MATH_GPU_ENABLED BOOST_MATH_FORCEINLINE T gamma_imp(T z, const Policy& pol
       result = -boost::math::constants::pi<T>() / result;
       if(result == 0)
          return policies::raise_underflow_error<T>(function, "Result of tgamma is too small to represent.", pol);
-      if((boost::math::fpclassify)(result) == (int)FP_SUBNORMAL)
+      if((boost::math::fpclassify)(result) == (int)BOOST_MATH_FP_SUBNORMAL)
          return policies::raise_denorm_error<T>(function, "Result of tgamma is denormalized.", result, pol);
       BOOST_MATH_INSTRUMENT_VARIABLE(result);
       return result;
@@ -630,7 +630,7 @@ T gamma_imp(T z, const Policy& pol, const lanczos::undefined_lanczos&)
       if(gamma_value == 0)
          return policies::raise_underflow_error<T>(function, "Result of tgamma is too small to represent.", pol);
 
-      if((boost::math::fpclassify)(gamma_value) == static_cast<int>(FP_SUBNORMAL))
+      if((boost::math::fpclassify)(gamma_value) == static_cast<int>(BOOST_MATH_FP_SUBNORMAL))
          return policies::raise_denorm_error<T>(function, "Result of tgamma is denormalized.", gamma_value, pol);
    }
 
@@ -778,6 +778,19 @@ T lgamma_imp(T z, const Policy& pol, const lanczos::undefined_lanczos&, int* sig
 
 #endif // BOOST_MATH_HAS_GPU_SUPPORT
 
+// In order for tgammap1m1_imp to compile we need a forward decl of boost::math::tgamma
+// The rub is that we can't just use math_fwd so we provide one here only in that circumstance
+#ifdef BOOST_MATH_HAS_NVRTC
+template <class RT>
+BOOST_MATH_GPU_ENABLED tools::promote_args_t<RT> tgamma(RT z);
+
+template <class RT1, class RT2>
+BOOST_MATH_GPU_ENABLED tools::promote_args_t<RT1, RT2> tgamma(RT1 a, RT2 z);
+
+template <class RT1, class RT2, class Policy>
+BOOST_MATH_GPU_ENABLED tools::promote_args_t<RT1, RT2> tgamma(RT1 a, RT2 z, const Policy& pol);
+#endif
+
 //
 // This helper calculates tgamma(dz+1)-1 without cancellation errors,
 // used by the upper incomplete gamma with z < 1:
@@ -921,7 +934,7 @@ BOOST_MATH_GPU_ENABLED T full_igamma_prefix(T a, T z, const Policy& pol)
    // This error handling isn't very good: it happens after the fact
    // rather than before it...
    //
-   if((boost::math::fpclassify)(prefix) == (int)FP_INFINITE)
+   if((boost::math::fpclassify)(prefix) == (int)BOOST_MATH_FP_INFINITE)
       return policies::raise_overflow_error<T>("boost::math::detail::full_igamma_prefix<%1%>(%1%, %1%)", "Result of incomplete gamma function is too large to represent.", pol);
 
    return prefix;

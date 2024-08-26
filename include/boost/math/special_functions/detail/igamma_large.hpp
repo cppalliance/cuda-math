@@ -69,7 +69,7 @@ namespace boost{ namespace math{ namespace detail{
 // when T is unsuitable to be passed to these routines:
 //
 template <class T, class Policy>
-inline T igamma_temme_large(T, T, const Policy& /* pol */, const boost::math::integral_constant<int, 0>&)
+BOOST_MATH_GPU_ENABLED inline T igamma_temme_large(T, T, const Policy& /* pol */, const boost::math::integral_constant<int, 0>&)
 {
    // stub function, should never actually be called
    BOOST_MATH_ASSERT(0);
