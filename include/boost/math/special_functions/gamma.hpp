@@ -15,9 +15,6 @@
 #endif
 
 #include <boost/math/tools/config.hpp>
-
-#ifndef BOOST_MATH_HAS_NVRTC
-
 #include <boost/math/tools/series.hpp>
 #include <boost/math/tools/fraction.hpp>
 #include <boost/math/tools/precision.hpp>
@@ -457,6 +454,8 @@ int minimum_argument_for_bernoulli_recursion()
    return min_arg;
 }
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 template <class T, class Policy>
 T scaled_tgamma_no_lanczos(const T& z, const Policy& pol, bool islog = false)
 {
@@ -777,6 +776,8 @@ T lgamma_imp(T z, const Policy& pol, const lanczos::undefined_lanczos&, int* sig
    return log_gamma_value;
 }
 
+#endif // BOOST_MATH_HAS_GPU_SUPPORT
+
 //
 // This helper calculates tgamma(dz+1)-1 without cancellation errors,
 // used by the upper incomplete gamma with z < 1:
@@ -830,6 +831,8 @@ BOOST_MATH_GPU_ENABLED T tgammap1m1_imp(T dz, Policy const& pol, const Lanczos& 
    return result;
 }
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 template <class T, class Policy>
 inline T tgammap1m1_imp(T z, Policy const& pol,
                  const ::boost::math::lanczos::undefined_lanczos&)
@@ -842,6 +845,8 @@ inline T tgammap1m1_imp(T z, Policy const& pol,
    }
    return boost::math::expm1(boost::math::lgamma(1 + z, pol));
 }
+
+#endif // BOOST_MATH_HAS_GPU_SUPPORT
 
 //
 // Series representation for upper fraction when z is small:
@@ -1006,6 +1011,9 @@ BOOST_MATH_GPU_ENABLED T regularised_gamma_prefix(T a, T z, const Policy& pol, c
    prefix *= sqrt(agh / boost::math::constants::e<T>()) / Lanczos::lanczos_sum_expG_scaled(a);
    return prefix;
 }
+
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 //
 // And again, without Lanczos support:
 //
@@ -1075,6 +1083,9 @@ T regularised_gamma_prefix(T a, T z, const Policy& pol, const lanczos::undefined
       }
    }
 }
+
+#endif // BOOST_MATH_HAS_GPU_SUPPORT
+
 //
 // Upper gamma fraction for very small a:
 //
@@ -1653,6 +1664,8 @@ BOOST_MATH_GPU_ENABLED T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Poli
 //
 // And again without Lanczos support this time:
 //
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 template <class T, class Policy>
 T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Policy& pol, const lanczos::undefined_lanczos& l)
 {
@@ -1708,6 +1721,8 @@ T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Policy& pol, const lanczos:
    }
    return ratio;
 }
+
+#endif
 
 template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED T tgamma_delta_ratio_imp(T z, T delta, const Policy& pol)
@@ -2285,74 +2300,5 @@ BOOST_MATH_GPU_ENABLED inline tools::promote_args_t<T1, T2>
 #include <boost/math/special_functions/detail/igamma_inverse.hpp>
 #include <boost/math/special_functions/detail/gamma_inva.hpp>
 #include <boost/math/special_functions/erf.hpp>
-
-#else
-
-#include <boost/math/tools/config.hpp>
-#include <boost/math/special_functions/expm1.hpp>
-
-namespace boost {
-namespace math {
-
-inline BOOST_MATH_GPU_ENABLED float tgamma(float x) { return ::tgammaf(x); }
-inline BOOST_MATH_GPU_ENABLED double tgamma(double x) { return ::tgamma(x); }
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T tgamma(T x, const Policy&)
-{
-   return boost::math::tgamma(x);
-}
-
-inline BOOST_MATH_GPU_ENABLED float lgamma(float x) { return ::lgammaf(x); }
-inline BOOST_MATH_GPU_ENABLED double lgamma(double x) { return ::lgamma(x); }
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T lgamma(T x, const Policy&)
-{
-   return boost::math::lgamma(x);
-}
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T lgamma(T x, int* sign, const Policy&)
-{
-   auto res = boost::math::lgamma(x);
-   if (sign != nullptr)
-   {
-      if (res < 0)
-      {
-         *sign = -1;
-      }
-      else
-      {
-         *sign = 1;
-      }
-   }
-
-   return res;
-}
-
-template <typename T>
-BOOST_MATH_GPU_ENABLED T tgamma1pm1(T z)
-{
-   using namespace boost::math;
-
-   if (fabs(z) < T(0.55))
-   {
-      return expm1(lgamma(z));
-   }
-
-   return expm1(lgamma(1 + z));
-}
-
-template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T tgamma1pm1(T x, const Policy&)
-{
-   return tgamma1pm1(x);
-}
-
-} // namespace math
-} // namespace boost
-
-#endif // __CUDACC_RTC__
 
 #endif // BOOST_MATH_SF_GAMMA_HPP
