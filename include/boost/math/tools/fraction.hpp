@@ -18,9 +18,6 @@
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/tools/complex.hpp>
 #include <boost/math/tools/cstdint.hpp>
-#include <type_traits>
-#include <cstdint>
-#include <cmath>
 
 namespace boost{ namespace math{ namespace tools{
 
@@ -67,7 +64,7 @@ namespace detail
 
    template <typename Gen>
    struct fraction_traits
-       : public std::conditional<
+       : public boost::math::conditional<
          is_pair<typename Gen::result_type>::value,
          fraction_traits_pair<Gen>,
          fraction_traits_simple<Gen>>::type
@@ -183,7 +180,7 @@ BOOST_MATH_GPU_ENABLED inline typename detail::fraction_traits<Gen>::result_type
    #endif
    )
 {
-   boost::math::uintmax_t max_terms = (std::numeric_limits<boost::math::uintmax_t>::max)();
+   boost::math::uintmax_t max_terms = (boost::math::numeric_limits<boost::math::uintmax_t>::max)();
    return detail::continued_fraction_b_impl(g, factor, max_terms);
 }
 
@@ -201,7 +198,7 @@ BOOST_MATH_GPU_ENABLED inline typename detail::fraction_traits<Gen>::result_type
    using result_type = typename traits::result_type;
 
    result_type factor = ldexp(1.0f, 1 - bits); // 1 / pow(result_type(2), bits);
-   boost::math::uintmax_t max_terms = (std::numeric_limits<boost::math::uintmax_t>::max)();
+   boost::math::uintmax_t max_terms = (boost::math::numeric_limits<boost::math::uintmax_t>::max)();
    return detail::continued_fraction_b_impl(g, factor, max_terms);
 }
 
@@ -310,7 +307,7 @@ BOOST_MATH_GPU_ENABLED inline typename detail::fraction_traits<Gen>::result_type
    #endif
    )
 {
-   boost::math::uintmax_t max_iter = (std::numeric_limits<boost::math::uintmax_t>::max)();
+   boost::math::uintmax_t max_iter = (boost::math::numeric_limits<boost::math::uintmax_t>::max)();
    return detail::continued_fraction_a_impl(g, factor, max_iter);
 }
 
@@ -328,7 +325,7 @@ BOOST_MATH_GPU_ENABLED inline typename detail::fraction_traits<Gen>::result_type
    typedef typename traits::result_type result_type;
 
    result_type factor = ldexp(1.0f, 1-bits); // 1 / pow(result_type(2), bits);
-   boost::math::uintmax_t max_iter = (std::numeric_limits<boost::math::uintmax_t>::max)();
+   boost::math::uintmax_t max_iter = (boost::math::numeric_limits<boost::math::uintmax_t>::max)();
 
    return detail::continued_fraction_a_impl(g, factor, max_iter);
 }
