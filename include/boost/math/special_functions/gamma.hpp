@@ -405,6 +405,8 @@ BOOST_MATH_GPU_ENABLED inline T lower_gamma_series(T a, T z, const Policy& pol, 
    return result;
 }
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 //
 // Fully generic tgamma and lgamma use Stirling's approximation
 // with Bernoulli numbers.
@@ -453,8 +455,6 @@ int minimum_argument_for_bernoulli_recursion()
 
    return min_arg;
 }
-
-#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 
 template <class T, class Policy>
 T scaled_tgamma_no_lanczos(const T& z, const Policy& pol, bool islog = false)
@@ -1940,7 +1940,7 @@ struct igamma_initializer
          }
       }
       BOOST_MATH_GPU_ENABLED static void do_init(const boost::math::integral_constant<int, 53>&){}
-      void force_instantiate()const{}
+      BOOST_MATH_GPU_ENABLED void force_instantiate()const{}
    };
    BOOST_MATH_STATIC const init initializer;
    BOOST_MATH_GPU_ENABLED static void force_instantiate()
