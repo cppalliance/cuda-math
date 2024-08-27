@@ -7,6 +7,14 @@
 #include <pch_light.hpp>
 #endif
 
+#ifdef __clang__
+#  pragma clang diagnostic push 
+#  pragma clang diagnostic ignored "-Wliteral-range"
+#elif defined(__GNUC__)
+#  pragma GCC diagnostic push 
+#  pragma GCC diagnostic ignored "-Wliteral-range"
+#endif
+
 #include "test_igamma_inva.hpp"
 
 #if !defined(TEST_FLOAT) && !defined(TEST_DOUBLE) && !defined(TEST_LDOUBLE) && !defined(TEST_REAL_CONCEPT)
