@@ -424,7 +424,18 @@ BOOST_MATH_GPU_ENABLED T igamma_temme_large(T a, T x, const Policy& pol, const b
    if(x < a)
       result = -result;
 
+   #ifdef BOOST_MATH_HAS_NVRTC
+   if (boost::math::is_same_v<T, float>)
+   {
+      result += ::erfcf(::sqrtf(y)) / 2;
+   }
+   else
+   {
+      result += ::erfc(::sqrt(y)) / 2;
+   }
+   #else
    result += boost::math::erfc(sqrt(y), pol) / 2;
+   #endif
 
    return result;
 }
@@ -477,7 +488,18 @@ BOOST_MATH_GPU_ENABLED T igamma_temme_large(T a, T x, const Policy& pol, const b
    if(x < a)
       result = -result;
 
+   #ifdef BOOST_MATH_HAS_NVRTC
+   if (boost::math::is_same_v<T, float>)
+   {
+      result += ::erfcf(::sqrtf(y)) / 2;
+   }
+   else
+   {
+      result += ::erfc(::sqrt(y)) / 2;
+   }
+   #else
    result += boost::math::erfc(sqrt(y), pol) / 2;
+   #endif
 
    return result;
 }
