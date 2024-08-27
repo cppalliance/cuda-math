@@ -24,17 +24,31 @@ run test_saspoint5.cpp ;
 
 # Special Functions
 run pow_test.cpp ;
+
 run test_beta_simple.cpp ;
+
 run test_bessel_i.cpp ;
 run test_bessel_j.cpp ;
 run test_bessel_k.cpp ;
 run test_bessel_y.cpp ;
+
 run test_cbrt.cpp ;
+
 run test_sign.cpp ;
+
 run test_round.cpp ;
+
 run test_expm1_simple.cpp ;
+
 run test_log1p_simple.cpp ;
+
 run test_digamma_simple.cpp ;
+
 run test_trigamma.cpp ;
+
 run test_erf.cpp ;
+
 run test_gamma.cpp ;
+run test_igamma.cpp ;
+run test_igamma_inv.cpp ;
+run test_igamma_inva.cpp ;
