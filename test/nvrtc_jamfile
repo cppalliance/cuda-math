@@ -150,6 +150,8 @@ run test_gamma_nvrtc_double.cpp ;
 run test_gamma_nvrtc_float.cpp ;
 run test_gamma_p_derivative_nvrtc_double.cpp ;
 run test_gamma_p_derivative_nvrtc_float.cpp ;
+run test_gamma_p_inv_nvrtc_double.cpp ;
+run test_gamma_p_inv_nvrtc_float.cpp ;
 run test_tgamma_ratio_nvrtc_double.cpp ;
 run test_tgamma_ratio_nvrtc_float.cpp ;
 
