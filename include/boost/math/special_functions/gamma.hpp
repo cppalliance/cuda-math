@@ -1237,7 +1237,7 @@ BOOST_MATH_GPU_ENABLED T incomplete_tgamma_large_x(const T& a, const T& x, const
 // Main incomplete gamma entry point, handles all four incomplete gamma's:
 //
 template <class T, class Policy>
-BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool invert,
+BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp_final(T a, T x, bool normalised, bool invert,
                        const Policy& pol, T* p_derivative)
 {
    constexpr auto function = "boost::math::gamma_p<%1%>(%1%, %1%)";
@@ -1251,70 +1251,6 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool in
    typedef typename lanczos::lanczos<T, Policy>::type lanczos_type;
 
    T result = 0; // Just to avoid warning C4701: potentially uninitialized local variable 'result' used
-
-   if(a >= max_factorial<T>::value && !normalised)
-   {
-      //
-      // When we're computing the non-normalized incomplete gamma
-      // and a is large the result is rather hard to compute unless
-      // we use logs.  There are really two options - if x is a long
-      // way from a in value then we can reliably use methods 2 and 4
-      // below in logarithmic form and go straight to the result.
-      // Otherwise we let the regularized gamma take the strain
-      // (the result is unlikely to underflow in the central region anyway)
-      // and combine with lgamma in the hopes that we get a finite result.
-      //
-      if(invert && (a * 4 < x))
-      {
-         // This is method 4 below, done in logs:
-         result = a * log(x) - x;
-         if(p_derivative)
-            *p_derivative = exp(result);
-         result += log(upper_gamma_fraction(a, x, policies::get_epsilon<T, Policy>()));
-      }
-      else if(!invert && (a > 4 * x))
-      {
-         // This is method 2 below, done in logs:
-         result = a * log(x) - x;
-         if(p_derivative)
-            *p_derivative = exp(result);
-         T init_value = 0;
-         result += log(detail::lower_gamma_series(a, x, pol, init_value) / a);
-      }
-      else
-      {
-         result = gamma_incomplete_imp(a, x, true, invert, pol, p_derivative);
-         if(result == 0)
-         {
-            if(invert)
-            {
-               // Try http://functions.wolfram.com/06.06.06.0039.01
-               result = 1 + 1 / (12 * a) + 1 / (288 * a * a);
-               result = log(result) - a + (a - 0.5f) * log(a) + log(boost::math::constants::root_two_pi<T>());
-               if(p_derivative)
-                  *p_derivative = exp(a * log(x) - x);
-            }
-            else
-            {
-               // This is method 2 below, done in logs, we're really outside the
-               // range of this method, but since the result is almost certainly
-               // infinite, we should probably be OK:
-               result = a * log(x) - x;
-               if(p_derivative)
-                  *p_derivative = exp(result);
-               T init_value = 0;
-               result += log(detail::lower_gamma_series(a, x, pol, init_value) / a);
-            }
-         }
-         else
-         {
-            result = log(result) + boost::math::lgamma(a, pol);
-         }
-      }
-      if(result > tools::log_max_value<T>())
-         return policies::raise_overflow_error<T>(function, nullptr, pol);
-      return exp(result);
-   }
 
    BOOST_MATH_ASSERT((p_derivative == nullptr) || normalised);
 
@@ -1617,6 +1553,91 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool in
    }
 
    return result;
+}
+
+// Need to implement this dispatch to avoid recursion for device compilers
+template <class T, class Policy>
+BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool invert,
+                       const Policy& pol, T* p_derivative)
+{
+   constexpr auto function = "boost::math::gamma_p<%1%>(%1%, %1%)";
+   if(a <= 0)
+      return policies::raise_domain_error<T>(function, "Argument a to the incomplete gamma function must be greater than zero (got a=%1%).", a, pol);
+   if(x < 0)
+      return policies::raise_domain_error<T>(function, "Argument x to the incomplete gamma function must be >= 0 (got x=%1%).", x, pol);
+
+   BOOST_MATH_STD_USING
+
+   typedef typename lanczos::lanczos<T, Policy>::type lanczos_type;
+
+   T result = 0; // Just to avoid warning C4701: potentially uninitialized local variable 'result' used
+
+   if(a >= max_factorial<T>::value && !normalised)
+   {
+      //
+      // When we're computing the non-normalized incomplete gamma
+      // and a is large the result is rather hard to compute unless
+      // we use logs.  There are really two options - if x is a long
+      // way from a in value then we can reliably use methods 2 and 4
+      // below in logarithmic form and go straight to the result.
+      // Otherwise we let the regularized gamma take the strain
+      // (the result is unlikely to underflow in the central region anyway)
+      // and combine with lgamma in the hopes that we get a finite result.
+      //
+      if(invert && (a * 4 < x))
+      {
+         // This is method 4 below, done in logs:
+         result = a * log(x) - x;
+         if(p_derivative)
+            *p_derivative = exp(result);
+         result += log(upper_gamma_fraction(a, x, policies::get_epsilon<T, Policy>()));
+      }
+      else if(!invert && (a > 4 * x))
+      {
+         // This is method 2 below, done in logs:
+         result = a * log(x) - x;
+         if(p_derivative)
+            *p_derivative = exp(result);
+         T init_value = 0;
+         result += log(detail::lower_gamma_series(a, x, pol, init_value) / a);
+      }
+      else
+      {
+         result = gamma_incomplete_imp_final(T(a), T(x), true, invert, pol, p_derivative);
+         if(result == 0)
+         {
+            if(invert)
+            {
+               // Try http://functions.wolfram.com/06.06.06.0039.01
+               result = 1 + 1 / (12 * a) + 1 / (288 * a * a);
+               result = log(result) - a + (a - 0.5f) * log(a) + log(boost::math::constants::root_two_pi<T>());
+               if(p_derivative)
+                  *p_derivative = exp(a * log(x) - x);
+            }
+            else
+            {
+               // This is method 2 below, done in logs, we're really outside the
+               // range of this method, but since the result is almost certainly
+               // infinite, we should probably be OK:
+               result = a * log(x) - x;
+               if(p_derivative)
+                  *p_derivative = exp(result);
+               T init_value = 0;
+               result += log(detail::lower_gamma_series(a, x, pol, init_value) / a);
+            }
+         }
+         else
+         {
+            result = log(result) + boost::math::lgamma(a, pol);
+         }
+      }
+      if(result > tools::log_max_value<T>())
+         return policies::raise_overflow_error<T>(function, nullptr, pol);
+      return exp(result);
+   }
+
+   // If no special handling is required then we proceeds as normal
+   return gamma_incomplete_imp_final(T(a), T(x), normalised, invert, pol, p_derivative);
 }
 
 //
