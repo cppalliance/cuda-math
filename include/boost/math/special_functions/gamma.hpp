@@ -1646,7 +1646,18 @@ BOOST_MATH_GPU_ENABLED T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Poli
       }
       else
       {
+         #ifdef BOOST_MATH_HAS_NVRTC
+         if (boost::math::is_same_v<T, float>)
+         {
+            return 1 / (z * ::tgammaf(z + delta));
+         }
+         else
+         {
+            return 1 / (z * ::tgamma(z + delta));
+         }
+         #else
          return 1 / (z * boost::math::tgamma(z + delta, pol));
+         #endif
       }
    }
    T zgh = static_cast<T>(z + T(Lanczos::g()) - constants::half<T>());
@@ -1753,7 +1764,18 @@ BOOST_MATH_GPU_ENABLED T tgamma_delta_ratio_imp(T z, T delta, const Policy& pol)
    if((z <= 0) || (z + delta <= 0))
    {
       // This isn't very sophisticated, or accurate, but it does work:
+      #ifdef BOOST_MATH_HAS_NVRTC
+      if (boost::math::is_same_v<T, float>)
+      {
+         return ::tgammaf(z) / ::tgammaf(z + delta);
+      }
+      else
+      {
+         return ::tgamma(z) / ::tgamma(z + delta);
+      }
+      #else
       return boost::math::tgamma(z, pol) / boost::math::tgamma(z + delta, pol);
+      #endif
    }
 
    if(floor(delta) == delta)
@@ -1813,17 +1835,32 @@ BOOST_MATH_GPU_ENABLED T tgamma_ratio_imp(T x, T y, const Policy& pol)
    if((y <= 0) || (boost::math::isinf)(y))
       return policies::raise_domain_error<T>("boost::math::tgamma_ratio<%1%>(%1%, %1%)", "Gamma function ratios only implemented for positive arguments (got b=%1%).", y, pol);
 
+   // We don't need to worry about the denorm case on device
+   // And this has the added bonus of removing recursion
+   #ifndef BOOST_MATH_HAS_GPU_SUPPORT
    if(x <= tools::min_value<T>())
    {
       // Special case for denorms...Ugh.
       T shift = ldexp(T(1), tools::digits<T>());
       return shift * tgamma_ratio_imp(T(x * shift), y, pol);
    }
+   #endif
 
    if((x < max_factorial<T>::value) && (y < max_factorial<T>::value))
    {
       // Rather than subtracting values, lets just call the gamma functions directly:
+      #ifdef BOOST_MATH_HAS_NVRTC
+      if (boost::math::is_same_v<T, float>)
+      {
+         return ::tgammaf(x) / ::tgammaf(y);
+      }
+      else
+      {
+         return ::tgamma(x) / ::tgamma(y);
+      }
+      #else
       return boost::math::tgamma(x, pol) / boost::math::tgamma(y, pol);
+      #endif
    }
    T prefix = 1;
    if(x < 1)
@@ -1839,12 +1876,35 @@ BOOST_MATH_GPU_ENABLED T tgamma_ratio_imp(T x, T y, const Policy& pol)
             y -= 1;
             prefix /= y;
          }
+
+         #ifdef BOOST_MATH_HAS_NVRTC
+         if (boost::math::is_same_v<T, float>)
+         {
+            return prefix * ::tgammaf(x) / ::tgammaf(y);
+         }
+         else
+         {
+            return prefix * ::tgamma(x) / ::tgamma(y);
+         }
+         #else
          return prefix * boost::math::tgamma(x, pol) / boost::math::tgamma(y, pol);
+         #endif
       }
       //
       // result is almost certainly going to underflow to zero, try logs just in case:
       //
+      #ifdef BOOST_MATH_HAS_NVRTC
+      if (boost::math::is_same_v<T, float>)
+      {
+         return ::expf(::lgammaf(x) - ::lgammaf(y));
+      }
+      else
+      {
+         return ::exp(::lgamma(x) - ::lgamma(y));
+      }
+      #else
       return exp(boost::math::lgamma(x, pol) - boost::math::lgamma(y, pol));
+      #endif
    }
    if(y < 1)
    {
@@ -1859,17 +1919,44 @@ BOOST_MATH_GPU_ENABLED T tgamma_ratio_imp(T x, T y, const Policy& pol)
             x -= 1;
             prefix *= x;
          }
+
+         #ifdef BOOST_MATH_HAS_NVRTC
+         if (boost::math::is_same_v<T, float>)
+         {
+            return prefix * ::tgammaf(x) / ::tgammaf(y);
+         }
+         else
+         {
+            return prefix * ::tgamma(x) / ::tgamma(y);
+         }
+         #else
          return prefix * boost::math::tgamma(x, pol) / boost::math::tgamma(y, pol);
+         #endif
       }
       //
       // Result will almost certainly overflow, try logs just in case:
       //
+      #ifdef BOOST_MATH_HAS_NVRTC
+      if (boost::math::is_same_v<T, float>)
+      {
+         return ::expf(::lgammaf(x) - ::lgammaf(y));
+      }
+      else
+      {
+         return ::exp(::lgamma(x) - ::lgamma(y));
+      }
+      #else
       return exp(boost::math::lgamma(x, pol) - boost::math::lgamma(y, pol));
+      #endif
    }
    //
    // Regular case, x and y both large and similar in magnitude:
    //
+   #ifdef BOOST_MATH_HAS_NVRTC
+   return detail::tgamma_delta_ratio_imp(x, y - x, pol);
+   #else
    return boost::math::tgamma_delta_ratio(x, y - x, pol);
+   #endif
 }
 
 template <class T, class Policy>
