@@ -402,7 +402,7 @@ BOOST_MATH_GPU_ENABLED T gamma_p_inv_imp(T a, T p, const Policy& pol)
 {
    BOOST_MATH_STD_USING  // ADL of std functions.
 
-   BOOST_MATH_STATIC const char* function = "boost::math::gamma_p_inv<%1%>(%1%, %1%)";
+   constexpr auto function = "boost::math::gamma_p_inv<%1%>(%1%, %1%)";
 
    BOOST_MATH_INSTRUMENT_VARIABLE(a);
    BOOST_MATH_INSTRUMENT_VARIABLE(p);
@@ -477,7 +477,7 @@ BOOST_MATH_GPU_ENABLED T gamma_q_inv_imp(T a, T q, const Policy& pol)
 {
    BOOST_MATH_STD_USING  // ADL of std functions.
 
-   BOOST_MATH_STATIC const char* function = "boost::math::gamma_q_inv<%1%>(%1%, %1%)";
+   constexpr auto function = "boost::math::gamma_q_inv<%1%>(%1%, %1%)";
 
    if(a <= 0)
       return policies::raise_domain_error<T>(function, "Argument a in the incomplete gamma function inverse must be >= 0 (got a=%1%).", a, pol);
