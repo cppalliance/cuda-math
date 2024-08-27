@@ -814,7 +814,11 @@ BOOST_MATH_GPU_ENABLED T tgammap1m1_imp(T dz, Policy const& pol, const Lanczos& 
       if(dz < T(-0.5))
       {
          // Best method is simply to subtract 1 from tgamma:
+         #ifdef BOOST_MATH_HAS_NVRTC
+         result = ::tgamma(1+dz);
+         #else
          result = boost::math::tgamma(1+dz, pol) - 1;
+         #endif
          BOOST_MATH_INSTRUMENT_CODE(result);
       }
       else
@@ -836,7 +840,11 @@ BOOST_MATH_GPU_ENABLED T tgammap1m1_imp(T dz, Policy const& pol, const Lanczos& 
       else
       {
          // Best method is simply to subtract 1 from tgamma:
+         #ifdef BOOST_MATH_HAS_NVRTC
+         result = ::tgamma(1+dz);
+         #else
          result = boost::math::tgamma(1+dz, pol) - 1;
+         #endif
          BOOST_MATH_INSTRUMENT_CODE(result);
       }
    }
