@@ -1384,14 +1384,40 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp_final(T a, T x, bool normalised, b
       {
          result = finite_gamma_q(a, x, pol, p_derivative);
          if(!normalised)
+         {
+            #ifdef BOOST_MATH_HAS_NVRTC
+            if (boost::math::is_same_v<T, float>)
+            {
+               result *= ::tgammaf(a);
+            }
+            else
+            {
+               result *= ::tgamma(a);
+            }
+            #else
             result *= boost::math::tgamma(a, pol);
+            #endif
+         }
          break;
       }
    case 1:
       {
          result = finite_half_gamma_q(a, x, p_derivative, pol);
          if(!normalised)
+         {
+            #ifdef BOOST_MATH_HAS_NVRTC
+            if (boost::math::is_same_v<T, float>)
+            {
+               result *= ::tgammaf(a);
+            }
+            else
+            {
+               result *= ::tgamma(a);
+            }
+            #else
             result *= boost::math::tgamma(a, pol);
+            #endif
+         }
          if(p_derivative && (*p_derivative == 0))
             *p_derivative = regularised_gamma_prefix(a, x, pol, lanczos_type());
          break;
@@ -1420,7 +1446,19 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp_final(T a, T x, bool normalised, b
             bool optimised_invert = false;
             if(invert)
             {
+               #ifdef BOOST_MATH_HAS_NVRTC
+               if (boost::math::is_same_v<T, float>)
+               {
+                  init_value = (normalised ? 1 : ::tgammaf(a));
+               }
+               else
+               {
+                  init_value = (normalised ? 1 : ::tgamma(a));
+               }
+               #else
                init_value = (normalised ? 1 : boost::math::tgamma(a, pol));
+               #endif
+
                if(normalised || (result >= 1) || (tools::max_value<T>() * result > init_value))
                {
                   init_value /= result;
@@ -1503,7 +1541,18 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp_final(T a, T x, bool normalised, b
             try
             {
 #endif
+               #ifdef BOOST_MATH_HAS_NVRTC
+               if (boost::math::is_same_v<T, float>)
+               {
+                  result = ::powf(x, a) / ::tgammaf(a + 1);
+               }
+               else
+               {
+                  result = ::pow(x, a) / ::tgamma(a + 1);
+               }
+               #else
                result = pow(x, a) / boost::math::tgamma(a + 1, pol);
+               #endif
 #ifndef BOOST_MATH_NO_EXCEPTIONS
             }
             catch (const std::overflow_error&)
@@ -1535,7 +1584,19 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp_final(T a, T x, bool normalised, b
       result = 1;
    if(invert)
    {
+      #ifdef BOOST_MATH_HAS_NVRTC
+      T gam;
+      if (boost::math::is_same_v<T, float>)
+      {
+         gam = normalised ? 1 : ::tgammaf(a);
+      }
+      else
+      {
+         gam = normalised ? 1 : ::tgamma(a);
+      }
+      #else
       T gam = normalised ? 1 : boost::math::tgamma(a, pol);
+      #endif
       result = gam - result;
    }
    if(p_derivative)
@@ -1628,7 +1689,18 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool in
          }
          else
          {
+            #ifdef BOOST_MATH_HAS_NVRTC
+            if (boost::math::is_same_v<T, float>)
+            {
+               result = ::logf(result) + ::lgammaf(a);
+            }
+            else
+            {
+               result = ::log(result) + ::lgamma(a);
+            }
+            #else
             result = log(result) + boost::math::lgamma(a, pol);
+            #endif
          }
       }
       if(result > tools::log_max_value<T>())
