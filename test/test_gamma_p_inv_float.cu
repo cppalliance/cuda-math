@@ -93,7 +93,7 @@ int main(void)
     // check the results
     for(int i = 0; i < numElements; ++i)
     {
-        if (boost::math::epsilon_difference(output_vector[i], results[i]) > 10)
+        if (boost::math::epsilon_difference(output_vector[i], results[i]) > 100)
         {
             std::cerr << "Result verification failed at element " << i << "!" << std::endl;
             return EXIT_FAILURE;

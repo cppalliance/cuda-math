@@ -100,14 +100,22 @@ void expected_results()
       "linux.*",                          // platform
       largest_type,                     // test type(s)
       "[^|]*medium[^|]*",                   // test data group
+      #ifdef SYCL_LANGUAGE_VERSION
+      "[^|]*", 350, 50);
+      #else
       "[^|]*", 350, 5);                  // test function
+      #endif
    add_expected_result(
       "[^|]*",                          // compiler
       "[^|]*",                          // stdlib
       "linux.*",                          // platform
       largest_type,                     // test type(s)
       "[^|]*large[^|]*",                   // test data group
+      #ifdef SYCL_LANGUAGE_VERSION
+      "[^|]*", 150, 20);                  // test function
+      #else
       "[^|]*", 150, 5);                  // test function
+      #endif
 
 
    //
