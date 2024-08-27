@@ -20,19 +20,19 @@
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
 
-typedef float float_type;
+typedef double float_type;
 
 const char* cuda_kernel = R"(
-typedef float float_type;
+typedef double float_type;
 #include <cuda/std/type_traits>
 #include <boost/math/special_functions/gamma.hpp>
 extern "C" __global__ 
-void test_tgamma_ratio_kernel(const float_type *in1, const float_type *in2, float_type *out, int numElements)
+void test_gamma_p_derivative_kernel(const float_type *in1, const float_type *in2, float_type *out, int numElements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i < numElements)
     {
-        out[i] = boost::math::tgamma_ratio(in1[i], in2[i]);
+        out[i] = boost::math::gamma_p_derivative(in1[i], in2[i]);
     }
 }
 )";
@@ -82,10 +82,10 @@ int main()
         nvrtcProgram prog;
         nvrtcResult res;
 
-        res = nvrtcCreateProgram(&prog, cuda_kernel, "test_tgamma_ratio_kernel.cu", 0, nullptr, nullptr);
+        res = nvrtcCreateProgram(&prog, cuda_kernel, "test_gamma_p_derivative_kernel.cu", 0, nullptr, nullptr);
         checkNVRTCError(res, "Failed to create NVRTC program");
 
-        nvrtcAddNameExpression(prog, "test_tgamma_ratio_kernel");
+        nvrtcAddNameExpression(prog, "test_gamma_p_derivative_kernel");
 
         #ifdef BOOST_MATH_NVRTC_CI_RUN
         const char* opts[] = {"--std=c++14", "--gpu-architecture=compute_75", "--include-path=/home/runner/work/cuda-math/boost-root/libs/cuda-math/include/", "-I/usr/local/cuda/include"};
@@ -116,7 +116,7 @@ int main()
         CUmodule module;
         CUfunction kernel;
         checkCUError(cuModuleLoadDataEx(&module, ptx, 0, 0, 0), "Failed to load module");
-        checkCUError(cuModuleGetFunction(&kernel, module, "test_tgamma_ratio_kernel"), "Failed to get kernel function");
+        checkCUError(cuModuleGetFunction(&kernel, module, "test_gamma_p_derivative_kernel"), "Failed to get kernel function");
 
         int numElements = 5000;
         float_type *h_in1, *h_in2, *h_out;
@@ -153,7 +153,7 @@ int main()
         // Verify Result
         for (int i = 0; i < numElements; ++i) 
         {
-            const auto res = boost::math::tgamma_ratio(h_in1[i], h_in2[i]);
+            const auto res = boost::math::gamma_p_derivative(h_in1[i], h_in2[i]);
             
             if (std::isfinite(res))
             {
