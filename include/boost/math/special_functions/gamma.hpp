@@ -1991,7 +1991,18 @@ BOOST_MATH_GPU_ENABLED T gamma_p_derivative_imp(T a, T x, const Policy& pol)
    if(f1 == 0)
    {
       // Underflow in calculation, use logs instead:
+      #ifdef BOOST_MATH_HAS_NVRTC
+      if (boost::math::is_same_v<T, float>)
+      {
+         f1 = a * ::logf(x) - x - ::lgammaf(a) - ::logf(x);
+      }
+      else
+      {
+         f1 = a * ::log(x) - x - ::lgamma(a) - ::log(x);
+      }
+      #else
       f1 = a * log(x) - x - lgamma(a, pol) - log(x);
+      #endif
       f1 = exp(f1);
    }
    else
