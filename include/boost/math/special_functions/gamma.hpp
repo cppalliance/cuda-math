@@ -1118,7 +1118,14 @@ BOOST_MATH_GPU_ENABLED inline T tgamma_small_upper_part(T a, T x, const Policy& 
    // Compute the full upper fraction (Q) when a is very small:
    //
 
+   #ifdef BOOST_MATH_HAS_NVRTC
+   typedef typename tools::promote_args<T>::type result_type;
+   typedef typename policies::evaluation<result_type, Policy>::type value_type;
+   typedef typename lanczos::lanczos<value_type, Policy>::type evaluation_type;
+   T result {detail::tgammap1m1_imp(static_cast<value_type>(a), pol, evaluation_type())};
+   #else
    T result { boost::math::tgamma1pm1(a, pol) };
+   #endif
 
    if(pgam)
       *pgam = (result + 1) / a;
@@ -1175,7 +1182,21 @@ BOOST_MATH_GPU_ENABLED T finite_half_gamma_q(T a, T x, T* p_derivative, const Po
    // Calculates normalised Q when a is a half-integer:
    //
    BOOST_MATH_STD_USING
+
+   #ifdef BOOST_MATH_HAS_NVRTC
+   T e;
+   if (boost::math::is_same_v<T, float>)
+   {
+      e = ::erfcf(::sqrtf(x));
+   }
+   else
+   {
+      e = ::erfc(::sqrt(x));
+   }
+   #else
    T e = boost::math::erfc(sqrt(x), pol);
+   #endif
+
    if((e != 0) && (a > 1))
    {
       T term = exp(-x) / sqrt(constants::pi<T>() * x);
@@ -1629,7 +1650,6 @@ BOOST_MATH_GPU_ENABLED T gamma_incomplete_imp(T a, T x, bool normalised, bool in
 
    BOOST_MATH_STD_USING
 
-   typedef typename lanczos::lanczos<T, Policy>::type lanczos_type;
 
    T result = 0; // Just to avoid warning C4701: potentially uninitialized local variable 'result' used
 
