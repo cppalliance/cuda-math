@@ -2054,13 +2054,6 @@ BOOST_MATH_GPU_ENABLED inline tools::promote_args_t<T1, T2>
 
 } // namespace detail
 
-template <class T>
-BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type
-   tgamma(T z)
-{
-   return tgamma(z, policies::policy<>());
-}
-
 template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type
    lgamma(T z, int* sign, const Policy&)
@@ -2148,6 +2141,12 @@ BOOST_MATH_GPU_ENABLED inline tools::promote_args_t<T1, T2>
 {
    using result_type = tools::promote_args_t<T1, T2>;
    return static_cast<result_type>(detail::tgamma(a, z, pol, boost::math::false_type()));
+}
+template <class T>
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type
+   tgamma(T z)
+{
+   return tgamma(z, policies::policy<>());
 }
 //
 // Full lower incomplete gamma:
