@@ -154,6 +154,8 @@ run test_lgamma_double.cu ;
 run test_lgamma_float.cu ;
 run test_tgamma_double.cu ;
 run test_tgamma_float.cu ;
+run test_tgamma_ratio_double.cu ;
+run test_tgamma_ratio_float.cu ;
 
 run test_log1p_double.cu ;
 run test_log1p_float.cu ;
