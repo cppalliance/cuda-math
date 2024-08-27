@@ -22,6 +22,7 @@ run test_laplace.cpp ;
 run test_logistic_dist.cpp ;
 run test_mapairy.cpp ;
 run test_saspoint5.cpp ;
+run test_weibull.cpp ;
 
 # Special Functions
 run pow_test.cpp ;
