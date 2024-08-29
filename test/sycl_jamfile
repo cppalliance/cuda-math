@@ -28,6 +28,7 @@ run test_weibull.cpp ;
 run pow_test.cpp ;
 
 run test_beta_simple.cpp ;
+run test_beta.cpp ;
 run test_ibeta.cpp ;
 run test_ibeta_inv.cpp ;
 run test_ibeta_inv_ab.cpp ;
