@@ -104,6 +104,8 @@ run test_weibull_quan_nvrtc_float.cpp ;
 # Special Functions
 run test_beta_nvrtc_double.cpp ;
 run test_beta_nvrtc_float.cpp ;
+run test_betac_nvrtc_double.cpp ;
+run test_betac_nvrtc_float.cpp ;
 
 run test_bessel_i0_nvrtc_double.cpp ;
 run test_bessel_i0_nvrtc_float.cpp ;
