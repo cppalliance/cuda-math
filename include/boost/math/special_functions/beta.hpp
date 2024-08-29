@@ -958,7 +958,6 @@ struct Pn_size<long double>
 #endif
 };
 
-#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED T beta_small_b_large_a_series(T a, T b, T x, T y, T s0, T mult, const Policy& pol, bool normalised)
 {
@@ -1060,7 +1059,7 @@ BOOST_MATH_GPU_ENABLED T beta_small_b_large_a_series(T a, T b, T x, T y, T s0, T
    }
    return sum;
 } // template <class T, class Lanczos>T beta_small_b_large_a_series(T a, T b, T x, T y, T s0, T mult, const Lanczos& l, bool normalised)
-#endif
+
 //
 // For integer arguments we can relate the incomplete beta to the
 // complement of the binomial distribution cdf and use this finite sum.
@@ -1749,12 +1748,7 @@ BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<RT1, RT2, RT3>::type
 } // namespace math
 } // namespace boost
 
-// TODO(mborland): Get the ibeta_inv working on NVRTC
-#ifndef BOOST_MATH_HAS_NVRTC
-
 #include <boost/math/special_functions/detail/ibeta_inverse.hpp>
 #include <boost/math/special_functions/detail/ibeta_inv_ab.hpp>
-
-#endif
 
 #endif // BOOST_MATH_SPECIAL_BETA_HPP
