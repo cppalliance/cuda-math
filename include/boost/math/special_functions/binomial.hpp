@@ -44,9 +44,9 @@ BOOST_MATH_GPU_ENABLED T binomial_coefficient(unsigned n, unsigned k, const Poli
    {
       // Use the beta function:
       if(k < n - k)
-         result = static_cast<T>(k * beta(static_cast<T>(k), static_cast<T>(n-k+1), pol));
+         result = static_cast<T>(k * boost::math::beta(static_cast<T>(k), static_cast<T>(n-k+1), pol));
       else
-         result = static_cast<T>((n - k) * beta(static_cast<T>(k+1), static_cast<T>(n-k), pol));
+         result = static_cast<T>((n - k) * boost::math::beta(static_cast<T>(k+1), static_cast<T>(n-k), pol));
       if(result == 0)
          return policies::raise_overflow_error<T>(function, nullptr, pol);
       result = 1 / result;

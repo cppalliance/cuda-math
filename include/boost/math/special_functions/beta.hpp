@@ -28,14 +28,10 @@
 #include <boost/math/policies/policy.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/constants/constants.hpp>
-
-#ifndef BOOST_MATH_HAS_NVRTC
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/tools/roots.hpp>
-#include <cmath>
-#endif
 
 namespace boost{ namespace math{
 
@@ -1129,6 +1125,7 @@ BOOST_MATH_GPU_ENABLED T binomial_ccdf(T n, T k, T x, T y, const Policy& pol)
 // input range and select the right implementation method for
 // each domain:
 //
+
 template <class T, class Policy>
 BOOST_MATH_GPU_ENABLED T ibeta_imp(T a, T b, T x, const Policy& pol, bool inv, bool normalised, T* p_derivative)
 {

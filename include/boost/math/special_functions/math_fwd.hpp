@@ -26,7 +26,19 @@
 
 #include <boost/math/tools/config.hpp>
 
-#ifndef BOOST_MATH_HAS_NVRTC
+#ifdef BOOST_MATH_HAS_NVRTC
+
+namespace boost {
+namespace math {
+
+template <class RT1, class RT2, class A>
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<RT1, RT2, A>::type
+beta(RT1 a, RT2 b, A arg);
+
+} // namespace math
+} // namespace boost
+
+#else
 
 #include <vector>
 #include <complex>
