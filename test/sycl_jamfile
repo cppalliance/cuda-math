@@ -28,6 +28,7 @@ run test_weibull.cpp ;
 run pow_test.cpp ;
 
 run test_beta_simple.cpp ;
+run test_ibeta.cpp ;
 
 run test_bessel_i.cpp ;
 run test_bessel_j.cpp ;
