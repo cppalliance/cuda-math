@@ -800,7 +800,7 @@ BOOST_MATH_GPU_ENABLED T ibeta_series(T a, T b, T x, T s0, const boost::math::la
    policies::check_series_iterations<T>("boost::math::ibeta<%1%>(%1%, %1%, %1%) in ibeta_series (without lanczos)", max_iter, pol);
    return result;
 }
-
+#endif
 //
 // Continued fraction for the incomplete beta:
 //
@@ -884,7 +884,7 @@ BOOST_MATH_GPU_ENABLED T ibeta_a_step(T a, T b, T x, T y, int k, const Policy& p
 
    return prefix;
 }
-#endif
+
 //
 // This function is only needed for the non-regular incomplete beta,
 // it computes the delta in:
