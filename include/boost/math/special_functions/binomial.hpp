@@ -10,20 +10,21 @@
 #pragma once
 #endif
 
+#include <boost/math/tools/config.hpp>
+#include <boost/math/tools/type_traits.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/special_functions/beta.hpp>
 #include <boost/math/policies/error_handling.hpp>
-#include <type_traits>
 
 namespace boost{ namespace math{
 
 template <class T, class Policy>
-T binomial_coefficient(unsigned n, unsigned k, const Policy& pol)
+BOOST_MATH_GPU_ENABLED T binomial_coefficient(unsigned n, unsigned k, const Policy& pol)
 {
-   static_assert(!std::is_integral<T>::value, "Type T must not be an integral type");
+   static_assert(!boost::math::is_integral<T>::value, "Type T must not be an integral type");
    BOOST_MATH_STD_USING
-   static const char* function = "boost::math::binomial_coefficient<%1%>(unsigned, unsigned)";
+   constexpr auto function = "boost::math::binomial_coefficient<%1%>(unsigned, unsigned)";
    if(k > n)
       return policies::raise_domain_error<T>(function, "The binomial coefficient is undefined for k > n, but got k = %1%.", static_cast<T>(k), pol);
    T result;  // LCOV_EXCL_LINE
@@ -59,7 +60,7 @@ T binomial_coefficient(unsigned n, unsigned k, const Policy& pol)
 // we'll promote to double:
 //
 template <>
-inline float binomial_coefficient<float, policies::policy<> >(unsigned n, unsigned k, const policies::policy<>&)
+BOOST_MATH_GPU_ENABLED inline float binomial_coefficient<float, policies::policy<> >(unsigned n, unsigned k, const policies::policy<>&)
 {
    typedef policies::normalise<
        policies::policy<>,
@@ -71,7 +72,7 @@ inline float binomial_coefficient<float, policies::policy<> >(unsigned n, unsign
 }
 
 template <class T>
-inline T binomial_coefficient(unsigned n, unsigned k)
+BOOST_MATH_GPU_ENABLED inline T binomial_coefficient(unsigned n, unsigned k)
 {
    return binomial_coefficient<T>(n, k, policies::policy<>());
 }
