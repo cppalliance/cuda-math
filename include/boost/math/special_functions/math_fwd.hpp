@@ -154,9 +154,9 @@ namespace boost
 
    // Binomial:
    template <class T, class Policy>
-   T binomial_coefficient(unsigned n, unsigned k, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED T binomial_coefficient(unsigned n, unsigned k, const Policy& pol);
    template <class T>
-   T binomial_coefficient(unsigned n, unsigned k);
+   BOOST_MATH_GPU_ENABLED T binomial_coefficient(unsigned n, unsigned k);
 
    // erf & erfc error functions.
    template <class RT> // Error function.
@@ -1218,62 +1218,62 @@ namespace boost
    BOOST_MATH_DETAIL_11_FUNC(Policy)\
    \
    template <class RT1, class RT2>\
-   inline boost::math::tools::promote_args_t<RT1, RT2> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2> \
    beta(RT1 a, RT2 b) { return ::boost::math::beta(a, b, Policy()); }\
 \
    template <class RT1, class RT2, class A>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, A> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, A> \
    beta(RT1 a, RT2 b, A x){ return ::boost::math::beta(a, b, x, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    betac(RT1 a, RT2 b, RT3 x) { return ::boost::math::betac(a, b, x, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibeta(RT1 a, RT2 b, RT3 x){ return ::boost::math::ibeta(a, b, x, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibetac(RT1 a, RT2 b, RT3 x){ return ::boost::math::ibetac(a, b, x, Policy()); }\
 \
    template <class T1, class T2, class T3, class T4>\
-   inline boost::math::tools::promote_args_t<T1, T2, T3, T4>  \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2, T3, T4>  \
    ibeta_inv(T1 a, T2 b, T3 p, T4* py){ return ::boost::math::ibeta_inv(a, b, p, py, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibeta_inv(RT1 a, RT2 b, RT3 p){ return ::boost::math::ibeta_inv(a, b, p, Policy()); }\
 \
    template <class T1, class T2, class T3, class T4>\
-   inline boost::math::tools::promote_args_t<T1, T2, T3, T4> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2, T3, T4> \
    ibetac_inv(T1 a, T2 b, T3 q, T4* py){ return ::boost::math::ibetac_inv(a, b, q, py, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibeta_inva(RT1 a, RT2 b, RT3 p){ return ::boost::math::ibeta_inva(a, b, p, Policy()); }\
 \
    template <class T1, class T2, class T3>\
-   inline boost::math::tools::promote_args_t<T1, T2, T3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2, T3> \
    ibetac_inva(T1 a, T2 b, T3 q){ return ::boost::math::ibetac_inva(a, b, q, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibeta_invb(RT1 a, RT2 b, RT3 p){ return ::boost::math::ibeta_invb(a, b, p, Policy()); }\
 \
    template <class T1, class T2, class T3>\
-   inline boost::math::tools::promote_args_t<T1, T2, T3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2, T3> \
    ibetac_invb(T1 a, T2 b, T3 q){ return ::boost::math::ibetac_invb(a, b, q, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibetac_inv(RT1 a, RT2 b, RT3 q){ return ::boost::math::ibetac_inv(a, b, q, Policy()); }\
 \
    template <class RT1, class RT2, class RT3>\
-   inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT1, RT2, RT3> \
    ibeta_derivative(RT1 a, RT2 b, RT3 x){ return ::boost::math::ibeta_derivative(a, b, x, Policy()); }\
 \
-   template <class T> T binomial_coefficient(unsigned n, unsigned k){ return ::boost::math::binomial_coefficient<T, Policy>(n, k, Policy()); }\
+   template <class T> BOOST_MATH_GPU_ENABLED T binomial_coefficient(unsigned n, unsigned k){ return ::boost::math::binomial_coefficient<T, Policy>(n, k, Policy()); }\
 \
    template <class RT>\
    BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<RT> erf(RT z) { return ::boost::math::erf(z, Policy()); }\
