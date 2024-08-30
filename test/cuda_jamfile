@@ -114,6 +114,18 @@ run test_ibeta_double.cu ;
 run test_ibeta_float.cu ;
 run test_ibeta_derivative_double.cu ;
 run test_ibeta_derivative_float.cu ;
+run test_ibeta_inv_double.cu ;
+run test_ibeta_inv_float.cu ;
+run test_ibeta_inva_double.cu ;
+run test_ibeta_inva_float.cu ;
+run test_ibeta_invb_double.cu ;
+run test_ibeta_invb_float.cu ;
+run test_ibetac_inv_double.cu ;
+run test_ibetac_inv_float.cu ;
+run test_ibetac_inva_double.cu ;
+run test_ibetac_inva_float.cu ;
+run test_ibetac_invb_double.cu ;
+run test_ibetac_invb_float.cu ;
 
 run test_bessel_i0_double.cu ;
 run test_bessel_i0_float.cu ;
