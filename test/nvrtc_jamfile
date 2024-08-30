@@ -110,6 +110,8 @@ run test_ibeta_nvrtc_double.cpp ;
 run test_ibeta_nvrtc_float.cpp ;
 run test_ibetac_nvrtc_double.cpp ;
 run test_ibetac_nvrtc_float.cpp ;
+run test_ibeta_derivative_nvrtc_double.cpp ;
+run test_ibeta_derivative_nvrtc_float.cpp ;
 
 run test_bessel_i0_nvrtc_double.cpp ;
 run test_bessel_i0_nvrtc_float.cpp ;
