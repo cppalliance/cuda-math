@@ -886,19 +886,19 @@ namespace boost
    BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> cos_pi(T x);
 
    template <class T>
-   int fpclassify BOOST_NO_MACRO_EXPAND(T t);
+   BOOST_MATH_GPU_ENABLED int fpclassify BOOST_NO_MACRO_EXPAND(T t);
 
    template <class T>
-   bool isfinite BOOST_NO_MACRO_EXPAND(T z);
+   BOOST_MATH_GPU_ENABLED bool isfinite BOOST_NO_MACRO_EXPAND(T z);
 
    template <class T>
-   bool isinf BOOST_NO_MACRO_EXPAND(T t);
+   BOOST_MATH_GPU_ENABLED bool isinf BOOST_NO_MACRO_EXPAND(T t);
 
    template <class T>
-   bool isnan BOOST_NO_MACRO_EXPAND(T t);
+   BOOST_MATH_GPU_ENABLED bool isnan BOOST_NO_MACRO_EXPAND(T t);
 
    template <class T>
-   bool isnormal BOOST_NO_MACRO_EXPAND(T t);
+   BOOST_MATH_GPU_ENABLED bool isnormal BOOST_NO_MACRO_EXPAND(T t);
 
    template<class T>
    BOOST_MATH_GPU_ENABLED int signbit BOOST_NO_MACRO_EXPAND(T x);
