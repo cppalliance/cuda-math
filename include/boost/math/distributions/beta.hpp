@@ -531,7 +531,7 @@ namespace boost
     } // quantile
 
     template <class RealType, class Policy>
-    inline RealType quantile(const complemented2_type<beta_distribution<RealType, Policy>, RealType>& c)
+    BOOST_MATH_GPU_ENABLED inline RealType quantile(const complemented2_type<beta_distribution<RealType, Policy>, RealType>& c)
     { // Complement Quantile or Percent Point beta function .
       // Return the number of expected x for a given
       // complement of the probability q.
