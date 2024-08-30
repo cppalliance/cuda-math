@@ -12,6 +12,7 @@
 #include <boost/math/tools/numeric_limits.hpp>
 #include <boost/math/tools/type_traits.hpp>
 #include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/tuple.hpp>
 
 #ifndef BOOST_MATH_HAS_NVRTC
 
@@ -884,9 +885,9 @@ namespace detail{
 // that value usually comes from one of the error handlers above:
 //
 template <class T>
-BOOST_MATH_GPU_ENABLED std::pair<T, T> pair_from_single(const T& val) BOOST_MATH_NOEXCEPT(T)
+BOOST_MATH_GPU_ENABLED boost::math::pair<T, T> pair_from_single(const T& val) BOOST_MATH_NOEXCEPT(T)
 {
-   return std::make_pair(val, val);
+   return boost::math::make_pair(val, val);
 }
 
 }
