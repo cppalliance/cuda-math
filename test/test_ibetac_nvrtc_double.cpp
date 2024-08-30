@@ -20,19 +20,19 @@
 #include <boost/math/special_functions/beta.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
 
-typedef float float_type;
+typedef double float_type;
 
 const char* cuda_kernel = R"(
-typedef float float_type;
+typedef double float_type;
 #include <cuda/std/type_traits>
 #include <boost/math/special_functions/beta.hpp>
 extern "C" __global__ 
-void test_ibeta_kernel(const float_type *in1, const float_type *in2, const float_type *in3, float_type *out, int numElements)
+void test_ibetac_kernel(const float_type *in1, const float_type *in2, const float_type *in3, float_type *out, int numElements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i < numElements)
     {
-        out[i] = boost::math::ibeta(in1[i], in2[i], in3[i]);
+        out[i] = boost::math::ibetac(in1[i], in2[i], in3[i]);
     }
 }
 )";
@@ -89,10 +89,10 @@ int main()
         nvrtcProgram prog;
         nvrtcResult res;
 
-        res = nvrtcCreateProgram(&prog, cuda_kernel, "test_ibeta_kernel.cu", 0, nullptr, nullptr);
+        res = nvrtcCreateProgram(&prog, cuda_kernel, "test_ibetac_kernel.cu", 0, nullptr, nullptr);
         checkNVRTCError(res, "Failed to create NVRTC program");
 
-        nvrtcAddNameExpression(prog, "test_ibeta_kernel");
+        nvrtcAddNameExpression(prog, "test_ibetac_kernel");
 
         #ifdef BOOST_MATH_NVRTC_CI_RUN
         const char* opts[] = {"--std=c++14", "--gpu-architecture=compute_75", "--include-path=/home/runner/work/cuda-math/boost-root/libs/cuda-math/include/", "-I/usr/local/cuda/include"};
@@ -123,7 +123,7 @@ int main()
         CUmodule module;
         CUfunction kernel;
         checkCUError(cuModuleLoadDataEx(&module, ptx, 0, 0, 0), "Failed to load module");
-        checkCUError(cuModuleGetFunction(&kernel, module, "test_ibeta_kernel"), "Failed to get kernel function");
+        checkCUError(cuModuleGetFunction(&kernel, module, "test_ibetac_kernel"), "Failed to get kernel function");
 
         int numElements = ibeta_data.size() + ibeta_small_data.size();
         float_type *h_in1, *h_in2, *h_in3, *h_out;
@@ -168,7 +168,7 @@ int main()
         // Verify Result
         for (int i = 0; i < numElements; ++i) 
         {
-            const auto res = boost::math::ibeta(h_in1[i], h_in2[i], h_in3[i]);
+            const auto res = boost::math::ibetac(h_in1[i], h_in2[i], h_in3[i]);
             
             if (std::isfinite(res))
             {
