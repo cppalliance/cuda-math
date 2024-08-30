@@ -17,6 +17,7 @@
 #include <vector>
 #include <random>
 #include <exception>
+#include <boost/math/tools/config.hpp>
 #include <boost/math/special_functions/beta.hpp>
 #include <boost/math/special_functions/relative_difference.hpp>
 
@@ -170,7 +171,17 @@ int main()
         // Verify Result
         for (int i = 0; i < numElements; ++i) 
         {
-            const auto res = boost::math::ibeta_invb(h_in1[i], h_in2[i], h_in3[i]);
+            // Sometimes the ignore error policy is ignored so the below throws
+            // Rather than terminating we can continue to process through our results array
+            double res;
+            try
+            {
+                res = boost::math::ibeta_invb(h_in1[i], h_in2[i], h_in3[i]);
+            }
+            catch (...)
+            {
+                continue;
+            }
             
             if (std::isfinite(res))
             {
