@@ -878,20 +878,6 @@ BOOST_MATH_GPU_ENABLED inline void check_root_iterations(const char* function, s
 
 } //namespace policies
 
-namespace detail{
-
-//
-// Simple helper function to assist in returning a pair from a single value,
-// that value usually comes from one of the error handlers above:
-//
-template <class T>
-BOOST_MATH_GPU_ENABLED boost::math::pair<T, T> pair_from_single(const T& val) BOOST_MATH_NOEXCEPT(T)
-{
-   return boost::math::make_pair(val, val);
-}
-
-}
-
 #ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
@@ -1040,7 +1026,21 @@ BOOST_MATH_GPU_ENABLED inline void check_root_iterations(const char* function, b
 } // namespace math
 } // namespace boost
 
-#endif
+#endif // BOOST_MATH_HAS_NVRTC
+
+namespace boost { namespace math { namespace detail {
+
+//
+// Simple helper function to assist in returning a pair from a single value,
+// that value usually comes from one of the error handlers above:
+//
+template <class T>
+BOOST_MATH_GPU_ENABLED boost::math::pair<T, T> pair_from_single(const T& val) BOOST_MATH_NOEXCEPT(T)
+{
+   return boost::math::make_pair(val, val);
+}
+
+}}} // boost::math::detail
 
 #endif // BOOST_MATH_POLICY_ERROR_HANDLING_HPP
 
