@@ -112,6 +112,8 @@ run test_betac_double.cu ;
 run test_betac_float.cu ;
 run test_ibeta_double.cu ;
 run test_ibeta_float.cu ;
+run test_ibeta_derivative_double.cu ;
+run test_ibeta_derivative_float.cu ;
 
 run test_bessel_i0_double.cu ;
 run test_bessel_i0_float.cu ;
