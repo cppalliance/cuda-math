@@ -65,6 +65,13 @@ run test_extreme_value_pdf_float.cu ;
 run test_extreme_value_quan_double.cu ;
 run test_extreme_value_quan_float.cu ;
 
+run test_fisher_f_cdf_double.cu ;
+run test_fisher_f_cdf_float.cu ;
+run test_fisher_f_pdf_double.cu ;
+run test_fisher_f_pdf_float.cu ;
+run test_fisher_f_quan_double.cu ;
+run test_fisher_f_quan_float.cu ;
+
 run test_holtsmark_cdf_double.cu ;
 run test_holtsmark_cdf_float.cu ;
 run test_holtsmark_pdf_double.cu ;
