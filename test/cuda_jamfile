@@ -91,6 +91,13 @@ run test_holtsmark_cdf_float.cu ;
 run test_holtsmark_pdf_double.cu ;
 run test_holtsmark_pdf_float.cu ;
 
+run test_inverse_chi_squared_cdf_double.cu ;
+run test_inverse_chi_squared_cdf_float.cu ;
+run test_inverse_chi_squared_pdf_double.cu ;
+run test_inverse_chi_squared_pdf_float.cu ;
+run test_inverse_chi_squared_quan_double.cu ;
+run test_inverse_chi_squared_quan_float.cu ;
+
 run test_landau_cdf_double.cu ;
 run test_landau_cdf_float.cu ;
 run test_landau_pdf_double.cu ;
