@@ -59,6 +59,13 @@ run test_extreme_value_pdf_nvrtc_float.cpp ;
 run test_extreme_value_quan_nvrtc_double.cpp ;
 run test_extreme_value_quan_nvrtc_float.cpp ;
 
+run test_fisher_f_cdf_nvrtc_double.cpp ;
+run test_fisher_f_cdf_nvrtc_float.cpp ;
+run test_fisher_f_pdf_nvrtc_double.cpp ;
+run test_fisher_f_pdf_nvrtc_float.cpp ;
+run test_fisher_f_quan_nvrtc_double.cpp ;
+run test_fisher_f_quan_nvrtc_float.cpp ;
+
 run test_holtsmark_cdf_nvrtc_double.cpp ;
 run test_holtsmark_cdf_nvrtc_float.cpp ;
 run test_holtsmark_pdf_nvrtc_double.cpp ;
