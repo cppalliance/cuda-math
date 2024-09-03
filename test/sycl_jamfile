@@ -18,6 +18,7 @@ run test_chi_squared.cpp ;
 run test_exponential_dist.cpp ;
 run test_extreme_value.cpp ;
 run test_fisher_f.cpp ;
+run test_gamma_dist.cpp ;
 run test_holtsmark.cpp ;
 run test_landau.cpp ;
 run test_laplace.cpp ;
