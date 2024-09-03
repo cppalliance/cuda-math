@@ -79,6 +79,13 @@ run test_gamma_dist_pdf_float.cu ;
 run test_gamma_dist_quan_double.cu ;
 run test_gamma_dist_quan_float.cu ;
 
+run test_geometric_dist_cdf_double.cu ;
+run test_geometric_dist_cdf_float.cu ;
+run test_geometric_dist_pdf_double.cu ;
+run test_geometric_dist_pdf_float.cu ;
+run test_geometric_dist_quan_double.cu ;
+run test_geometric_dist_quan_float.cu ;
+
 run test_holtsmark_cdf_double.cu ;
 run test_holtsmark_cdf_float.cu ;
 run test_holtsmark_pdf_double.cu ;
