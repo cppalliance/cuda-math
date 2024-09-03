@@ -94,6 +94,13 @@ run test_inverse_chi_squared_pdf_nvrtc_float.cpp ;
 run test_inverse_chi_squared_quan_nvrtc_double.cpp ; 
 run test_inverse_chi_squared_quan_nvrtc_float.cpp ;
 
+run test_inverse_gamma_cdf_nvrtc_double.cpp ;
+run test_inverse_gamma_cdf_nvrtc_float.cpp ;
+run test_inverse_gamma_pdf_nvrtc_double.cpp ;
+run test_inverse_gamma_pdf_nvrtc_float.cpp ;
+run test_inverse_gamma_quan_nvrtc_double.cpp ;
+run test_inverse_gamma_quan_nvrtc_float.cpp ;
+
 run test_landau_cdf_nvrtc_double.cpp ;
 run test_landau_cdf_nvrtc_float.cpp ;
 run test_landau_pdf_nvrtc_double.cpp ;
