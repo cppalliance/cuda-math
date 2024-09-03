@@ -212,7 +212,7 @@ namespace boost
         return result + k;
       } // RealType find_number_of_failures
 
-      static RealType find_maximum_number_of_trials(
+      BOOST_MATH_GPU_ENABLED static RealType find_maximum_number_of_trials(
         RealType k,     // number of failures (k >= 0).
         RealType p,     // success fraction 0 <= p <= 1.
         RealType alpha) // risk level threshold 0 <= alpha <= 1.
