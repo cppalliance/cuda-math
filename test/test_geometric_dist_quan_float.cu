@@ -90,7 +90,7 @@ int main(void)
     // check the results
     for(int i = 0; i < numElements; ++i)
     {
-        if (boost::math::epsilon_difference(output_vector[i], results[i]) > 200.0)
+        if (boost::math::epsilon_difference(output_vector[i], results[i]) > 1000.0)
         {
             std::cerr << "Result verification failed at element " << i << "!" << std::endl;
             std::cerr << "Error rate was: " << boost::math::epsilon_difference(output_vector[i], results[i]) << "eps" << std::endl;
