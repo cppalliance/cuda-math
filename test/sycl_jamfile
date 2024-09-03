@@ -22,6 +22,7 @@ run test_gamma_dist.cpp ;
 run test_geometric.cpp ;
 run test_holtsmark.cpp ;
 run test_inverse_chi_squared_distribution.cpp ;
+run test_inverse_gamma_distribution.cpp ;
 run test_landau.cpp ;
 run test_laplace.cpp ;
 run test_logistic_dist.cpp ;
