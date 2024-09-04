@@ -19,7 +19,7 @@
 // For the CUDA runtime routines (prefixed with "cuda_")
 #include <cuda_runtime.h>
 
-typedef double float_type;
+typedef float float_type;
 
 /**
  * CUDA Kernel Device code
