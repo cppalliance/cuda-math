@@ -101,6 +101,13 @@ run test_inverse_gamma_pdf_nvrtc_float.cpp ;
 run test_inverse_gamma_quan_nvrtc_double.cpp ;
 run test_inverse_gamma_quan_nvrtc_float.cpp ;
 
+run test_inverse_gaussian_cdf_nvrtc_double.cpp ;
+run test_inverse_gaussian_cdf_nvrtc_float.cpp ;
+run test_inverse_gaussian_pdf_nvrtc_double.cpp ;
+run test_inverse_gaussian_pdf_nvrtc_float.cpp ;
+run test_inverse_gaussian_quan_nvrtc_double.cpp ;
+run test_inverse_gaussian_quan_nvrtc_float.cpp ;
+
 run test_landau_cdf_nvrtc_double.cpp ;
 run test_landau_cdf_nvrtc_float.cpp ;
 run test_landau_pdf_nvrtc_double.cpp ;
