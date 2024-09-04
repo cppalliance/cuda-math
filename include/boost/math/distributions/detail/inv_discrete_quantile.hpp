@@ -311,7 +311,7 @@ BOOST_MATH_GPU_ENABLED inline typename Dist::value_type round_to_floor(const Dis
    while(result != 0)
    {
       #ifdef BOOST_MATH_HAS_GPU_SUPPORT
-      cc = ceil(nextafter(result, tools::min_value<typename Dist::value_type>()));
+      cc = ceil(std::nextafter(result, tools::min_value<typename Dist::value_type>()));
       #else
       cc = floor(float_prior(result));
       #endif
@@ -347,7 +347,7 @@ BOOST_MATH_GPU_ENABLED inline typename Dist::value_type round_to_ceil(const Dist
    while(true)
    {
       #ifdef BOOST_MATH_HAS_GPU_SUPPORT
-      cc = ceil(nextafter(result, tools::max_value<typename Dist::value_type>()));
+      cc = ceil(std::nextafter(result, tools::max_value<typename Dist::value_type>()));
       #else
       cc = ceil(float_next(result));
       #endif
