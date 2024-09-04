@@ -16,6 +16,7 @@
 #include <boost/math/tools/tuple.hpp>
 #include <boost/math/tools/numeric_limits.hpp>
 #include <boost/math/tools/precision.hpp>
+#include <boost/math/tools/utility.hpp>
 #include <boost/math/policies/policy.hpp>
 
 namespace boost{ namespace math{ namespace tools{
@@ -29,7 +30,7 @@ BOOST_MATH_GPU_ENABLED boost::math::pair<T, T> brent_find_minima(F f, T min, T m
    )
 {
    BOOST_MATH_STD_USING
-   bits = boost_math_gpu_safe_min(policies::digits<T, policies::policy<> >() / 2, bits);
+   bits = (boost::math::min)(policies::digits<T, policies::policy<> >() / 2, bits);
    T tolerance = static_cast<T>(ldexp(1.0, 1-bits));
    T x;  // minima so far
    T w;  // second best point
@@ -47,7 +48,7 @@ BOOST_MATH_GPU_ENABLED boost::math::pair<T, T> brent_find_minima(F f, T min, T m
    fw = fv = fx = f(x);
    delta2 = delta = 0;
 
-   uintmax_t count = max_iter;
+   boost::math::uintmax_t count = max_iter;
 
    do{
       // get midpoint
