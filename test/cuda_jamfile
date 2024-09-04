@@ -105,6 +105,13 @@ run test_inverse_gamma_pdf_float.cu ;
 run test_inverse_gamma_quan_double.cu ;
 run test_inverse_gamma_quan_float.cu ;
 
+run test_inverse_gaussian_cdf_double.cu ;
+run test_inverse_gaussian_cdf_float.cu ;
+run test_inverse_gaussian_pdf_double.cu ;
+run test_inverse_gaussian_pdf_float.cu ;
+run test_inverse_gaussian_quan_double.cu ;
+run test_inverse_gaussian_quan_float.cu ;
+
 run test_landau_cdf_double.cu ;
 run test_landau_cdf_float.cu ;
 run test_landau_pdf_double.cu ;
