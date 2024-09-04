@@ -129,6 +129,13 @@ run test_mapairy_pdf_nvrtc_float.cpp ;
 run test_mapairy_quan_nvrtc_double.cpp ;
 run test_mapairy_quan_nvrtc_float.cpp ;
 
+run test_normal_cdf_nvrtc_double.cpp ;
+run test_normal_cdf_nvrtc_float.cpp ;
+run test_normal_pdf_nvrtc_double.cpp ;
+run test_normal_pdf_nvrtc_float.cpp ;
+run test_normal_quan_nvrtc_double.cpp ;
+run test_normal_quan_nvrtc_float.cpp ;
+
 run test_saspoint5_cdf_nvrtc_double.cpp ;
 run test_saspoint5_cdf_nvrtc_float.cpp ;
 run test_saspoint5_pdf_nvrtc_double.cpp ;
