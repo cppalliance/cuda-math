@@ -133,6 +133,13 @@ run test_logistic_pdf_float.cu ;
 run test_logistic_quan_double.cu ;
 run test_logistic_quan_float.cu ;
 
+run test_lognormal_cdf_double.cu ;
+run test_lognormal_cdf_float.cu ;
+run test_lognormal_pdf_double.cu ;
+run test_lognormal_pdf_float.cu ;
+run test_lognormal_quan_double.cu ;
+run test_lognormal_quan_float.cu ;
+
 run test_mapairy_cdf_double.cu ;
 run test_mapairy_cdf_float.cu ;
 run test_mapairy_pdf_double.cu ;
