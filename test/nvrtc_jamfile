@@ -143,6 +143,13 @@ run test_mapairy_pdf_nvrtc_float.cpp ;
 run test_mapairy_quan_nvrtc_double.cpp ;
 run test_mapairy_quan_nvrtc_float.cpp ;
 
+run test_nc_beta_cdf_nvrtc_double.cpp ;
+run test_nc_beta_cdf_nvrtc_float.cpp ;
+run test_nc_beta_pdf_nvrtc_double.cpp ;
+run test_nc_beta_pdf_nvrtc_float.cpp ;
+run test_nc_beta_quan_nvrtc_double.cpp ;
+run test_nc_beta_quan_nvrtc_float.cpp ;
+
 run test_negative_binomial_cdf_nvrtc_double.cpp ;
 run test_negative_binomial_cdf_nvrtc_float.cpp ;
 run test_negative_binomial_pdf_nvrtc_double.cpp ;
