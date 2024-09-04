@@ -129,6 +129,13 @@ run test_logistic_pdf_nvrtc_float.cpp ;
 run test_logistic_quan_nvrtc_double.cpp ;
 run test_logistic_quan_nvrtc_float.cpp ;
 
+run test_lognormal_cdf_nvrtc_double.cpp ;
+run test_lognormal_cdf_nvrtc_float.cpp ;
+run test_lognormal_pdf_nvrtc_double.cpp ;
+run test_lognormal_pdf_nvrtc_float.cpp ;
+run test_lognormal_quan_nvrtc_double.cpp ;
+run test_lognormal_quan_nvrtc_float.cpp ;
+
 run test_mapairy_cdf_nvrtc_double.cpp ;
 run test_mapairy_cdf_nvrtc_float.cpp ;
 run test_mapairy_pdf_nvrtc_double.cpp ;
