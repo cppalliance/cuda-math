@@ -182,6 +182,13 @@ run test_normal_pdf_float.cu ;
 run test_normal_quan_double.cu ;
 run test_normal_quan_float.cu ;
 
+run test_pareto_cdf_double.cu ;
+run test_pareto_cdf_float.cu ;
+run test_pareto_pdf_double.cu ;
+run test_pareto_pdf_float.cu ;
+run test_pareto_quan_double.cu ;
+run test_pareto_quan_float.cu ;
+
 run test_saspoint5_cdf_double.cu ;
 run test_saspoint5_cdf_float.cu ;
 run test_saspoint5_pdf_double.cu ;
