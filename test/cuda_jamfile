@@ -154,6 +154,13 @@ run test_nc_beta_pdf_float.cu ;
 run test_nc_beta_quan_double.cu ;
 run test_nc_beta_quan_float.cu ;
 
+run test_nc_chi_squared_cdf_double.cu ;
+run test_nc_chi_squared_cdf_float.cu ;
+run test_nc_chi_squared_pdf_double.cu ;
+run test_nc_chi_squared_pdf_float.cu ;
+run test_nc_chi_squared_quan_double.cu ;
+run test_nc_chi_squared_quan_float.cu ;
+
 run test_negative_binomial_cdf_double.cu ;
 run test_negative_binomial_cdf_float.cu ;
 run test_negative_binomial_pdf_double.cu ;
