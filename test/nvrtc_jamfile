@@ -185,6 +185,13 @@ run test_pareto_pdf_nvrtc_float.cpp ;
 run test_pareto_quan_nvrtc_double.cpp ;
 run test_pareto_quan_nvrtc_float.cpp ;
 
+run test_poisson_cdf_nvrtc_double.cpp ;
+run test_poisson_cdf_nvrtc_float.cpp ;
+run test_poisson_pdf_nvrtc_double.cpp ;
+run test_poisson_pdf_nvrtc_float.cpp ;
+run test_poisson_quan_nvrtc_double.cpp ;
+run test_poisson_quan_nvrtc_float.cpp ;
+
 run test_saspoint5_cdf_nvrtc_double.cpp ;
 run test_saspoint5_cdf_nvrtc_float.cpp ;
 run test_saspoint5_pdf_nvrtc_double.cpp ;
