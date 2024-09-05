@@ -31,6 +31,7 @@ run test_lognormal.cpp ;
 run test_mapairy.cpp ;
 run test_nc_beta.cpp ;
 run test_nc_chi_squared.cpp ;
+run test_nc_f.cpp ;
 run test_negative_binomial.cpp ;
 run test_normal.cpp ; 
 run test_saspoint5.cpp ;
