@@ -157,6 +157,13 @@ run test_nc_chi_squared_pdf_nvrtc_float.cpp ;
 run test_nc_chi_squared_quan_nvrtc_double.cpp ;
 run test_nc_chi_squared_quan_nvrtc_float.cpp ;
 
+run test_nc_f_cdf_nvrtc_double.cpp ; 
+run test_nc_f_cdf_nvrtc_float.cpp ;
+run test_nc_f_pdf_nvrtc_double.cpp ;
+run test_nc_f_pdf_nvrtc_float.cpp ;
+run test_nc_f_quan_nvrtc_double.cpp ;
+run test_nc_f_quan_nvrtc_float.cpp ;
+
 run test_negative_binomial_cdf_nvrtc_double.cpp ;
 run test_negative_binomial_cdf_nvrtc_float.cpp ;
 run test_negative_binomial_pdf_nvrtc_double.cpp ;
