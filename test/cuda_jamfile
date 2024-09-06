@@ -224,6 +224,13 @@ run test_triangular_pdf_float.cu ;
 run test_triangular_quan_double.cu ;
 run test_triangular_quan_float.cu ;
 
+run test_uniform_cdf_double.cu ;
+run test_uniform_cdf_float.cu ;
+run test_uniform_pdf_double.cu ;
+run test_uniform_pdf_float.cu ;
+run test_uniform_quan_double.cu ;
+run test_uniform_quan_float.cu ;
+
 run test_weibull_cdf_double.cu ;
 run test_weibull_cdf_float.cu ;
 run test_weibull_pdf_double.cu ;
