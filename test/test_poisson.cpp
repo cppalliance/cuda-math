@@ -40,6 +40,7 @@
 //   using boost::math::qamma_Q;
 #include "table_type.hpp"
 #include "test_out_of_range.hpp"
+#include "../include_private/boost/math/tools/test.hpp"
 
 #include <iostream>
    using std::cout;
