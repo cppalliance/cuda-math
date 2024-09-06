@@ -192,6 +192,13 @@ run test_poisson_pdf_nvrtc_float.cpp ;
 run test_poisson_quan_nvrtc_double.cpp ;
 run test_poisson_quan_nvrtc_float.cpp ;
 
+run test_rayleigh_cdf_nvrtc_double.cpp ;
+run test_rayleigh_cdf_nvrtc_float.cpp ;
+run test_rayleigh_pdf_nvrtc_double.cpp ;
+run test_rayleigh_pdf_nvrtc_float.cpp ;
+run test_rayleigh_quan_nvrtc_double.cpp ;
+run test_rayleigh_quan_nvrtc_float.cpp ;
+
 run test_saspoint5_cdf_nvrtc_double.cpp ;
 run test_saspoint5_cdf_nvrtc_float.cpp ;
 run test_saspoint5_pdf_nvrtc_double.cpp ;
