@@ -196,6 +196,13 @@ run test_poisson_pdf_float.cu ;
 run test_poisson_quan_double.cu ;
 run test_poisson_quan_float.cu ;
 
+run test_rayleigh_cdf_double.cu ;
+run test_rayleigh_cdf_float.cu ;
+run test_rayleigh_pdf_double.cu ;
+run test_rayleigh_pdf_float.cu ;
+run test_rayleigh_quan_double.cu ;
+run test_rayleigh_quan_float.cu ;
+
 run test_saspoint5_cdf_double.cu ;
 run test_saspoint5_cdf_float.cu ;
 run test_saspoint5_pdf_double.cu ;
