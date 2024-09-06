@@ -40,6 +40,7 @@ run test_rayleigh.cpp ;
 run test_saspoint5.cpp ;
 run test_students_t.cpp ;
 run test_triangular.cpp ;
+run test_uniform.cpp ;
 run test_weibull.cpp ;
 
 # Special Functions
