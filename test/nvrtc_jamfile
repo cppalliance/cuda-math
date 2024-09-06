@@ -213,6 +213,13 @@ run test_students_t_pdf_nvrtc_float.cpp ;
 run test_students_t_quan_nvrtc_double.cpp ;
 run test_students_t_quan_nvrtc_float.cpp ;
 
+run test_triangular_cdf_nvrtc_double.cpp ;
+run test_triangular_cdf_nvrtc_float.cpp ;
+run test_triangular_pdf_nvrtc_double.cpp ;
+run test_triangular_pdf_nvrtc_float.cpp ;
+run test_triangular_quan_nvrtc_double.cpp ;
+run test_triangular_quan_nvrtc_float.cpp ;
+
 run test_weibull_cdf_nvrtc_double.cpp ;
 run test_weibull_cdf_nvrtc_float.cpp ;
 run test_weibull_pdf_nvrtc_double.cpp ;
