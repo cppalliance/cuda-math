@@ -36,6 +36,7 @@ run test_negative_binomial.cpp ;
 run test_normal.cpp ; 
 run test_pareto.cpp ;
 run test_poisson.cpp ;
+run test_rayleigh.cpp ;
 run test_saspoint5.cpp ;
 run test_students_t.cpp ;
 run test_weibull.cpp ;
