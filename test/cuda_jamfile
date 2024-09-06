@@ -217,6 +217,13 @@ run test_students_t_pdf_float.cu ;
 run test_students_t_quan_double.cu ;
 run test_students_t_quan_float.cu ;
 
+run test_triangular_cdf_double.cu ;
+run test_triangular_cdf_float.cu ;
+run test_triangular_pdf_double.cu ;
+run test_triangular_pdf_float.cu ;
+run test_triangular_quan_double.cu ;
+run test_triangular_quan_float.cu ;
+
 run test_weibull_cdf_double.cu ;
 run test_weibull_cdf_float.cu ;
 run test_weibull_pdf_double.cu ;
