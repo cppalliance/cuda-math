@@ -548,12 +548,18 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 4>&)
 
 #else // BOOST_MATH_ENABLE_CUDA
 
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/precision.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/math/policies/error_handling.hpp>
+
 namespace boost { 
 namespace math { 
 namespace quadrature {
 namespace detail {
 
-__constant__ float m_abscissas_float[][] = {
+__constant__ float m_abscissas_float[8][527] = {
       { 3.47876573e-23f, 5.62503650e-09f, 9.95706124e-04f, 9.67438487e-02f, 7.43599217e-01f, 4.14293205e+00f, 
         1.08086768e+02f, 4.56291316e+05f, 2.70123007e+15f, },
       { 2.41870864e-14f, 1.02534662e-05f, 1.65637566e-02f, 3.11290799e-01f, 1.64691269e+00f, 1.49800773e+01f, 
@@ -734,7 +740,7 @@ __constant__ float m_abscissas_float[][] = {
         1.53216987e+18f, 2.96403754e+18f, 5.79389087e+18f, 1.14455803e+19f, 2.28537992e+19f, },
    };
 
-__constant__ float m_weights_float[][] = {
+__constant__ float m_weights_float[8][527] = {
       { 1.79979618e-21f, 1.07218106e-07f, 7.05786060e-03f, 2.72310168e-01f, 1.18863515e+00f, 8.77655464e+00f, 
         5.33879432e+02f, 5.98892409e+06f, 9.60751551e+16f, },
       { 7.59287827e-13f, 1.18886775e-04f, 7.27332179e-02f, 6.09156795e-01f, 2.71431234e+00f, 4.68800805e+01f, 
@@ -915,9 +921,10 @@ __constant__ float m_weights_float[][] = {
         6.42020070e+19f, 1.26155602e+20f, 2.50480806e+20f, 5.02601059e+20f, 1.01935525e+21f, },
    };
 
-__device__ exp_sinh_integrate_impl(const F& f, Real* error, Real* L1, const char* function, Real tolerance, boost::math::size_t* levels)
+template <typename F, typename Real, typename Policy = policies::policy<> >
+__device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels)
 {
-    using K = decltype(f(static_cast<Real>(0))) K;
+    using K = decltype(f(static_cast<Real>(0)));
     using boost::math::constants::half;
     using boost::math::constants::half_pi;
 
@@ -1007,8 +1014,8 @@ __device__ exp_sinh_integrate_impl(const F& f, Real* error, Real* L1, const char
         K sum = 0;
         Real absum = 0;
 
-        auto abscissas_row = get_abscissa_row(i);
-        auto weight_row = get_weight_row(i);
+        auto& abscissas_row = m_abscissas[i];
+        auto& weight_row = m_weights[i];
 
         // appoximate location to start looking for lowest meaningful abscissa value
         first_j = first_j == 0 ? 0 : 2 * first_j - 1;  
@@ -1033,7 +1040,7 @@ __device__ exp_sinh_integrate_impl(const F& f, Real* error, Real* L1, const char
         err = abs(I0 - I1);
         if (!(boost::math::isfinite)(L1_I1))
         {
-            return static_cast<K>(policies::raise_evaluation_error(function, "The exp_sinh quadrature evaluated your function at a singular point and returned %1%. Please ensure your function evaluates to a finite number over its entire domain.", I1, Policy()));
+            return static_cast<K>(policies::raise_evaluation_error("exp_sinh_integrate", "The exp_sinh quadrature evaluated your function at a singular point and returned %1%. Please ensure your function evaluates to a finite number over its entire domain.", I1, Policy()));
         }
         if (err <= tolerance*L1_I1)
         {
