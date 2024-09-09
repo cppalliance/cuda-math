@@ -1,4 +1,5 @@
 // Copyright Nick Thompson, 2017
+// Copyright Matt Borland, 2024
 // Use, modification and distribution are subject to the
 // Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -15,11 +16,14 @@
 #ifndef BOOST_MATH_QUADRATURE_EXP_SINH_HPP
 #define BOOST_MATH_QUADRATURE_EXP_SINH_HPP
 
-#include <cmath>
-#include <limits>
-#include <memory>
-#include <string>
+#include <boost/math/tools/config.hpp>
+#include <boost/math/tools/numeric_limits.hpp>
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/shared_ptr.hpp>
 #include <boost/math/quadrature/detail/exp_sinh_detail.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/math/policies/error_handling.hpp>
 
 namespace boost{ namespace math{ namespace quadrature {
 
@@ -27,30 +31,31 @@ template<class Real, class Policy = policies::policy<> >
 class exp_sinh
 {
 public:
-   exp_sinh(size_t max_refinements = 9)
-      : m_imp(std::make_shared<detail::exp_sinh_detail<Real, Policy>>(max_refinements)) {}
+    exp_sinh(boost::math::size_t max_refinements = 9)
+      : m_imp(boost::math::make_shared<detail::exp_sinh_detail<Real, Policy>>(max_refinements)) {}
 
     template<class F>
-    auto integrate(const F& f, Real a, Real b, Real tol = boost::math::tools::root_epsilon<Real>(), Real* error = nullptr, Real* L1 = nullptr, std::size_t* levels = nullptr) const ->decltype(std::declval<F>()(std::declval<Real>()));
+    auto integrate(const F& f, Real a, Real b, Real tol = boost::math::tools::root_epsilon<Real>(), Real* error = nullptr, Real* L1 = nullptr, boost::math::size_t* levels = nullptr) const;
     template<class F>
-    auto integrate(const F& f, Real tol = boost::math::tools::root_epsilon<Real>(), Real* error = nullptr, Real* L1 = nullptr, std::size_t* levels = nullptr) const ->decltype(std::declval<F>()(std::declval<Real>()));
+    auto integrate(const F& f, Real tol = boost::math::tools::root_epsilon<Real>(), Real* error = nullptr, Real* L1 = nullptr, boost::math::size_t* levels = nullptr) const;
 
 private:
-    std::shared_ptr<detail::exp_sinh_detail<Real, Policy>> m_imp;
+    boost::math::shared_ptr<detail::exp_sinh_detail<Real, Policy>> m_imp;
 };
 
 template<class Real, class Policy>
 template<class F>
-auto exp_sinh<Real, Policy>::integrate(const F& f, Real a, Real b, Real tolerance, Real* error, Real* L1, std::size_t* levels) const ->decltype(std::declval<F>()(std::declval<Real>()))
+auto exp_sinh<Real, Policy>::integrate(const F& f, Real a, Real b, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels) const
 {
+    BOOST_MATH_STD_USING
+
     typedef decltype(f(a)) K;
-    static_assert(!std::is_integral<K>::value,
+    static_assert(!boost::math::is_integral<K>::value,
                   "The return type cannot be integral, it must be either a real or complex floating point type.");
-    using std::abs;
     using boost::math::constants::half;
     using boost::math::quadrature::detail::exp_sinh_detail;
 
-    static const char* function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
+    constexpr auto function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
 
     // Neither limit may be a NaN:
     if((boost::math::isnan)(a) || (boost::math::isnan)(b))
@@ -86,10 +91,11 @@ auto exp_sinh<Real, Policy>::integrate(const F& f, Real a, Real b, Real toleranc
 
 template<class Real, class Policy>
 template<class F>
-auto exp_sinh<Real, Policy>::integrate(const F& f, Real tolerance, Real* error, Real* L1, std::size_t* levels) const ->decltype(std::declval<F>()(std::declval<Real>()))
+auto exp_sinh<Real, Policy>::integrate(const F& f, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels) const
 {
-    static const char* function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
-    using std::abs;
+    BOOST_MATH_STD_USING
+
+    constexpr auto function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
     if (abs(tolerance) > 1) {
         return policies::raise_domain_error(function, "The tolerance provided (%1%) is unusually large; did you confuse it with a domain bound?", tolerance, Policy());
     }

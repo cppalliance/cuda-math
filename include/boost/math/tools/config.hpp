@@ -741,6 +741,10 @@ BOOST_MATH_GPU_ENABLED constexpr T gpu_safe_max(const T& a, const T& b) { return
 #define BOOST_MATH_GPU_SAFE_MIN(a, b) gpu_safe_min(a, b)
 #define BOOST_MATH_GPU_SAFE_MAX(a, b) gpu_safe_max(a, b)
 
+#ifdef BOOST_MATH_HAS_THREADS
+#undef BOOST_MATH_HAS_THREADS
+#endif
+
 #else
 
 #define BOOST_MATH_GPU_SAFE_SWAP(a, b) std::swap(a, b)
@@ -834,6 +838,10 @@ BOOST_MATH_GPU_ENABLED constexpr void gpu_safe_swap(T& a, T& b) { T t(a); a = b;
 #  define BOOST_MATH_INLINE_CONSTEXPR inline constexpr
 #else
 #  define BOOST_MATH_INLINE_CONSTEXPR constexpr
+#endif
+
+#ifdef BOOST_MATH_HAS_THREADS
+#undef BOOST_MATH_HAS_THREADS
 #endif
 
 #define BOOST_MATH_INSTRUMENT_VARIABLE(x)

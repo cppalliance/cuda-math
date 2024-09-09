@@ -1,4 +1,5 @@
 // Copyright Nick Thompson, 2017
+// Copyright Matt Borland, 2024
 // Use, modification and distribution are subject to the
 // Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -7,13 +8,13 @@
 #ifndef BOOST_MATH_QUADRATURE_DETAIL_EXP_SINH_DETAIL_HPP
 #define BOOST_MATH_QUADRATURE_DETAIL_EXP_SINH_DETAIL_HPP
 
-#include <cmath>
-#include <vector>
-#include <typeinfo>
-#include <boost/math/constants/constants.hpp>
-#include <boost/math/special_functions/next.hpp>
-#include <boost/math/tools/atomic.hpp>
 #include <boost/math/tools/config.hpp>
+#include <boost/math/tools/atomic.hpp>
+#include <boost/math/tools/type_traits.hpp>
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/numeric_limits.hpp>
+#include <boost/math/tools/vector.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #ifdef BOOST_MATH_HAS_THREADS
 #include <mutex>
@@ -27,27 +28,27 @@ template<class Real, class Policy>
 class exp_sinh_detail
 {
    static const int initializer_selector =
-      !std::numeric_limits<Real>::is_specialized || (std::numeric_limits<Real>::radix != 2) ?
+      !boost::math::numeric_limits<Real>::is_specialized || (boost::math::numeric_limits<Real>::radix != 2) ?
       0 :
-      (std::numeric_limits<Real>::digits < 30) && (std::numeric_limits<Real>::max_exponent <= 128) ?
+      (boost::math::numeric_limits<Real>::digits < 30) && (boost::math::numeric_limits<Real>::max_exponent <= 128) ?
       1 :
-      (std::numeric_limits<Real>::digits <= std::numeric_limits<double>::digits) && (std::numeric_limits<Real>::max_exponent <= std::numeric_limits<double>::max_exponent) ?
+      (boost::math::numeric_limits<Real>::digits <= boost::math::numeric_limits<double>::digits) && (boost::math::numeric_limits<Real>::max_exponent <= boost::math::numeric_limits<double>::max_exponent) ?
       2 :
-      (std::numeric_limits<Real>::digits <= std::numeric_limits<long double>::digits) && (std::numeric_limits<Real>::max_exponent <= 16384) ?
+      (boost::math::numeric_limits<Real>::digits <= boost::math::numeric_limits<long double>::digits) && (boost::math::numeric_limits<Real>::max_exponent <= 16384) ?
       3 :
 #ifdef BOOST_HAS_FLOAT128
-      (std::numeric_limits<Real>::digits <= 113) && (std::numeric_limits<Real>::max_exponent <= 16384) ?
+      (boost::math::numeric_limits<Real>::digits <= 113) && (boost::math::numeric_limits<Real>::max_exponent <= 16384) ?
       4 :
 #endif
       0;
 public:
-    exp_sinh_detail(size_t max_refinements);
+    exp_sinh_detail(boost::math::size_t max_refinements);
 
     template<class F>
-    auto integrate(const F& f, Real* error, Real* L1, const char* function, Real tolerance, std::size_t* levels) const ->decltype(std::declval<F>()(std::declval<Real>()));
+    auto integrate(const F& f, Real* error, Real* L1, const char* function, Real tolerance, boost::math::size_t* levels) const;
 
 private:
-   const std::vector<Real>& get_abscissa_row(std::size_t n)const
+   const boost::math::vector<Real>& get_abscissa_row(boost::math::size_t n)const
    {
 #if !defined(BOOST_MATH_NO_ATOMIC_INT) && defined(BOOST_MATH_HAS_THREADS)
       if (m_committed_refinements.load() < n)
@@ -60,7 +61,7 @@ private:
 #endif
       return m_abscissas[n];
    }
-   const std::vector<Real>& get_weight_row(std::size_t n)const
+   const boost::math::vector<Real>& get_weight_row(boost::math::size_t n)const
    {
 #if !defined(BOOST_MATH_NO_ATOMIC_INT) && defined(BOOST_MATH_HAS_THREADS)
       if (m_committed_refinements.load() < n)
@@ -73,12 +74,12 @@ private:
 #endif
       return m_weights[n];
    }
-   void init(const std::integral_constant<int, 0>&);
-   void init(const std::integral_constant<int, 1>&);
-   void init(const std::integral_constant<int, 2>&);
-   void init(const std::integral_constant<int, 3>&);
+   void init(const boost::math::integral_constant<int, 0>&);
+   void init(const boost::math::integral_constant<int, 1>&);
+   void init(const boost::math::integral_constant<int, 2>&);
+   void init(const boost::math::integral_constant<int, 3>&);
 #ifdef BOOST_HAS_FLOAT128
-   void init(const std::integral_constant<int, 4>&);
+   void init(const boost::math::integral_constant<int, 4>&);
 #endif
 
    void extend_refinements()const
@@ -97,12 +98,9 @@ private:
          return;
 #endif
 
-      using std::ldexp;
-      using std::ceil;
-      using std::sinh;
-      using std::cosh;
-      using std::exp;
-      std::size_t row  = ++m_committed_refinements;
+      BOOST_MATH_STD_USING
+
+      boost::math::size_t row  = ++m_committed_refinements;
 
       Real h = ldexp(static_cast<Real>(1), -static_cast<int>(row));
       const Real t_max = m_t_min + m_abscissas[0].size() - 1;
@@ -116,7 +114,7 @@ private:
       while (arg + l*h < t_max)
       {
          arg = m_t_min + (2 * j + 1)*h;
-         Real x = exp(constants::half_pi<Real>()*sinh(arg));
+         Real x = exp(boost::math::constants::half_pi<Real>()*sinh(arg));
          m_abscissas[row].emplace_back(x);
          Real w = cosh(arg)*constants::half_pi<Real>()*x;
          m_weights[row].emplace_back(w);
@@ -126,9 +124,9 @@ private:
 
     Real m_tol, m_t_min;
 
-    mutable std::vector<std::vector<Real>> m_abscissas;
-    mutable std::vector<std::vector<Real>> m_weights;
-    std::size_t                       m_max_refinements;
+    mutable boost::math::vector<boost::math::vector<Real>> m_abscissas;
+    mutable boost::math::vector<boost::math::vector<Real>> m_weights;
+    boost::math::size_t                       m_max_refinements;
 #if !defined(BOOST_MATH_NO_ATOMIC_INT) && defined(BOOST_MATH_HAS_THREADS)
     mutable boost::math::detail::atomic_unsigned_type      m_committed_refinements{};
     mutable std::mutex m_mutex;
@@ -142,20 +140,15 @@ exp_sinh_detail<Real, Policy>::exp_sinh_detail(size_t max_refinements)
    : m_abscissas(max_refinements), m_weights(max_refinements),
    m_max_refinements(max_refinements)
 {
-   init(std::integral_constant<int, initializer_selector>());
+   init(boost::math::integral_constant<int, initializer_selector>());
 }
 template<class Real, class Policy>
 template<class F>
-auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1, const char* function, Real tolerance, std::size_t* levels) const ->decltype(std::declval<F>()(std::declval<Real>()))
+auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1, const char* function, Real tolerance, boost::math::size_t* levels) const
 {
+   BOOST_MATH_STD_USING
+
     typedef decltype(f(static_cast<Real>(0))) K;
-    using std::abs;
-    using std::floor;
-    using std::tanh;
-    using std::sinh;
-    using std::sqrt;
-    using boost::math::constants::half;
-    using boost::math::constants::half_pi;
 
    // This provided a nice error message for real valued integrals, but it's super awkward for complex-valued integrals:
    /*K y_max = f(tools::max_value<Real>());
@@ -165,7 +158,7 @@ auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1,
        return static_cast<K>(policies::raise_domain_error(function, "The function you are trying to integrate does not go to zero at infinity, and instead evaluates to %1%", val, Policy()));
    }*/
 
-   //std::cout << std::setprecision(5*std::numeric_limits<Real>::digits10);
+   //std::cout << std::setprecision(5*boost::math::numeric_limits<Real>::digits10);
 
     // Get the party started with two estimates of the integral:
     Real min_abscissa{ 0 }, max_abscissa{ boost::math::tools::max_value<Real>() };
@@ -188,7 +181,7 @@ auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1,
     K I1 = I0;
     Real L1_I1 = L1_I0;
     bool have_first_j = false;
-    std::size_t first_j = 0;
+    boost::math::size_t first_j = 0;
     for (size_t i = 0; (i < m_abscissas[1].size()) && (m_abscissas[1][i] < max_abscissa); ++i)
     {
         K y = f(m_abscissas[1][i]);
@@ -221,8 +214,8 @@ auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1,
        max_abscissa = boost::math::tools::max_value<Real>();
     }
 
-    I1 *= half<Real>();
-    L1_I1 *= half<Real>();
+    I1 *= constants::half<Real>();
+    L1_I1 *= constants::half<Real>();
     Real err = abs(I0 - I1);
     //std::cout << "Second estimate: " << I1 << " Error estimate at level " << 1 << " = " << err << std::endl;
 
@@ -232,8 +225,8 @@ auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1,
         I0 = I1;
         L1_I0 = L1_I1;
 
-        I1 = half<Real>()*I0;
-        L1_I1 = half<Real>()*L1_I0;
+        I1 = constants::half<Real>()*I0;
+        L1_I1 = constants::half<Real>()*L1_I0;
         Real h = static_cast<Real>(1)/static_cast<Real>(1 << i);
         K sum = 0;
         Real absum = 0;
@@ -242,7 +235,7 @@ auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1,
         auto weight_row = get_weight_row(i);
 
         first_j = first_j == 0 ? 0 : 2 * first_j - 1;  // appoximate location to start looking for lowest meaningful abscissa value
-        std::size_t j = first_j;
+        boost::math::size_t j = first_j;
         while (abscissas_row[j] < min_abscissa)
            ++j;
         for(; (j < m_weights[i].size()) && (abscissas_row[j] < max_abscissa); ++j)
@@ -289,15 +282,9 @@ auto exp_sinh_detail<Real, Policy>::integrate(const F& f, Real* error, Real* L1,
 
 
 template<class Real, class Policy>
-void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 0>&)
+void exp_sinh_detail<Real, Policy>::init(const boost::math::integral_constant<int, 0>&)
 {
-   using std::exp;
-   using std::log;
-   using std::sqrt;
-   using std::cosh;
-   using std::sinh;
-   using std::asinh;
-   using std::ceil;
+   BOOST_MATH_STD_USING
    using boost::math::constants::two_div_pi;
    using boost::math::constants::half_pi;
    using boost::math::constants::half;
@@ -309,7 +296,7 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 0>&)
    // If we choose the small number as the min(), then we round off to zero and hit the singularity.
    // The logarithmic average of the min() and the epsilon() has been found to be a reasonable compromise, which achieves high accuracy
    // but does not evaluate the function at the singularity.
-   Real tmp = (boost::math::tools::log_min_value<Real>() + log(boost::math::tools::epsilon<Real>()))*half<Real>();
+   Real tmp = (boost::math::tools::log_min_value<Real>() + log(boost::math::tools::epsilon<Real>()))*constants::half<Real>();
    m_t_min = asinh(two_div_pi<Real>()*tmp);
 
    // t_max is chosen to make g'(t_max) ~ sqrt(max) (g' grows faster than g).
@@ -367,7 +354,7 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 0>&)
 }
 
 template<class Real, class Policy>
-void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 1>&)
+void exp_sinh_detail<Real, Policy>::init(const boost::math::integral_constant<int, 1>&)
 {
    m_abscissas = {
       { 3.47876573e-23f, 5.62503650e-09f, 9.95706124e-04f, 9.67438487e-02f, 7.43599217e-01f, 4.14293205e+00f, 1.08086768e+02f, 4.56291316e+05f, 2.70123007e+15f, },
@@ -407,7 +394,7 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 1>&)
 }
 
 template<class Real, class Policy>
-void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 2>&)
+void exp_sinh_detail<Real, Policy>::init(const boost::math::integral_constant<int, 2>&)
 {
    m_abscissas = {
       { 7.241670621354483269e-163, 2.257639733856759198e-60, 1.153241619257215165e-22, 8.747691973876861825e-09, 1.173446923800022477e-03, 1.032756936219208144e-01, 7.719261204224504866e-01, 4.355544675823585545e+00, 1.215101039066652656e+02, 6.228845436711506169e+05, 6.278613977336989392e+15, 9.127414935180233465e+42, 6.091127771174027909e+116, },
@@ -447,7 +434,7 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 2>&)
 }
 #if LDBL_MAX_EXP == 16384
 template<class Real, class Policy>
-void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 3>&)
+void exp_sinh_detail<Real, Policy>::init(const boost::math::integral_constant<int, 3>&)
 {
    m_abscissas = {
       { 1.02756529896290544244959196973059583e-2497L, 2.56737528671961581475200468317128232e-919L, 1.17417808941462434184174780056564573e-338L, 4.82182886130634548471358754377036370e-125L, 1.85613301660646818149136526457281019e-46L, 1.52174118093087534300657777272732001e-17L, 6.75122240537294392532710530940672267e-07L, 5.94481311616464419075825632567494453e-03L, 2.00100938779037997581424620542543429e-01L, 1.17328605653712546899681147538372171e+00L, 8.18356490677287285512063117929807241e+00L, 5.59865842621965368881982340891928481e+02L, 3.69902944883650290371636082450503730e+07L, 4.05747121124517088709477132072461878e+20L, 1.07723884748977308147226626407207905e+56L, 2.07250561337258237728923403163755392e+152L, 1.09889904624000153879292638133263171e+414L, 3.02463014753652876878705286965250144e+1125L, },
@@ -488,7 +475,7 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 3>&)
 #endif
 #ifdef BOOST_HAS_FLOAT128
 template<class Real, class Policy>
-void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 4>&)
+void exp_sinh_detail<Real, Policy>::init(const boost::math::integral_constant<int, 4>&)
 {
    m_abscissas = {
       { 2.239451308457907276646263599248028318747e-2543Q, 4.087883914826209167187520163938786544603e-936Q, 7.764136408896555253208502557716060646316e-345Q, 2.569416154701911093162209102345213640613e-127Q, 2.705458070464053854934121429341356913371e-47Q, 7.491188348021113917760090371440516887521e-18Q, 5.198294603582515693057809058359470253018e-07Q, 0.005389922804577577496651910020276229582764Q, 0.1920600417448513371971708155403009636026Q, 1.140219687292143805081229623729334820659Q, 7.806184141505854070922571674663437423603Q, 497.9910059199034049204308876883447088185Q, 27016042.73379639480428530637021605662451Q, 172966369043668599418.5877957471751383371Q, 1.061675373362961296862509492541522509127e+55Q, 3.811736521949348274993846910907815663725e+149Q, 4.031589783270233530756613072386084762687e+406Q, 1.857591496578858801010210685679553673527e+1105Q, },

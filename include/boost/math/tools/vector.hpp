@@ -7,21 +7,21 @@
 //  And thrust::device_vector does not work on NVRTC
 //  Roll our own implmentation of vector using CUDA 
 
-#ifndef BOOST_MATH_TOOLS_VECTOR_HPP
-#define BOOST_MATH_TOOLS_VECTOR_HPP
+#ifndef BOOST_MATH_TOOLS_LONGER_NAME_VECTOR_HPP
+#define BOOST_MATH_TOOLS_LONGER_NAME_VECTOR_HPP
 
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/cstdint.hpp>
 #include <boost/math/tools/type_traits.hpp>
 
-#ifndef BOOST_MATH_ENABLE_CUDA
-
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 #include <vector>
 
 namespace boost {
 namespace math {
 
-using std::vector;
+template <typename T, typename Allocator = std::allocator<T>>
+using vector = ::std::vector<T, Allocator>;
 
 } // namespace math
 } // namespace boost
@@ -169,4 +169,4 @@ public:
 
 #endif // CUDA vector
 
-#endif // BOOST_MATH_TOOLS_VECTOR_HPP
+#endif
