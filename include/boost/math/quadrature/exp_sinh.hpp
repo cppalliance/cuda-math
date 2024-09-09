@@ -116,15 +116,13 @@ namespace math {
 namespace quadrature {
 
 template <class F, class Real, class Policy = policies::policy<> >
-__device__ auto exp_sinh_integrate(const F& f, Real a, Real b, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels) const
+__device__ auto exp_sinh_integrate(const F& f, Real a, Real b, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels)
 {
     BOOST_MATH_STD_USING
 
     using K = decltype(f(a));
     static_assert(!boost::math::is_integral<K>::value,
                   "The return type cannot be integral, it must be either a real or complex floating point type.");
-    using boost::math::constants::half;
-    using boost::math::quadrature::detail::exp_sinh_detail;
 
     constexpr auto function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
 
@@ -132,23 +130,23 @@ __device__ auto exp_sinh_integrate(const F& f, Real a, Real b, Real tolerance, R
     if((boost::math::isnan)(a) || (boost::math::isnan)(b))
     {
        return static_cast<K>(policies::raise_domain_error(function, "NaN supplied as one limit of integration - sorry I don't know what to do", a, Policy()));
-     }
+    }
     // Right limit is infinite:
     if ((boost::math::isfinite)(a) && (b >= boost::math::tools::max_value<Real>()))
     {
         // If a = 0, don't use an additional level of indirection:
         if (a == static_cast<Real>(0))
         {
-            return detail::exp_sinh_integrate_impl(f, error, L1, function, tolerance, levels);
+            return detail::exp_sinh_integrate_impl(f, tolerance, error, L1, levels);
         }
         const auto u = [&](Real t)->K { return f(t + a); };
-        return detail::exp_sinh_integrate_impl(u, error, L1, function, tolerance, levels);
+        return detail::exp_sinh_integrate_impl(u, tolerance, error, L1, levels);
     }
 
     if ((boost::math::isfinite)(b) && a <= -boost::math::tools::max_value<Real>())
     {
         const auto u = [&](Real t)->K { return f(b-t);};
-        return detail::exp_sinh_integrate_impl(u, error, L1, function, tolerance, levels);
+        return detail::exp_sinh_integrate_impl(u, tolerance, error, L1, levels);
     }
 
     // Infinite limits:
@@ -161,7 +159,7 @@ __device__ auto exp_sinh_integrate(const F& f, Real a, Real b, Real tolerance, R
 }
 
 template <class F, class Real, class Policy = policies::policy<> >
-__device__ auto exp_sinh_integrate(const F& f, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels) const
+__device__ auto exp_sinh_integrate(const F& f, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels)
 {
     BOOST_MATH_STD_USING
     constexpr auto function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
@@ -169,7 +167,7 @@ __device__ auto exp_sinh_integrate(const F& f, Real tolerance, Real* error, Real
     if (abs(tolerance) > 1) {
         return policies::raise_domain_error(function, "The tolerance provided (%1%) is unusually large; did you confuse it with a domain bound?", tolerance, Policy());
     }
-    return detail::exp_sinh_integrate_impl(f, error, L1, function, tolerance, levels);
+    return detail::exp_sinh_integrate_impl(f, tolerance, error, L1, levels);
 }
 
 } // namespace quadrature
