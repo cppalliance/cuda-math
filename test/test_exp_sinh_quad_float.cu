@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <vector>
 #include <boost/math/quadrature/exp_sinh.hpp>
+#include <boost/math/special_functions.hpp>
 #include <boost/math/tools/precision.hpp>
 #include "cuda_managed_ptr.hpp"
 #include "stopwatch.hpp"
@@ -21,7 +22,7 @@ typedef double float_type;
 __host__ __device__ float_type func(float_type x)
 {
     BOOST_MATH_STD_USING
-    return sin(x);
+    return 1/(1+x*x);
 }
 
 /**
@@ -87,23 +88,51 @@ int main(void)
     }
 
     // Verify that the result vector is correct
-    double t = w.elapsed();
-    /*
     std::vector<float_type> results;
     results.reserve(numElements);
     w.reset();
-    for(int i = 0; i < numElements; ++i)
-       results.push_back(boost::math::expm1(input_vector[i]));
-    // check the results
+    float_type tol = boost::math::tools::root_epsilon<float_type>();
+    float_type error;
+    float_type L1;
+    boost::math::quadrature::exp_sinh<float_type> integrator;
     for(int i = 0; i < numElements; ++i)
     {
-        if (boost::math::epsilon_difference(output_vector[i], results[i]) > 10)
+       results.push_back(integrator.integrate(func, tol, &error, &L1));
+    }
+    double t = w.elapsed();
+    // check the results
+    int non_finite_count = 0;
+    int failed_count = 0;
+    for(int i = 0; i < numElements; ++i)
+    {
+        if (!std::isfinite(output_vector[i]))
         {
-            std::cerr << "Result verification failed at element " << i << "!" << std::endl;
-            return EXIT_FAILURE;
+            const auto eps = boost::math::epsilon_difference(output_vector[i], results[i]);
+            if (eps > 10)
+            {
+                std::cerr << "Result verification failed at element " << i << "!\n"
+                          << "Device: " << output_vector[i]
+                          << "\nHost: " << results[i]
+                          << "\nEps: " << eps << "\n";
+                failed_count++;
+                if (failed_count > 100)
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            ++non_finite_count;
         }
     }
-    */
+
+    if (failed_count != 0 || non_finite_count == numElements)
+    {
+        std::cout << "Test FAILED" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     std::cout << "Test PASSED, normal calculation time: " << t << "s" << std::endl;
     std::cout << "Done\n";
 
