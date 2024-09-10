@@ -18,7 +18,7 @@
 #include <boost/math/tools/config.hpp>
 #include <boost/math/quadrature/detail/exp_sinh_detail.hpp>
 
-#ifndef BOOST_MATH_ENABLE_CUDA
+#ifndef BOOST_MATH_HAS_NVRTC
 
 #include <cmath>
 #include <limits>
@@ -103,7 +103,9 @@ auto exp_sinh<Real, Policy>::integrate(const F& f, Real tolerance, Real* error, 
 
 }}}
 
-#else
+#endif // BOOST_MATH_HAS_NVRTC
+
+#ifdef BOOST_MATH_ENABLE_CUDA
 
 #include <boost/math/tools/type_traits.hpp>
 #include <boost/math/tools/cstdint.hpp>

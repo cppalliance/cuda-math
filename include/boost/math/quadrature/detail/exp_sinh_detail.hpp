@@ -9,7 +9,7 @@
 
 #include <boost/math/tools/config.hpp>
 
-#ifndef BOOST_MATH_ENABLE_CUDA
+#ifndef BOOST_MATH_HAS_NVRTC
 
 #include <cmath>
 #include <vector>
@@ -546,7 +546,9 @@ void exp_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 4>&)
 }
 }
 
-#else // BOOST_MATH_ENABLE_CUDA
+#endif // BOOST_MATH_HAS_NVRTC
+
+#ifdef BOOST_MATH_ENABLE_CUDA // BOOST_MATH_ENABLE_CUDA
 
 #include <boost/math/tools/cstdint.hpp>
 #include <boost/math/tools/precision.hpp>
