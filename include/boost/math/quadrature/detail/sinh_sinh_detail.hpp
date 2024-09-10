@@ -496,6 +496,7 @@ void sinh_sinh_detail<Real, Policy>::init(const std::integral_constant<int, 4>&)
 
 #include <boost/math/tools/cstdint.hpp>
 #include <boost/math/tools/precision.hpp>
+#include <boost/math/tools/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/math/policies/error_handling.hpp>
@@ -1210,6 +1211,137 @@ struct coefficients_selector<double>
     __device__ static const auto weights() { return m_weights_double; }
     __device__ static const auto size() { return double_coefficients_size; }
 };
+
+template <class F, class Real, class Policy = boost::math::policies::policy<> >
+__device__ auto sinh_sinh_integrate_impl(const F& f, Real tol, Real* error, Real* L1, boost::math::size_t* levels)
+{
+    BOOST_MATH_STD_USING
+    using boost::math::constants::half;
+    using boost::math::constants::half_pi;
+    using boost::math::size_t;
+
+    constexpr auto function = "boost::math::quadrature::sinh_sinh<%1%>::integrate";
+
+    using K = decltype(f(static_cast<Real>(0)));
+    static_assert(!boost::math::::is_integral<K>::value,
+                  "The return type cannot be integral, it must be either a real or complex floating point type.");
+
+    K y_max = f(boost::math::tools::max_value<Real>());
+    
+    if(abs(y_max) > boost::math::tools::epsilon<Real>())
+    {
+        return static_cast<K>(policies::raise_domain_error(function,
+           "The function you are trying to integrate does not go to zero at infinity, and instead evaluates to %1%", y_max, Policy()));
+    }
+
+    K y_min = f(-boost::math::tools::max_value<Real>());
+    
+    if(abs(y_min) > boost::math::tools::epsilon<Real>())
+    {
+        return static_cast<K>(policies::raise_domain_error(function,
+           "The function you are trying to integrate does not go to zero at -infinity, and instead evaluates to %1%", y_max, Policy()));
+    }
+
+    // Get the party started with two estimates of the integral:
+    const auto m_abscissas = coefficients_selector<Real>::abscissas();
+    const auto m_weights = coefficients_selector<Real>::weights();
+    const auto m_size = coefficients_selector<Real>::size();
+
+    K I0 = f(0)*half_pi<Real>();
+    Real L1_I0 = abs(I0);
+    for(size_t i = 0; i < m_size[0]; ++i)
+    {
+        Real x = m_abscissas[0][i];
+        K yp = f(x);
+        K ym = f(-x);
+        I0 += (yp + ym)*m_weights[0][i];
+        L1_I0 += (abs(yp)+abs(ym))*m_weights[0][i];
+    }
+
+    K I1 = I0;
+    Real L1_I1 = L1_I0;
+    for (size_t i = 0; i < m_size[1]; ++i)
+    {
+        Real x= m_abscissas[1][i];
+        K yp = f(x);
+        K ym = f(-x);
+        I1 += (yp + ym)*m_weights[1][i];
+        L1_I1 += (abs(yp) + abs(ym))*m_weights[1][i];
+    }
+
+    I1 *= half<Real>();
+    L1_I1 *= half<Real>();
+    Real err = abs(I0 - I1);
+
+    size_t i = 2;
+    for(; i <= 8U; ++i)
+    {
+        I0 = I1;
+        L1_I0 = L1_I1;
+
+        I1 = half<Real>()*I0;
+        L1_I1 = half<Real>()*L1_I0;
+        Real h = static_cast<Real>(1) / static_cast<Real>(1 << i);
+        K sum = 0;
+        Real absum = 0;
+
+        Real abterm1 = 1;
+        Real eps = boost::math::tools::epsilon<Real>()*L1_I1;
+
+        auto abscissa_row = m_abscissas[i];
+        auto weight_row = m_weights[i];
+
+        for(size_t j = 0; j < m_size[i]; ++j)
+        {
+            Real x = abscissa_row[j];
+            K yp = f(x);
+            K ym = f(-x);
+            sum += (yp + ym)*weight_row[j];
+            Real abterm0 = (abs(yp) + abs(ym))*weight_row[j];
+            absum += abterm0;
+
+            // We require two consecutive terms to be < eps in case we hit a zero of f.
+            if (x > static_cast<Real>(100) && abterm0 < eps && abterm1 < eps)
+            {
+                break;
+            }
+            abterm1 = abterm0;
+        }
+
+        I1 += sum*h;
+        L1_I1 += absum*h;
+        err = abs(I0 - I1);
+
+        if (!(boost::math::isfinite)(L1_I1))
+        {
+            constexpr auto err_msg = "The sinh_sinh quadrature evaluated your function at a singular point, leading to the value %1%.\n"
+               "sinh_sinh quadrature cannot handle singularities in the domain.\n"
+               "If you are sure your function has no singularities, please submit a bug against boost.math\n";
+            return static_cast<K>(policies::raise_evaluation_error(function, err_msg, I1, Policy()));
+        }
+        if (err <= tolerance*L1_I1)
+        {
+            break;
+        }
+    }
+
+    if (error)
+    {
+        *error = err;
+    }
+
+    if (L1)
+    {
+        *L1 = L1_I1;
+    }
+
+    if (levels)
+    {
+       *levels = i;
+    }
+
+    return I1;
+}
 
 } // Namespace detail
 } // Namespace quadrature
