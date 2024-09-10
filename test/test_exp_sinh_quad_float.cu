@@ -17,7 +17,7 @@
 // For the CUDA runtime routines (prefixed with "cuda_")
 #include <cuda_runtime.h>
 
-typedef double float_type;
+typedef float float_type;
 
 __host__ __device__ float_type func(float_type x)
 {
@@ -101,33 +101,26 @@ int main(void)
     }
     double t = w.elapsed();
     // check the results
-    int non_finite_count = 0;
     int failed_count = 0;
     for(int i = 0; i < numElements; ++i)
     {
-        if (!std::isfinite(output_vector[i]))
+        const auto eps = boost::math::epsilon_difference(output_vector[i], results[i]);
+        if (eps > 10)
         {
-            const auto eps = boost::math::epsilon_difference(output_vector[i], results[i]);
-            if (eps > 10)
-            {
-                std::cerr << "Result verification failed at element " << i << "!\n"
-                          << "Device: " << output_vector[i]
-                          << "\nHost: " << results[i]
-                          << "\nEps: " << eps << "\n";
-                failed_count++;
-                if (failed_count > 100)
-                {
-                    break;
-                }
-            }
+            std::cerr   << std::setprecision(std::numeric_limits<float_type>::digits10)
+                        << "Result verification failed at element " << i << "!\n"
+                        << "Device: " << output_vector[i]
+                        << "\n  Host: " << results[i]
+                        << "\n   Eps: " << eps << "\n";
+            failed_count++;
         }
-        else
+        if (failed_count > 100)
         {
-            ++non_finite_count;
+            break;
         }
     }
 
-    if (failed_count != 0 || non_finite_count == numElements)
+    if (failed_count != 0)
     {
         std::cout << "Test FAILED" << std::endl;
         return EXIT_FAILURE;
