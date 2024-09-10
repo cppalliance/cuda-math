@@ -923,6 +923,14 @@ __constant__ float m_weights_float[8][527] = {
         6.42020070e+19f, 1.26155602e+20f, 2.50480806e+20f, 5.02601059e+20f, 1.01935525e+21f, },
    };
 
+
+// Since we have to use C arrays we can't compensate for the fact that each level has
+// a different number of coefficients.
+// Store the actual sizes in these size arrays so we don't cruise head first into segfaults.
+__constant__ boost::math::size_t float_coefficients_size[8] = {9, 8, 16, 33, 66, 132, 263, 527};
+
+__constant__ boost::math::size_t double_coefficients_size[8] = {13, 12, 25, 49, 98, 196, 393, 786};
+
 template <typename F, typename Real, typename Policy = policies::policy<> >
 __device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels)
 {
@@ -943,11 +951,12 @@ __device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error,
     // Get the party started with two estimates of the integral:
     auto& m_abscissas = m_abscissas_float;
     auto& m_weights = m_weights_float;
+    auto& m_size = float_coefficients_size;
     
     Real min_abscissa{ 0 }, max_abscissa{ boost::math::tools::max_value<Real>() };
     K I0 = 0;
     Real L1_I0 = 0;
-    for(boost::math::size_t i = 0; i < sizeof(m_abscissas[0])/sizeof(Real); ++i)
+    for(boost::math::size_t i = 0; i < m_size[0]; ++i)
     {
         K y = f(m_abscissas[0][i]);
         K I0_last = I0;
@@ -965,7 +974,7 @@ __device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error,
     Real L1_I1 = L1_I0;
     bool have_first_j = false;
     boost::math::size_t first_j = 0;
-    for (boost::math::size_t i = 0; (i < sizeof(m_abscissas[1])/sizeof(Real)) && (m_abscissas[1][i] < max_abscissa); ++i)
+    for (boost::math::size_t i = 0; (i < m_size[1]) && (m_abscissas[1][i] < max_abscissa); ++i)
     {
         K y = f(m_abscissas[1][i]);
         K I1_last = I1;
@@ -974,7 +983,7 @@ __device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error,
         if (!have_first_j && (I1_last == I1))
         {
            // No change to the sum, disregard these values on the LHS:
-           if ((i < sizeof(m_abscissas[1])/sizeof(Real) - 1) && (m_abscissas[1][i + 1] > max_abscissa))
+           if ((i < m_size[1] - 1) && (m_abscissas[1][i + 1] > max_abscissa))
            {
               // The summit is so high, that we found nothing in this row which added to the integral!!
               have_first_j = true;
@@ -1005,7 +1014,7 @@ __device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error,
     //std::cout << "Second estimate: " << I1 << " Error estimate at level " << 1 << " = " << err << std::endl;
 
     boost::math::size_t i = 2;
-    for(; i < sizeof(m_abscissas)/sizeof(Real); ++i)
+    for(; i < 8U; ++i) // Magic number 8 is the number of precomputed levels
     {
         I0 = I1;
         L1_I0 = L1_I1;
@@ -1028,7 +1037,7 @@ __device__ auto exp_sinh_integrate_impl(const F& f, Real tolerance, Real* error,
            ++j;
         }
 
-        for(; (j < sizeof(m_weights[i])/sizeof(Real)) && (abscissas_row[j] < max_abscissa); ++j)
+        for(; (j < m_size[i]) && (abscissas_row[j] < max_abscissa); ++j)
         {
             Real x = abscissas_row[j];
             K y = f(x);
