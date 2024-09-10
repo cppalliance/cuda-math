@@ -165,7 +165,6 @@ __device__ auto exp_sinh_integrate(const F& f, Real tolerance, Real* error, Real
 {
     BOOST_MATH_STD_USING
     constexpr auto function = "boost::math::quadrature::exp_sinh<%1%>::integrate";
-    using std::abs;
     if (abs(tolerance) > 1) {
         return policies::raise_domain_error(function, "The tolerance provided (%1%) is unusually large; did you confuse it with a domain bound?", tolerance, Policy());
     }
