@@ -12,6 +12,8 @@ project : requirements
 # Quad
 run test_exp_sinh_quad_nvrtc_float.cpp ;
 run test_exp_sinh_quad_nvrtc_double.cpp ;
+run test_sinh_sinh_quad_nvrtc_float.cpp ;
+run test_sinh_sinh_quad_nvrtc_double.cpp ;
 
 # Distributions
 run test_arcsine_cdf_nvrtc_double.cpp ;
