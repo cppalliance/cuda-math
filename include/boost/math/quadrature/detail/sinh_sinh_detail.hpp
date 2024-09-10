@@ -1213,7 +1213,7 @@ struct coefficients_selector<double>
 };
 
 template <class F, class Real, class Policy = boost::math::policies::policy<> >
-__device__ auto sinh_sinh_integrate_impl(const F& f, Real tol, Real* error, Real* L1, boost::math::size_t* levels)
+__device__ auto sinh_sinh_integrate_impl(const F& f, Real tolerance, Real* error, Real* L1, boost::math::size_t* levels)
 {
     BOOST_MATH_STD_USING
     using boost::math::constants::half;
@@ -1223,7 +1223,7 @@ __device__ auto sinh_sinh_integrate_impl(const F& f, Real tol, Real* error, Real
     constexpr auto function = "boost::math::quadrature::sinh_sinh<%1%>::integrate";
 
     using K = decltype(f(static_cast<Real>(0)));
-    static_assert(!boost::math::::is_integral<K>::value,
+    static_assert(!boost::math::is_integral<K>::value,
                   "The return type cannot be integral, it must be either a real or complex floating point type.");
 
     K y_max = f(boost::math::tools::max_value<Real>());
