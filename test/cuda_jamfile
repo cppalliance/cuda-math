@@ -245,6 +245,15 @@ run test_weibull_quan_double.cu ;
 run test_weibull_quan_float.cu ;
 
 # Special Functions
+run test_airy_ai_double.cu ;
+run test_airy_ai_float.cu ;
+run test_airy_ai_prime_double.cu ;
+run test_airy_ai_prime_float.cu ;
+run test_airy_bi_double.cu ;
+run test_airy_bi_float.cu ;
+run test_airy_bi_prime_double.cu ;
+run test_airy_bi_prime_float.cu ;
+
 run test_beta_double.cu ;
 run test_beta_float.cu ;
 run test_betac_double.cu ;
