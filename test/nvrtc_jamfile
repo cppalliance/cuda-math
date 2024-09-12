@@ -322,6 +322,9 @@ run test_erf_inv_nvrtc_float.cpp ;
 run test_erfc_inv_nvrtc_double.cpp ;
 run test_erfc_inv_nvrtc_float.cpp ;
 
+run test_ellint_1_nvrtc_double.cpp ;
+run test_ellint_1_nvrtc_float.cpp ;
+
 run test_expm1_nvrtc_double.cpp ;
 run test_expm1_nvrtc_float.cpp ;
 
