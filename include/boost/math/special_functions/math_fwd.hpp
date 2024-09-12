@@ -664,10 +664,10 @@ namespace boost
    tools::promote_args_t<T> acosh(T x, const Policy&);
 
    template<typename T>
-   tools::promote_args_t<T> atanh(T x);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> atanh(T x);
 
    template<typename T, class Policy>
-   tools::promote_args_t<T> atanh(T x, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> atanh(T x, const Policy&);
 
    namespace detail{
 
@@ -1531,7 +1531,7 @@ namespace boost
    inline boost::math::tools::promote_args_t<T> acosh(const T x){ return boost::math::acosh(x, Policy()); }\
 \
    template<typename T>\
-   inline boost::math::tools::promote_args_t<T> atanh(const T x){ return boost::math::atanh(x, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> atanh(const T x){ return boost::math::atanh(x, Policy()); }\
 \
    template <class T1, class T2>\
    inline typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type cyl_bessel_j(T1 v, T2 x)\
