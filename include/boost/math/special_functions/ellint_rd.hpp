@@ -31,7 +31,7 @@
 namespace boost { namespace math { namespace detail{
 
 template <typename T, typename Policy>
-T ellint_rd_imp(T x, T y, T z, const Policy& pol)
+BOOST_MATH_GPU_ENABLED T ellint_rd_imp(T x, T y, T z, const Policy& pol)
 {
    BOOST_MATH_STD_USING
 
@@ -85,7 +85,9 @@ T ellint_rd_imp(T x, T y, T z, const Policy& pol)
       // Otherwise fall through to avoid cancellation in the above (RC(x,y) -> 1/x^0.5 as x -> y)
    }
    if(y == 0)
-      swap(x, y);
+   {
+      BOOST_MATH_GPU_SAFE_SWAP(x, y);
+   }
    if(x == 0)
    {
       //

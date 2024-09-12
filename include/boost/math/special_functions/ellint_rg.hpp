@@ -36,11 +36,11 @@ namespace boost { namespace math { namespace detail{
       // which implies (for example) x >= z >= y
       //
       if(x < y)
-         swap(x, y);
+         BOOST_MATH_GPU_SAFE_SWAP(x, y);
       if(x < z)
-         swap(x, z);
+         BOOST_MATH_GPU_SAFE_SWAP(x, z);
       if(y > z)
-         swap(y, z);
+         BOOST_MATH_GPU_SAFE_SWAP(y, z);
       
       BOOST_MATH_ASSERT(x >= z);
       BOOST_MATH_ASSERT(z >= y);
@@ -63,7 +63,7 @@ namespace boost { namespace math { namespace detail{
          else
          {
             // x = z, y != 0
-            swap(x, y);
+            BOOST_MATH_GPU_SAFE_SWAP(x, y);
             return (x == 0) ? T(sqrt(z) / 2) : T((z * ellint_rc_imp(x, z, pol) + sqrt(x)) / 2);
          }
       }
@@ -74,7 +74,7 @@ namespace boost { namespace math { namespace detail{
       }
       else if(y == 0)
       {
-         swap(y, z);
+         BOOST_MATH_GPU_SAFE_SWAP(y, z);
          //
          // Special handling for common case, from
          // Numerical Computation of Real or Complex Elliptic Integrals, eq.46
