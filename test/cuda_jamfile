@@ -320,6 +320,8 @@ run test_digamma_float.cu ;
 
 run test_ellint_1_double.cu ;
 run test_ellint_1_float.cu ;
+run test_ellint_2_double.cu ;
+run test_ellint_2_float.cu ;
 
 run test_erf_double.cu ;
 run test_erf_float.cu ;

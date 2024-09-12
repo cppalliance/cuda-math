@@ -8,7 +8,6 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
-#include <random>
 #include <boost/math/special_functions.hpp>
 #include "cuda_managed_ptr.hpp"
 #include "stopwatch.hpp"
@@ -16,7 +15,7 @@
 // For the CUDA runtime routines (prefixed with "cuda_")
 #include <cuda_runtime.h>
 
-typedef double float_type;
+typedef float float_type;
 
 /**
  * CUDA Kernel Device code
@@ -29,7 +28,7 @@ __global__ void cuda_test(const float_type *in, float_type *out, int numElements
 
     if (i < numElements)
     {
-        out[i] = boost::math::ellint_1(in[i]);
+        out[i] = boost::math::ellint_2(in[i]);
     }
 }
 
@@ -52,11 +51,9 @@ int main(void)
     cuda_managed_ptr<float_type> output_vector(numElements);
 
     // Initialize the input vectors
-    std::mt19937_64 rng(42);
-    std::uniform_real_distribution<float_type> dist(0.0f, 1.0f);
     for (int i = 0; i < numElements; ++i)
     {
-        input_vector[i] = dist(rng);
+        input_vector[i] = rand()/(float_type)RAND_MAX;
     }
 
     // Launch the Vector Add CUDA Kernel
@@ -84,18 +81,15 @@ int main(void)
     results.reserve(numElements);
     w.reset();
     for(int i = 0; i < numElements; ++i)
-       results.push_back(boost::math::ellint_1(input_vector[i]));
+       results.push_back(boost::math::ellint_2(input_vector[i]));
     double t = w.elapsed();
     // check the results
     for(int i = 0; i < numElements; ++i)
     {
-        if (std::isfinite(results[i]))
+        if (boost::math::epsilon_difference(output_vector[i], results[i]) > 10)
         {
-            if (boost::math::epsilon_difference(output_vector[i], results[i]) > 300)
-            {
-                std::cerr << "Result verification failed at element " << i << "!" << std::endl;
-                return EXIT_FAILURE;
-            }
+            std::cerr << "Result verification failed at element " << i << "!" << std::endl;
+            return EXIT_FAILURE;
         }
     }
 
