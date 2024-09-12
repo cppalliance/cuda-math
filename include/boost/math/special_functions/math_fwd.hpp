@@ -816,58 +816,58 @@ namespace boost
    std::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_2(T1 v, T2 x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T> airy_ai(T x, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_ai(T x, const Policy&);
 
    template <class T>
-   tools::promote_args_t<T> airy_ai(T x);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_ai(T x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T> airy_bi(T x, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_bi(T x, const Policy&);
 
    template <class T>
-   tools::promote_args_t<T> airy_bi(T x);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_bi(T x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T> airy_ai_prime(T x, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_ai_prime(T x, const Policy&);
 
    template <class T>
-   tools::promote_args_t<T> airy_ai_prime(T x);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_ai_prime(T x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T> airy_bi_prime(T x, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_bi_prime(T x, const Policy&);
 
    template <class T>
-   tools::promote_args_t<T> airy_bi_prime(T x);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_bi_prime(T x);
 
    template <class T>
-   T airy_ai_zero(int m);
+   BOOST_MATH_GPU_ENABLED T airy_ai_zero(int m);
    template <class T, class Policy>
-   T airy_ai_zero(int m, const Policy&);
+   BOOST_MATH_GPU_ENABLED T airy_ai_zero(int m, const Policy&);
 
    template <class OutputIterator>
-   OutputIterator airy_ai_zero(
+   BOOST_MATH_GPU_ENABLED OutputIterator airy_ai_zero(
                      int start_index,
                      unsigned number_of_zeros,
                      OutputIterator out_it);
    template <class OutputIterator, class Policy>
-   OutputIterator airy_ai_zero(
+   BOOST_MATH_GPU_ENABLED OutputIterator airy_ai_zero(
                      int start_index,
                      unsigned number_of_zeros,
                      OutputIterator out_it,
                      const Policy&);
 
    template <class T>
-   T airy_bi_zero(int m);
+   BOOST_MATH_GPU_ENABLED T airy_bi_zero(int m);
    template <class T, class Policy>
-   T airy_bi_zero(int m, const Policy&);
+   BOOST_MATH_GPU_ENABLED T airy_bi_zero(int m, const Policy&);
 
    template <class OutputIterator>
-   OutputIterator airy_bi_zero(
+   BOOST_MATH_GPU_ENABLED OutputIterator airy_bi_zero(
                      int start_index,
                      unsigned number_of_zeros,
                      OutputIterator out_it);
    template <class OutputIterator, class Policy>
-   OutputIterator airy_bi_zero(
+   BOOST_MATH_GPU_ENABLED OutputIterator airy_bi_zero(
                      int start_index,
                      unsigned number_of_zeros,
                      OutputIterator out_it,
@@ -1769,33 +1769,33 @@ template <class OutputIterator, class T>\
    { return boost::math::jacobi_theta4m1tau(z, q, Policy()); }\
    \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> airy_ai(T x)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> airy_ai(T x)\
    {  return boost::math::airy_ai(x, Policy());  }\
    \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> airy_bi(T x)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> airy_bi(T x)\
    {  return boost::math::airy_bi(x, Policy());  }\
    \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> airy_ai_prime(T x)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> airy_ai_prime(T x)\
    {  return boost::math::airy_ai_prime(x, Policy());  }\
    \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> airy_bi_prime(T x)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> airy_bi_prime(T x)\
    {  return boost::math::airy_bi_prime(x, Policy());  }\
    \
    template <class T>\
-   inline T airy_ai_zero(int m)\
+   BOOST_MATH_GPU_ENABLED inline T airy_ai_zero(int m)\
    { return boost::math::airy_ai_zero<T>(m, Policy()); }\
    template <class T, class OutputIterator>\
-   OutputIterator airy_ai_zero(int start_index, unsigned number_of_zeros, OutputIterator out_it)\
+   BOOST_MATH_GPU_ENABLED OutputIterator airy_ai_zero(int start_index, unsigned number_of_zeros, OutputIterator out_it)\
    { return boost::math::airy_ai_zero<T>(start_index, number_of_zeros, out_it, Policy()); }\
    \
    template <class T>\
-   inline T airy_bi_zero(int m)\
+   BOOST_MATH_GPU_ENABLED inline T airy_bi_zero(int m)\
    { return boost::math::airy_bi_zero<T>(m, Policy()); }\
    template <class T, class OutputIterator>\
-   OutputIterator airy_bi_zero(int start_index, unsigned number_of_zeros, OutputIterator out_it)\
+   BOOST_MATH_GPU_ENABLED OutputIterator airy_bi_zero(int start_index, unsigned number_of_zeros, OutputIterator out_it)\
    { return boost::math::airy_bi_zero<T>(start_index, number_of_zeros, out_it, Policy()); }\
    \
    template <class T>\
