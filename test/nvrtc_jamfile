@@ -241,6 +241,15 @@ run test_weibull_quan_nvrtc_double.cpp ;
 run test_weibull_quan_nvrtc_float.cpp ;
 
 # Special Functions
+run test_airy_ai_nvrtc_double.cpp ;
+run test_airy_ai_nvrtc_float.cpp ;
+run test_airy_ai_prime_nvrtc_double.cpp ;
+run test_airy_ai_prime_nvrtc_float.cpp ;
+run test_airy_bi_nvrtc_double.cpp ;
+run test_airy_bi_nvrtc_float.cpp ;
+run test_airy_bi_prime_nvrtc_double.cpp ;
+run test_airy_bi_prime_nvrtc_float.cpp ;
+
 run test_beta_nvrtc_double.cpp ;
 run test_beta_nvrtc_float.cpp ;
 run test_betac_nvrtc_double.cpp ;
