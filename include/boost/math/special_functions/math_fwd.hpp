@@ -27,6 +27,7 @@
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/promotion.hpp> // for argument promotion.
 #include <boost/math/tools/type_traits.hpp>
+#include <boost/math/policies/policy.hpp>
 
 #ifdef BOOST_MATH_HAS_NVRTC
 

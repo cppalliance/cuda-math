@@ -784,14 +784,7 @@ BOOST_MATH_GPU_ENABLED typename tools::promote_args<T1, T2>::type ellint_1(T1 k,
    return boost::math::ellint_1(k, phi, policies::policy<>());
 }
 
-}
-
-// Complete elliptic integral (Legendre form) of the first kind
-template <typename T>
-BOOST_MATH_GPU_ENABLED typename tools::promote_args<T>::type ellint_1(T k)
-{
-   return ellint_1(k, policies::policy<>());
-}
+} // namespace detail
 
 // Elliptic integral (Legendre form) of the first kind
 template <class T1, class T2, class Policy>
@@ -807,6 +800,13 @@ BOOST_MATH_GPU_ENABLED typename tools::promote_args<T1, T2>::type ellint_1(T1 k,
 {
    typedef typename policies::is_policy<T2>::type tag_type;
    return detail::ellint_1(k, phi, tag_type());
+}
+
+// Complete elliptic integral (Legendre form) of the first kind
+template <typename T>
+BOOST_MATH_GPU_ENABLED typename tools::promote_args<T>::type ellint_1(T k)
+{
+   return ellint_1(k, policies::policy<>());
 }
 
 }} // namespaces
