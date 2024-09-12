@@ -21,7 +21,6 @@
 #include <boost/math/tools/promotion.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/ellint_rc.hpp>
-#include <boost/math/special_functions/pow.hpp>
 #include <boost/math/policies/error_handling.hpp>
 
 // Carlson's elliptic integral of the second kind
@@ -107,7 +106,8 @@ BOOST_MATH_GPU_ENABLED T ellint_rd_imp(T x, T y, T z, const Policy& pol)
          xn = (xn + yn) / 2;
          yn = t;
          sum_pow *= 2;
-         sum += sum_pow * boost::math::pow<2>(xn - yn);
+         const auto temp = (xn - yn);
+         sum += sum_pow * temp * temp;
       }
       T RF = constants::pi<T>() / (xn + yn);
       //
