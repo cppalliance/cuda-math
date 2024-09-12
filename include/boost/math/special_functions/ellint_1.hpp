@@ -39,13 +39,13 @@ BOOST_MATH_GPU_ENABLED typename tools::promote_args<T1, T2>::type ellint_1(T1 k,
 namespace detail{
 
 template <typename T, typename Policy>
-BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, boost::math::integral_constant<int, 0> const&);
+BOOST_MATH_GPU_ENABLED BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, boost::math::integral_constant<int, 0> const&);
 template <typename T, typename Policy>
-BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, boost::math::integral_constant<int, 1> const&);
+BOOST_MATH_GPU_ENABLED BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, boost::math::integral_constant<int, 1> const&);
 template <typename T, typename Policy>
-BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, boost::math::integral_constant<int, 2> const&);
+BOOST_MATH_GPU_ENABLED BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, boost::math::integral_constant<int, 2> const&);
 template <typename T, typename Policy>
-BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, T one_minus_k2);
+BOOST_MATH_GPU_ENABLED BOOST_MATH_FORCEINLINE T ellint_k_imp(T k, const Policy& pol, T one_minus_k2);
 
 // Elliptic integral (Legendre form) of the first kind
 template <typename T, typename Policy>
