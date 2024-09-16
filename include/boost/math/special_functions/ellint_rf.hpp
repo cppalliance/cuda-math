@@ -37,7 +37,7 @@ namespace boost { namespace math { namespace detail{
       BOOST_MATH_STD_USING
       using namespace boost::math;
 
-      static const char* function = "boost::math::ellint_rf<%1%>(%1%,%1%,%1%)";
+      constexpr auto function = "boost::math::ellint_rf<%1%>(%1%,%1%,%1%)";
 
       if(x < 0 || y < 0 || z < 0)
       {
