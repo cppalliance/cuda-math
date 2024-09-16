@@ -412,10 +412,10 @@ namespace boost
    BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> ellint_d(T1 k, T2 phi, const Policy& pol);
 
    template <class T1, class T2>
-   tools::promote_args_t<T1, T2> jacobi_zeta(T1 k, T2 phi);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> jacobi_zeta(T1 k, T2 phi);
 
    template <class T1, class T2, class Policy>
-   tools::promote_args_t<T1, T2> jacobi_zeta(T1 k, T2 phi, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> jacobi_zeta(T1 k, T2 phi, const Policy& pol);
 
    template <class T1, class T2>
    tools::promote_args_t<T1, T2> heuman_lambda(T1 k, T2 phi);
@@ -1413,7 +1413,7 @@ namespace boost
    BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> ellint_d(T1 k, T2 phi){ return boost::math::ellint_d(k, phi, Policy()); }\
 \
    template <class T1, class T2>\
-   inline boost::math::tools::promote_args_t<T1, T2> jacobi_zeta(T1 k, T2 phi){ return boost::math::jacobi_zeta(k, phi, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T1, T2> jacobi_zeta(T1 k, T2 phi){ return boost::math::jacobi_zeta(k, phi, Policy()); }\
 \
    template <class T1, class T2>\
    inline boost::math::tools::promote_args_t<T1, T2> heuman_lambda(T1 k, T2 phi){ return boost::math::heuman_lambda(k, phi, Policy()); }\
