@@ -340,6 +340,9 @@ run test_erfc_float.cu ;
 run test_erfc_inv_double.cu ;
 run test_erfc_inv_float.cu ;
 
+run test_expint_double.cu ;
+run test_expint_float.cu ;
+
 run test_expm1_double.cu ;
 run test_expm1_float.cu ;
 
