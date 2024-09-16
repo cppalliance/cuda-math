@@ -61,6 +61,8 @@ run test_bessel_y.cpp ;
 
 run test_cbrt.cpp ;
 
+run test_ellint_1.cpp ;
+
 run test_sign.cpp ;
 
 run test_round.cpp ;
