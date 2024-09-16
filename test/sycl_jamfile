@@ -63,6 +63,7 @@ run test_cbrt.cpp ;
 
 run test_ellint_1.cpp ;
 run test_ellint_2.cpp ;
+run test_ellint_d.cpp ;
 
 run test_sign.cpp ;
 
