@@ -71,6 +71,8 @@ run test_sign.cpp ;
 
 run test_round.cpp ;
 
+run test_expint.cpp ;
+
 run test_expm1_simple.cpp ;
 
 run test_log1p_simple.cpp ;
