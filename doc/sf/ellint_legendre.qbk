@@ -463,10 +463,10 @@ using the relation:
   namespace boost { namespace math {
 
   template <class T1, class T2>
-  ``__sf_result`` jacobi_zeta(T1 k, T2 phi);
+  BOOST_MATH_GPU_ENABLED ``__sf_result`` jacobi_zeta(T1 k, T2 phi);
 
   template <class T1, class T2, class ``__Policy``>
-  ``__sf_result`` jacobi_zeta(T1 k, T2 phi, const ``__Policy``&);
+  BOOST_MATH_GPU_ENABLED ``__sf_result`` jacobi_zeta(T1 k, T2 phi, const ``__Policy``&);
 
   }} // namespaces
   
@@ -543,10 +543,10 @@ is [@../../example/jacobi_zeta_example.cpp jacobi_zeta_example.cpp].
   namespace boost { namespace math {
 
   template <class T1, class T2>
-  ``__sf_result`` heuman_lambda(T1 k, T2 phi);
+  BOOST_MATH_GPU_ENABLED ``__sf_result`` heuman_lambda(T1 k, T2 phi);
 
   template <class T1, class T2, class ``__Policy``>
-  ``__sf_result`` heuman_lambda(T1 k, T2 phi, const ``__Policy``&);
+  BOOST_MATH_GPU_ENABLED ``__sf_result`` heuman_lambda(T1 k, T2 phi, const ``__Policy``&);
 
   }} // namespaces
   
