@@ -50,6 +50,16 @@ namespace detail{
       >::type;
    };
 
+   template <class T, class U>
+   struct expint_result
+   {
+      using type = typename boost::math::conditional<
+         policies::is_policy<U>::value,
+         tools::promote_args_t<T>,
+         typename tools::promote_args<U>::type
+      >::type;
+   };
+
    } // namespace detail
 
 } // namespace math
@@ -936,7 +946,7 @@ namespace boost
    template <class T, class U>
    struct expint_result
    {
-      typedef typename std::conditional<
+      typedef typename boost::math::conditional<
          policies::is_policy<U>::value,
          tools::promote_args_t<T>,
          typename tools::promote_args<U>::type
@@ -946,13 +956,13 @@ namespace boost
    } // namespace detail
 
    template <class T, class Policy>
-   tools::promote_args_t<T> expint(unsigned n, T z, const Policy&);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> expint(unsigned n, T z, const Policy&);
 
    template <class T, class U>
-   typename detail::expint_result<T, U>::type expint(T const z, U const u);
+   BOOST_MATH_GPU_ENABLED typename detail::expint_result<T, U>::type expint(T const z, U const u);
 
    template <class T>
-   tools::promote_args_t<T> expint(T z);
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> expint(T z);
 
    // Zeta:
    template <class T, class Policy>
@@ -1620,11 +1630,11 @@ template <class OutputIterator, class T>\
    using boost::math::changesign;\
    \
    template <class T, class U>\
-   inline typename boost::math::tools::promote_args_t<T,U> expint(T const& z, U const& u)\
+   BOOST_MATH_GPU_ENABLED inline typename boost::math::tools::promote_args_t<T,U> expint(T const& z, U const& u)\
    { return boost::math::expint(z, u, Policy()); }\
    \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> expint(T z){ return boost::math::expint(z, Policy()); }\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> expint(T z){ return boost::math::expint(z, Policy()); }\
    \
    template <class T>\
    inline boost::math::tools::promote_args_t<T> zeta(T s){ return boost::math::zeta(s, Policy()); }\
