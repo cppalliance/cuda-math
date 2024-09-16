@@ -72,7 +72,7 @@ BOOST_MATH_GPU_ENABLED T ellint_rc1p_imp(T y, const Policy& pol)
 }
 
 template <typename T, typename Policy>
-BOOST_MATH_GPU_ENABLED T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
+BOOST_MATH_GPU_ENABLED T ellint_rj_imp_final(T x, T y, T z, T p, const Policy& pol)
 {
    BOOST_MATH_STD_USING
 
@@ -97,36 +97,6 @@ BOOST_MATH_GPU_ENABLED T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
    if(x + y == 0 || y + z == 0 || z + x == 0)
    {
       return policies::raise_domain_error<T>(function, "At most one argument can be zero, only possible result is %1%.", boost::math::numeric_limits<T>::quiet_NaN(), pol);
-   }
-
-   // for p < 0, the integral is singular, return Cauchy principal value
-   if(p < 0)
-   {
-      //
-      // We must ensure that x < y < z.
-      // Since the integral is symmetrical in x, y and z
-      // we can just permute the values:
-      //
-      if(x > y)
-         BOOST_MATH_GPU_SAFE_SWAP(x, y);
-      if(y > z)
-         BOOST_MATH_GPU_SAFE_SWAP(y, z);
-      if(x > y)
-         BOOST_MATH_GPU_SAFE_SWAP(x, y);
-
-      BOOST_MATH_ASSERT(x <= y);
-      BOOST_MATH_ASSERT(y <= z);
-
-      T q = -p;
-      p = (z * (x + y + q) - x * y) / (z + q);
-
-      BOOST_MATH_ASSERT(p >= 0);
-
-      T value = (p - z) * ellint_rj_imp(x, y, z, p, pol);
-      value -= 3 * ellint_rf_imp(x, y, z, pol);
-      value += 3 * sqrt((x * y * z) / (x * y + p * q)) * ellint_rc_imp(T(x * y + p * q), T(p * q), pol);
-      value /= (z + q);
-      return value;
    }
 
    //
@@ -259,6 +229,67 @@ BOOST_MATH_GPU_ENABLED T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
 
    result += 6 * RC_sum;
    return result;
+}
+
+template <typename T, typename Policy>
+BOOST_MATH_GPU_ENABLED T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
+{
+   BOOST_MATH_STD_USING
+   
+   constexpr auto function = "boost::math::ellint_rj<%1%>(%1%,%1%,%1%)";
+
+   if(x < 0)
+   {
+      return policies::raise_domain_error<T>(function, "Argument x must be non-negative, but got x = %1%", x, pol);
+   }
+   if(y < 0)
+   {
+      return policies::raise_domain_error<T>(function, "Argument y must be non-negative, but got y = %1%", y, pol);
+   }
+   if(z < 0)
+   {
+      return policies::raise_domain_error<T>(function, "Argument z must be non-negative, but got z = %1%", z, pol);
+   }
+   if(p == 0)
+   {
+      return policies::raise_domain_error<T>(function, "Argument p must not be zero, but got p = %1%", p, pol);
+   }
+   if(x + y == 0 || y + z == 0 || z + x == 0)
+   {
+      return policies::raise_domain_error<T>(function, "At most one argument can be zero, only possible result is %1%.", boost::math::numeric_limits<T>::quiet_NaN(), pol);
+   }
+
+   // for p < 0, the integral is singular, return Cauchy principal value
+   if(p < 0)
+   {
+      //
+      // We must ensure that x < y < z.
+      // Since the integral is symmetrical in x, y and z
+      // we can just permute the values:
+      //
+      if(x > y)
+         BOOST_MATH_GPU_SAFE_SWAP(x, y);
+      if(y > z)
+         BOOST_MATH_GPU_SAFE_SWAP(y, z);
+      if(x > y)
+         BOOST_MATH_GPU_SAFE_SWAP(x, y);
+
+      BOOST_MATH_ASSERT(x <= y);
+      BOOST_MATH_ASSERT(y <= z);
+
+      T q = -p;
+      p = (z * (x + y + q) - x * y) / (z + q);
+
+      BOOST_MATH_ASSERT(p >= 0);
+
+      T value = (p - z) * ellint_rj_imp_final(x, y, z, p, pol);
+      value -= 3 * ellint_rf_imp(x, y, z, pol);
+      value += 3 * sqrt((x * y * z) / (x * y + p * q)) * ellint_rc_imp(T(x * y + p * q), T(p * q), pol);
+      value /= (z + q);
+      return value;
+   }
+
+   return ellint_rj_imp_final(x, y, z, p, pol);
 }
 
 } // namespace detail
