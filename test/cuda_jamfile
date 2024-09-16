@@ -328,6 +328,8 @@ run test_ellint_d_double.cu ;
 run test_ellint_d_float.cu ;
 run test_jacobi_zeta_double.cu ;
 run test_jacobi_zeta_float.cu ;
+run test_heuman_lambda_double.cu ;
+run test_heuman_lambda_float.cu ;
 
 run test_erf_double.cu ;
 run test_erf_float.cu ;
