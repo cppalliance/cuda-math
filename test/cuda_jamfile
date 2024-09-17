@@ -9,9 +9,6 @@ project : requirements
     [ requires cxx14_decltype_auto cxx14_generic_lambdas cxx14_return_type_deduction cxx14_variable_templates cxx14_constexpr ]
     ;
 
-run test_cyl_hankel_1_double.cu ;
-run test_cyl_hankel_1_float.cu ;
-
 # Quad
 run test_exp_sinh_quad_float.cu ;
 run test_exp_sinh_quad_double.cu ;
@@ -308,6 +305,14 @@ run test_cyl_neumann_double.cu ;
 run test_cyl_neumann_float.cu ;
 run test_sph_neumann_double.cu ;
 run test_sph_neumann_float.cu ;
+run test_cyl_hankel_1_double.cu ;
+run test_cyl_hankel_1_float.cu ;
+run test_cyl_hankel_2_double.cu ;
+run test_cyl_hankel_2_float.cu ;
+run test_sph_hankel_1_double.cu ;
+run test_sph_hankel_1_float.cu ;
+run test_sph_hankel_2_double.cu ;
+run test_sph_hankel_2_float.cu ;
 
 run test_cbrt_double.cu ;
 run test_cbrt_float.cu ;
