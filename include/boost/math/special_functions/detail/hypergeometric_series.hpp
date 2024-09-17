@@ -140,7 +140,7 @@
     {
     }
 
-    T operator()()
+    BOOST_MATH_GPU_ENABLED T operator()()
     {
       BOOST_MATH_STD_USING
       const T r = term;
