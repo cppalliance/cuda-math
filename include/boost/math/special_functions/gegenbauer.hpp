@@ -18,14 +18,14 @@
 namespace boost { namespace math {
 
 template<typename Real>
-Real gegenbauer(unsigned n, Real lambda, Real x)
+BOOST_MATH_GPU_ENABLED Real gegenbauer(unsigned n, Real lambda, Real x)
 {
     static_assert(!boost::math::is_integral<Real>::value, "Gegenbauer polynomials required floating point arguments.");
     if (lambda <= -1/Real(2)) {
 #ifndef BOOST_MATH_NO_EXCEPTIONS
        throw std::domain_error("lambda > -1/2 is required.");
 #else
-       return std::numeric_limits<Real>::quiet_NaN();
+       return boost::math::numeric_limits<Real>::quiet_NaN();
 #endif
     }
     // The only reason to do this is because of some instability that could be present for x < 0 that is not present for x > 0.
@@ -60,7 +60,7 @@ Real gegenbauer(unsigned n, Real lambda, Real x)
 
 
 template<typename Real>
-Real gegenbauer_derivative(unsigned n, Real lambda, Real x, unsigned k)
+BOOST_MATH_GPU_ENABLED Real gegenbauer_derivative(unsigned n, Real lambda, Real x, unsigned k)
 {
     if (k > n) {
         return Real(0);
@@ -75,7 +75,7 @@ Real gegenbauer_derivative(unsigned n, Real lambda, Real x, unsigned k)
 }
 
 template<typename Real>
-Real gegenbauer_prime(unsigned n, Real lambda, Real x) {
+BOOST_MATH_GPU_ENABLED Real gegenbauer_prime(unsigned n, Real lambda, Real x) {
     return gegenbauer_derivative<Real>(n, lambda, x, 1);
 }
 
