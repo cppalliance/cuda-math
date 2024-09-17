@@ -331,15 +331,15 @@ namespace boost
       laguerre(unsigned n, T1 m, T2 x);
 
    template <class T>
-   tools::promote_args_t<T>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T>
       hermite(unsigned n, T x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T>
       hermite(unsigned n, T x, const Policy& pol);
 
    template <class T1, class T2, class T3>
-   tools::promote_args_t<T1, T2, T3>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3>
       hermite_next(unsigned n, T1 x, T2 Hn, T3 Hnm1);
 
    template<class T1, class T2, class T3>
@@ -1393,7 +1393,7 @@ namespace boost
    laguerre(unsigned n, T1 m, T2 x) { return ::boost::math::laguerre(n, m, x, Policy()); }\
 \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> \
    hermite(unsigned n, T x){ return ::boost::math::hermite(n, x, Policy()); }\
 \
    using boost::math::hermite_next;\
