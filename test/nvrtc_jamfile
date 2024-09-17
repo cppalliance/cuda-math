@@ -364,6 +364,9 @@ run test_tgamma_ratio_nvrtc_float.cpp ;
 run test_gegenbauer_nvrtc_double.cpp ;
 run test_gegenbauer_nvrtc_float.cpp ;
 
+run test_hermite_nvrtc_double.cpp ;
+run test_hermite_nvrtc_float.cpp ;
+
 run test_log1p_nvrtc_double.cpp ;
 run test_log1p_nvrtc_float.cpp ;
 
