@@ -3,6 +3,7 @@
 //  Copyright 2014 Christopher Kormanyos
 //  Copyright 2014 John Maddock
 //  Copyright 2014 Paul Bristow
+//  Copyright 2024 Matt Borland
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,6 +11,10 @@
 #ifndef BOOST_MATH_HYPERGEOMETRIC_0F1_HPP
 #define BOOST_MATH_HYPERGEOMETRIC_0F1_HPP
 
+#include <boost/math/tools/config.hpp>
+#include <boost/math/tools/tuple.hpp>
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/fraction.hpp>
 #include <boost/math/policies/policy.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/special_functions/detail/hypergeometric_series.hpp>
@@ -30,23 +35,26 @@ namespace boost { namespace math { namespace detail {
       //
       T b, z;
       int k;
-      hypergeometric_0F1_cf(T b_, T z_) : b(b_), z(z_), k(-2) {}
-      typedef std::pair<T, T> result_type;
+      typedef boost::math::pair<T, T> result_type;
 
-      result_type operator()()
+      BOOST_MATH_GPU_ENABLED hypergeometric_0F1_cf(T b_, T z_) : b(b_), z(z_), k(-2) {}
+
+      BOOST_MATH_GPU_ENABLED result_type operator()()
       {
          ++k;
          if (k <= 0)
-            return std::make_pair(z / b, 1);
-         return std::make_pair(-z / ((k + 1) * (b + k)), 1 + z / ((k + 1) * (b + k)));
+         {
+            return boost::math::make_pair(z / b, 1);
+         }
+         return boost::math::make_pair(-z / ((k + 1) * (b + k)), 1 + z / ((k + 1) * (b + k)));
       }
    };
 
    template <class T, class Policy>
-   T hypergeometric_0F1_cf_imp(T b, T z, const Policy& pol, const char* function)
+   BOOST_MATH_GPU_ENABLED T hypergeometric_0F1_cf_imp(T b, T z, const Policy& pol, const char* function)
    {
       hypergeometric_0F1_cf<T> evaluator(b, z);
-      std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+      boost::math::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
       T cf = tools::continued_fraction_b(evaluator, policies::get_epsilon<T, Policy>(), max_iter);
       policies::check_series_iterations<T>(function, max_iter, pol);
       return cf;
@@ -54,9 +62,9 @@ namespace boost { namespace math { namespace detail {
 
 
    template <class T, class Policy>
-   inline T hypergeometric_0F1_imp(const T& b, const T& z, const Policy& pol)
+   BOOST_MATH_GPU_ENABLED inline T hypergeometric_0F1_imp(const T& b, const T& z, const Policy& pol)
    {
-      const char* function = "boost::math::hypergeometric_0f1<%1%,%1%>(%1%, %1%)";
+      constexpr auto function = "boost::math::hypergeometric_0f1<%1%,%1%>(%1%, %1%)";
       BOOST_MATH_STD_USING
 
          // some special cases
@@ -87,7 +95,7 @@ namespace boost { namespace math { namespace detail {
 } // namespace detail
 
 template <class T1, class T2, class Policy>
-inline typename tools::promote_args<T1, T2>::type hypergeometric_0F1(T1 b, T2 z, const Policy& /* pol */)
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T1, T2>::type hypergeometric_0F1(T1 b, T2 z, const Policy& /* pol */)
 {
    BOOST_FPU_EXCEPTION_GUARD
       typedef typename tools::promote_args<T1, T2>::type result_type;
@@ -107,7 +115,7 @@ inline typename tools::promote_args<T1, T2>::type hypergeometric_0F1(T1 b, T2 z,
 }
 
 template <class T1, class T2>
-inline typename tools::promote_args<T1, T2>::type hypergeometric_0F1(T1 b, T2 z)
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T1, T2>::type hypergeometric_0F1(T1 b, T2 z)
 {
    return hypergeometric_0F1(b, z, policies::policy<>());
 }

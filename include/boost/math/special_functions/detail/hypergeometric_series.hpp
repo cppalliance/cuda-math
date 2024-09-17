@@ -3,6 +3,7 @@
 //  Copyright 2014 Christopher Kormanyos
 //  Copyright 2014 John Maddock
 //  Copyright 2014 Paul Bristow
+//  Copyright 2024 Matt Borland
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,9 +11,10 @@
 #ifndef BOOST_MATH_DETAIL_HYPERGEOMETRIC_SERIES_HPP
 #define BOOST_MATH_DETAIL_HYPERGEOMETRIC_SERIES_HPP
 
-#include <cmath>
-#include <cstdint>
+#include <boost/math/tools/config.hpp>
+#include <boost/math/tools/cstdint.hpp>
 #include <boost/math/tools/series.hpp>
+#include <boost/math/tools/precision.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/trunc.hpp>
 #include <boost/math/policies/error_handling.hpp>
@@ -29,12 +31,12 @@
   {
     typedef T result_type;
 
-    hypergeometric_pFq_generic_series_term(const T& b, const T& z)
+    BOOST_MATH_GPU_ENABLED hypergeometric_pFq_generic_series_term(const T& b, const T& z)
        : n(0), term(1), b(b), z(z)
     {
     }
 
-    T operator()()
+    BOOST_MATH_GPU_ENABLED T operator()()
     {
       BOOST_MATH_STD_USING
       const T r = term;
@@ -55,12 +57,12 @@
   {
     typedef T result_type;
 
-    hypergeometric_pFq_generic_series_term(const T& a, const T& z)
+    BOOST_MATH_GPU_ENABLED hypergeometric_pFq_generic_series_term(const T& a, const T& z)
        : n(0), term(1), a(a), z(z)
     {
     }
 
-    T operator()()
+    BOOST_MATH_GPU_ENABLED T operator()()
     {
       BOOST_MATH_STD_USING
       const T r = term;
@@ -81,12 +83,12 @@
   {
     typedef T result_type;
 
-    hypergeometric_pFq_generic_series_term(const T& a, const T& b, const T& z)
+    BOOST_MATH_GPU_ENABLED hypergeometric_pFq_generic_series_term(const T& a, const T& b, const T& z)
        : n(0), term(1), a(a), b(b), z(z)
     {
     }
 
-    T operator()()
+    BOOST_MATH_GPU_ENABLED T operator()()
     {
       BOOST_MATH_STD_USING
       const T r = term;
@@ -107,12 +109,12 @@
   {
     typedef T result_type;
 
-    hypergeometric_pFq_generic_series_term(const T& a, const T& b1, const T& b2, const T& z)
+    BOOST_MATH_GPU_ENABLED hypergeometric_pFq_generic_series_term(const T& a, const T& b1, const T& b2, const T& z)
        : n(0), term(1), a(a), b1(b1), b2(b2), z(z)
     {
     }
 
-    T operator()()
+    BOOST_MATH_GPU_ENABLED T operator()()
     {
       BOOST_MATH_STD_USING
       const T r = term;
@@ -133,7 +135,7 @@
   {
     typedef T result_type;
 
-    hypergeometric_pFq_generic_series_term(const T& a1, const T& a2, const T& z)
+    BOOST_MATH_GPU_ENABLED hypergeometric_pFq_generic_series_term(const T& a1, const T& a2, const T& z)
        : n(0), term(1), a1(a1), a2(a2), z(z)
     {
     }
@@ -159,12 +161,12 @@
   {
     typedef T result_type;
 
-    hypergeometric_pFq_generic_series_term(const T& a1, const T& a2, const T& b, const T& z)
+    BOOST_MATH_GPU_ENABLED hypergeometric_pFq_generic_series_term(const T& a1, const T& a2, const T& b, const T& z)
        : n(0), term(1), a1(a1), a2(a2), b(b), z(z)
     {
     }
 
-    T operator()()
+    BOOST_MATH_GPU_ENABLED T operator()()
     {
       BOOST_MATH_STD_USING
       const T r = term;
@@ -184,10 +186,10 @@
   // as described in functions.wolfram.alpha, because we always
   // stop summation when result (in this case numerator) is zero.
   template <class T, unsigned p, unsigned q, class Policy>
-  inline T sum_pFq_series(detail::hypergeometric_pFq_generic_series_term<T, p, q>& term, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T sum_pFq_series(detail::hypergeometric_pFq_generic_series_term<T, p, q>& term, const Policy& pol)
   {
     BOOST_MATH_STD_USING
-    std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+    boost::math::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
 
     const T result = boost::math::tools::sum_series(term, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
 
@@ -196,21 +198,21 @@
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_0F1_generic_series(const T& b, const T& z, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_0F1_generic_series(const T& b, const T& z, const Policy& pol)
   {
     detail::hypergeometric_pFq_generic_series_term<T, 0u, 1u> s(b, z);
     return detail::sum_pFq_series(s, pol);
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_1F0_generic_series(const T& a, const T& z, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_1F0_generic_series(const T& a, const T& z, const Policy& pol)
   {
     detail::hypergeometric_pFq_generic_series_term<T, 1u, 0u> s(a, z);
     return detail::sum_pFq_series(s, pol);
   }
 
   template <class T, class Policy>
-  inline T log_pochhammer(T z, unsigned n, const Policy pol, int* s = nullptr)
+  BOOST_MATH_GPU_ENABLED inline T log_pochhammer_final(T z, unsigned n, const Policy pol, int* s = nullptr)
   {
      BOOST_MATH_STD_USING
 #if 0
@@ -231,13 +233,6 @@
      else
 #endif
      {
-        if (z + n < 0)
-        {
-           T r = log_pochhammer(T(-z - n + 1), n, pol, s);
-           if (s)
-              *s *= (n & 1 ? -1 : 1);
-           return r;
-        }
         int s1, s2;
         auto r = static_cast<T>(boost::math::lgamma(T(z + n), &s1, pol) - boost::math::lgamma(z, &s2, pol));
         if(s)
@@ -247,7 +242,21 @@
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_1F1_generic_series(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling, const char* function)
+  BOOST_MATH_GPU_ENABLED inline T log_pochhammer(T z, unsigned n, const Policy pol, int* s = nullptr)
+  {
+      if (z + n < 0)
+      {
+         T r = log_pochhammer_final(T(-z - n + 1), n, pol, s);
+         if (s)
+            *s *= (n & 1 ? -1 : 1);
+         return r;
+      }
+
+      return log_pochhammer_final(T(z), n, pol, s);
+  }
+
+  template <class T, class Policy>
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_1F1_generic_series(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling, const char* function)
   {
      BOOST_MATH_STD_USING
      T sum(0), term(1), upper_limit(sqrt(boost::math::tools::max_value<T>())), diff;
@@ -409,21 +418,21 @@
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_1F2_generic_series(const T& a, const T& b1, const T& b2, const T& z, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_1F2_generic_series(const T& a, const T& b1, const T& b2, const T& z, const Policy& pol)
   {
     detail::hypergeometric_pFq_generic_series_term<T, 1u, 2u> s(a, b1, b2, z);
     return detail::sum_pFq_series(s, pol);
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_2F0_generic_series(const T& a1, const T& a2, const T& z, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_2F0_generic_series(const T& a1, const T& a2, const T& z, const Policy& pol)
   {
     detail::hypergeometric_pFq_generic_series_term<T, 2u, 0u> s(a1, a2, z);
     return detail::sum_pFq_series(s, pol);
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_2F1_generic_series(const T& a1, const T& a2, const T& b, const T& z, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_2F1_generic_series(const T& a1, const T& a2, const T& b, const T& z, const Policy& pol)
   {
     detail::hypergeometric_pFq_generic_series_term<T, 2u, 1u> s(a1, a2, b, z);
     return detail::sum_pFq_series(s, pol);

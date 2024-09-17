@@ -10,13 +10,15 @@
 #ifndef BOOST_MATH_HYPERGEOMETRIC_0F1_BESSEL_HPP
 #define BOOST_MATH_HYPERGEOMETRIC_0F1_BESSEL_HPP
 
+#include <boost/math/tools/config.hpp>
 #include <boost/math/special_functions/bessel.hpp>
 #include <boost/math/special_functions/gamma.hpp>
+#include <boost/math/special_functions/detail/unchecked_factorial.hpp>
 
   namespace boost { namespace math { namespace detail {
 
   template <class T, class Policy>
-  inline T hypergeometric_0F1_bessel(const T& b, const T& z, const Policy& pol)
+  BOOST_MATH_GPU_ENABLED inline T hypergeometric_0F1_bessel(const T& b, const T& z, const Policy& pol)
   {
     BOOST_MATH_STD_USING
 
