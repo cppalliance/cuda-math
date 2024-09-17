@@ -96,8 +96,8 @@ int main(void)
         if (eps > 10)
         {
             std::cerr << "Result verification failed at element " << i << "!\n"
-                        << "Device: " << output_vector[i]
-                        << "\n  Host: " << results[i]
+                        << "Device: " << output_vector[i].real() << ", " << output_vector[i].imag()
+                        << "\n  Host: " << results[i].real() << ", " << results[i].imag()
                         << "\n   Eps: " << eps << std::endl;
             ++failure_counter;
             if (failure_counter > 100)

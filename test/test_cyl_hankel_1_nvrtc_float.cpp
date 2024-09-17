@@ -160,8 +160,8 @@ int main()
             if (boost::math::epsilon_difference(res.real(), h_out[i].real()) > 300)
             {
                 std::cout << "error at line: " << i
-                        << "\nParallel: " << h_out[i]
-                        << "\n  Serial: " << res
+                        << "\nParallel: " << h_out[i].real() << ", " << h_out[i].imag()
+                        << "\n  Serial: " << res.real() << ", " << res.imag()
                         << "\n    Dist: " << boost::math::epsilon_difference(res.real(), h_out[i].real()) << std::endl;
                 ++fail_counter;
                 if (fail_counter > 100)
