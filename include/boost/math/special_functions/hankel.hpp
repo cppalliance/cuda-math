@@ -21,7 +21,7 @@ namespace boost{ namespace math{
 namespace detail{
 
 template <class T, class Policy>
-boost::math::complex<T> hankel_imp(T v, T x, const bessel_no_int_tag&, const Policy& pol, int sign)
+BOOST_MATH_GPU_ENABLED boost::math::complex<T> hankel_imp(T v, T x, const bessel_no_int_tag&, const Policy& pol, int sign)
 {
    BOOST_MATH_STD_USING
    constexpr auto function = "boost::math::cyl_hankel_1<%1%>(%1%,%1%)";
@@ -72,10 +72,10 @@ boost::math::complex<T> hankel_imp(T v, T x, const bessel_no_int_tag&, const Pol
 }
 
 template <class T, class Policy>
-boost::math::complex<T> hankel_imp(int v, T x, const bessel_int_tag&, const Policy& pol, int sign);
+BOOST_MATH_GPU_ENABLED boost::math::complex<T> hankel_imp(int v, T x, const bessel_int_tag&, const Policy& pol, int sign);
 
 template <class T, class Policy>
-inline boost::math::complex<T> hankel_imp(T v, T x, const bessel_maybe_int_tag&, const Policy& pol, int sign)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<T> hankel_imp(T v, T x, const bessel_maybe_int_tag&, const Policy& pol, int sign)
 {
    BOOST_MATH_STD_USING  // ADL of std names.
    int ival = detail::iconv(v, pol);
@@ -87,7 +87,7 @@ inline boost::math::complex<T> hankel_imp(T v, T x, const bessel_maybe_int_tag&,
 }
 
 template <class T, class Policy>
-inline boost::math::complex<T> hankel_imp(int v, T x, const bessel_int_tag&, const Policy& pol, int sign)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<T> hankel_imp(int v, T x, const bessel_int_tag&, const Policy& pol, int sign)
 {
    BOOST_MATH_STD_USING
    if((abs(v) < 200) && (x > 0))
@@ -96,7 +96,7 @@ inline boost::math::complex<T> hankel_imp(int v, T x, const bessel_int_tag&, con
 }
 
 template <class T, class Policy>
-inline boost::math::complex<T> sph_hankel_imp(T v, T x, const Policy& pol, int sign)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<T> sph_hankel_imp(T v, T x, const Policy& pol, int sign)
 {
    BOOST_MATH_STD_USING
    return constants::root_half_pi<T>() * hankel_imp(v + 0.5f, x, bessel_no_int_tag(), pol, sign) / sqrt(boost::math::complex<T>(x));
@@ -105,7 +105,7 @@ inline boost::math::complex<T> sph_hankel_imp(T v, T x, const Policy& pol, int s
 } // namespace detail
 
 template <class T1, class T2, class Policy>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_1(T1 v, T2 x, const Policy& pol)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_1(T1 v, T2 x, const Policy& pol)
 {
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
@@ -115,13 +115,13 @@ inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::resu
 }
 
 template <class T1, class T2>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_1(T1 v, T2 x)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_1(T1 v, T2 x)
 {
    return cyl_hankel_1(v, x, policies::policy<>());
 }
 
 template <class T1, class T2, class Policy>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_2(T1 v, T2 x, const Policy& pol)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_2(T1 v, T2 x, const Policy& pol)
 {
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
@@ -131,13 +131,13 @@ inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::resu
 }
 
 template <class T1, class T2>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_2(T1 v, T2 x)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_2(T1 v, T2 x)
 {
    return cyl_hankel_2(v, x, policies::policy<>());
 }
 
 template <class T1, class T2, class Policy>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_1(T1 v, T2 x, const Policy&)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_1(T1 v, T2 x, const Policy&)
 {
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
@@ -153,13 +153,13 @@ inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::resu
 }
 
 template <class T1, class T2>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_1(T1 v, T2 x)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_1(T1 v, T2 x)
 {
    return sph_hankel_1(v, x, policies::policy<>());
 }
 
 template <class T1, class T2, class Policy>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_2(T1 v, T2 x, const Policy&)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_2(T1 v, T2 x, const Policy&)
 {
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
@@ -175,7 +175,7 @@ inline boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::resu
 }
 
 template <class T1, class T2>
-inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_2(T1 v, T2 x)
+BOOST_MATH_GPU_ENABLED inline boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_2(T1 v, T2 x)
 {
    return sph_hankel_2(v, x, policies::policy<>());
 }
