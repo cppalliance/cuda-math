@@ -75,6 +75,8 @@ run test_expint.cpp ;
 
 run test_expm1_simple.cpp ;
 
+run gegenbauer_test.cpp ;
+
 run test_log1p_simple.cpp ;
 
 run test_digamma_simple.cpp ;
