@@ -357,6 +357,9 @@ run test_expm1_float.cu ;
 run test_gegenbauer_double.cu ;
 run test_gegenbauer_float.cu ;
 
+run test_hermite_double.cu ;
+run test_hermite_float.cu ;
+
 run test_lgamma_double.cu ;
 run test_lgamma_float.cu ;
 run test_tgamma_double.cu ;
