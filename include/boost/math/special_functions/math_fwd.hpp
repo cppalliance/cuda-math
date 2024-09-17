@@ -27,6 +27,7 @@
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/promotion.hpp> // for argument promotion.
 #include <boost/math/tools/type_traits.hpp>
+#include <boost/math/tools/complex.hpp>
 #include <boost/math/policies/policy.hpp>
 
 #ifdef BOOST_MATH_HAS_NVRTC
@@ -60,7 +61,43 @@ namespace detail{
       >::type;
    };
 
-   } // namespace detail
+   typedef boost::math::integral_constant<int, 0> bessel_no_int_tag;      // No integer optimisation possible.
+   typedef boost::math::integral_constant<int, 1> bessel_maybe_int_tag;   // Maybe integer optimisation.
+   typedef boost::math::integral_constant<int, 2> bessel_int_tag;         // Definite integer optimisation.
+
+   template <class T1, class T2, class Policy>
+   struct bessel_traits
+   {
+      using result_type = typename boost::math::conditional<
+         boost::math::is_integral<T1>::value,
+         typename tools::promote_args<T2>::type,
+         tools::promote_args_t<T1, T2>
+      >::type;
+
+      typedef typename policies::precision<result_type, Policy>::type precision_type;
+
+      using optimisation_tag = typename boost::math::conditional<
+         (precision_type::value <= 0 || precision_type::value > 64),
+         bessel_no_int_tag,
+         typename boost::math::conditional<
+            boost::math::is_integral<T1>::value,
+            bessel_int_tag,
+            bessel_maybe_int_tag
+         >::type
+      >::type;
+
+      using optimisation_tag128 = typename boost::math::conditional<
+         (precision_type::value <= 0 || precision_type::value > 113),
+         bessel_no_int_tag,
+         typename boost::math::conditional<
+            boost::math::is_integral<T1>::value,
+            bessel_int_tag,
+            bessel_maybe_int_tag
+         >::type
+      >::type;
+   };
+
+} // namespace detail
 
 } // namespace math
 } // namespace boost
@@ -818,28 +855,28 @@ namespace boost
                          const Policy&);
 
    template <class T1, class T2>
-   std::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_1(T1 v, T2 x);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_1(T1 v, T2 x);
 
    template <class T1, class T2, class Policy>
-   std::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_1(T1 v, T2 x, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_1(T1 v, T2 x, const Policy& pol);
 
    template <class T1, class T2, class Policy>
-   std::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_2(T1 v, T2 x, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> cyl_hankel_2(T1 v, T2 x, const Policy& pol);
 
    template <class T1, class T2>
-   std::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_2(T1 v, T2 x);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> cyl_hankel_2(T1 v, T2 x);
 
    template <class T1, class T2, class Policy>
-   std::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_1(T1 v, T2 x, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_1(T1 v, T2 x, const Policy& pol);
 
    template <class T1, class T2>
-   std::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_1(T1 v, T2 x);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_1(T1 v, T2 x);
 
    template <class T1, class T2, class Policy>
-   std::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_2(T1 v, T2 x, const Policy& pol);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type> sph_hankel_2(T1 v, T2 x, const Policy& pol);
 
    template <class T1, class T2>
-   std::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_2(T1 v, T2 x);
+   BOOST_MATH_GPU_ENABLED boost::math::complex<typename detail::bessel_traits<T1, T2, policies::policy<> >::result_type> sph_hankel_2(T1 v, T2 x);
 
    template <class T, class Policy>
    BOOST_MATH_GPU_ENABLED tools::promote_args_t<T> airy_ai(T x, const Policy&);
@@ -1679,19 +1716,19 @@ template <class OutputIterator, class T>\
    inline boost::math::tools::promote_args_t<RT1, RT2> owens_t(RT1 a, RT2 z){ return boost::math::owens_t(a, z, Policy()); }\
    \
    template <class T1, class T2>\
-   inline std::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> cyl_hankel_1(T1 v, T2 x)\
+   inline BOOST_MATH_GPU_ENABLED boost::math::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> cyl_hankel_1(T1 v, T2 x)\
    {  return boost::math::cyl_hankel_1(v, x, Policy()); }\
    \
    template <class T1, class T2>\
-   inline std::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> cyl_hankel_2(T1 v, T2 x)\
+   inline BOOST_MATH_GPU_ENABLED boost::math::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> cyl_hankel_2(T1 v, T2 x)\
    { return boost::math::cyl_hankel_2(v, x, Policy()); }\
    \
    template <class T1, class T2>\
-   inline std::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> sph_hankel_1(T1 v, T2 x)\
+   inline BOOST_MATH_GPU_ENABLED boost::math::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> sph_hankel_1(T1 v, T2 x)\
    { return boost::math::sph_hankel_1(v, x, Policy()); }\
    \
    template <class T1, class T2>\
-   inline std::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> sph_hankel_2(T1 v, T2 x)\
+   inline BOOST_MATH_GPU_ENABLED boost::math::complex<typename boost::math::detail::bessel_traits<T1, T2, Policy >::result_type> sph_hankel_2(T1 v, T2 x)\
    { return boost::math::sph_hankel_2(v, x, Policy()); }\
    \
    template <class T>\
