@@ -1279,8 +1279,8 @@ namespace boost
    template <class T1, class T2> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z);
    template <class T1, class T2, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z, const Policy&);
 
-   template <class T1, class T2, class T3> tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z);
-   template <class T1, class T2, class T3, class Policy> tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z, const Policy&);
+   template <class T1, class T2, class T3> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z);
+   template <class T1, class T2, class T3, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z, const Policy&);
 
    template <class T1, class T2, class T3> tools::promote_args_t<T1, T2, T3> hypergeometric_1F1(T1 a, T2 b, T3 z);
    template <class T1, class T2, class T3, class Policy> tools::promote_args_t<T1, T2, T3> hypergeometric_1F1(T1 a, T2 b, T3 z, const Policy&);
@@ -1907,7 +1907,7 @@ template <class OutputIterator, class T>\
    { return boost::math::hypergeometric_0F1(a, z, Policy()); }\
    \
    template <class T, class U, class V>\
-   inline boost::math::tools::promote_args_t<T, U> hypergeometric_2F0(const T& a1, const U& a2, const V& z)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T, U> hypergeometric_2F0(const T& a1, const U& a2, const V& z)\
    { return boost::math::hypergeometric_2F0(a1, a2, z, Policy()); }\
    \
 
