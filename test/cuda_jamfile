@@ -11,6 +11,8 @@ project : requirements
 
 run test_0F1_double.cu ;
 run test_0F1_float.cu ;
+run test_1F0_double.cu ;
+run test_1F0_float.cu ;
 
 # Quad
 run test_exp_sinh_quad_float.cu ;
