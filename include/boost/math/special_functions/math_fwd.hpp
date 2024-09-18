@@ -1255,8 +1255,8 @@ namespace boost
    boost::math::tools::promote_args_t<T> lambert_wm1_prime(T z);
 
    // Hypergeometrics:
-   template <class T1, class T2> tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z);
-   template <class T1, class T2, class Policy> tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z, const Policy&);
+   template <class T1, class T2> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z);
+   template <class T1, class T2, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z, const Policy&);
 
    template <class T1, class T2> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z);
    template <class T1, class T2, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z, const Policy&);
