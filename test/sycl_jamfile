@@ -96,3 +96,5 @@ run test_hermite.cpp ;
 
 run test_0F1.cpp ;
 run test_1F0.cpp ;
+
+run test_laguerre.cpp ;
