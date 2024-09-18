@@ -97,6 +97,8 @@ namespace detail{
       >::type;
    };
 
+} // namespace detail
+
    template <class T1, class T2>
    struct laguerre_result
    {
@@ -107,7 +109,13 @@ namespace detail{
       >::type;
    };
 
-} // namespace detail
+template <class T, class Policy>
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type 
+   laguerre(unsigned n, unsigned m, T x, const Policy& pol);
+
+template <class T1, class T2>
+BOOST_MATH_GPU_ENABLED inline typename laguerre_result<T1, T2>::type 
+   laguerre(unsigned n, T1 m, T2 x);
 
 } // namespace math
 } // namespace boost
