@@ -9,8 +9,8 @@ project : requirements
     [ requires cxx14_decltype_auto cxx14_generic_lambdas cxx14_return_type_deduction cxx14_variable_templates cxx14_constexpr ]
     ;
 
-run test_laguerre_double.cu ;
-run test_laguerre_float.cu ;
+run test_2F0_double.cu ;
+run test_2F0_float.cu ;
 
 # Quad
 run test_exp_sinh_quad_float.cu ;
@@ -378,6 +378,9 @@ run test_gamma_p_derivative_double.cu ;
 run test_gamma_p_derivative_float.cu ;
 run test_gamma_p_inv_double.cu ;
 run test_gamma_p_inv_float.cu ;
+
+run test_laguerre_double.cu ;
+run test_laguerre_float.cu ;
 
 run test_log1p_double.cu ;
 run test_log1p_float.cu ;
