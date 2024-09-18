@@ -11,6 +11,8 @@ project : requirements
 
 run test_0F1_nvrtc_double.cpp ;
 run test_0F1_nvrtc_float.cpp ;
+run test_1F0_nvrtc_double.cpp ;
+run test_1F0_nvrtc_float.cpp ;
 
 # Quad
 run test_exp_sinh_quad_nvrtc_float.cpp ;
