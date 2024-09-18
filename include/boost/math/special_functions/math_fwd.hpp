@@ -97,6 +97,16 @@ namespace detail{
       >::type;
    };
 
+   template <class T1, class T2>
+   struct laguerre_result
+   {
+      using type = typename boost::math::conditional<
+         policies::is_policy<T2>::value,
+         typename tools::promote_args<T1>::type,
+         typename tools::promote_args<T2>::type
+      >::type;
+   };
+
 } // namespace detail
 
 } // namespace math
@@ -301,25 +311,25 @@ namespace boost
          legendre_p(int l, int m, T x, const Policy& pol);
 
    template <class T1, class T2, class T3>
-   tools::promote_args_t<T1, T2, T3>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3>
          laguerre_next(unsigned n, T1 x, T2 Ln, T3 Lnm1);
 
    template <class T1, class T2, class T3>
-   tools::promote_args_t<T1, T2, T3>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3>
       laguerre_next(unsigned n, unsigned l, T1 x, T2 Pl, T3 Plm1);
 
    template <class T>
-   tools::promote_args_t<T>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T>
       laguerre(unsigned n, T x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T>
       laguerre(unsigned n, unsigned m, T x, const Policy& pol);
 
    template <class T1, class T2>
    struct laguerre_result
    {
-      using type = typename std::conditional<
+      using type = typename boost::math::conditional<
          policies::is_policy<T2>::value,
          typename tools::promote_args<T1>::type,
          typename tools::promote_args<T2>::type
@@ -327,7 +337,7 @@ namespace boost
    };
 
    template <class T1, class T2>
-   typename laguerre_result<T1, T2>::type
+   BOOST_MATH_GPU_ENABLED typename laguerre_result<T1, T2>::type
       laguerre(unsigned n, T1 m, T2 x);
 
    template <class T>
@@ -1385,11 +1395,11 @@ namespace boost
    using ::boost::math::laguerre_next;\
 \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> \
    laguerre(unsigned n, T x){ return ::boost::math::laguerre(n, x, Policy()); }\
 \
    template <class T1, class T2>\
-   inline typename boost::math::laguerre_result<T1, T2>::type \
+   BOOST_MATH_GPU_ENABLED inline typename boost::math::laguerre_result<T1, T2>::type \
    laguerre(unsigned n, T1 m, T2 x) { return ::boost::math::laguerre(n, m, x, Policy()); }\
 \
    template <class T>\
