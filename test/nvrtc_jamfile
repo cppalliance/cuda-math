@@ -9,10 +9,8 @@ project : requirements
     [ requires cxx14_decltype_auto cxx14_generic_lambdas cxx14_return_type_deduction cxx14_variable_templates cxx14_constexpr ]
     ;
 
-run test_0F1_nvrtc_double.cpp ;
-run test_0F1_nvrtc_float.cpp ;
-run test_1F0_nvrtc_double.cpp ;
-run test_1F0_nvrtc_float.cpp ;
+run test_laguerre_nvrtc_double.cpp ;
+run test_laguerre_nvrtc_float.cpp ;
 
 # Quad
 run test_exp_sinh_quad_nvrtc_float.cpp ;
@@ -371,6 +369,11 @@ run test_gegenbauer_nvrtc_float.cpp ;
 
 run test_hermite_nvrtc_double.cpp ;
 run test_hermite_nvrtc_float.cpp ;
+
+run test_0F1_nvrtc_double.cpp ;
+run test_0F1_nvrtc_float.cpp ;
+run test_1F0_nvrtc_double.cpp ;
+run test_1F0_nvrtc_float.cpp ;
 
 run test_log1p_nvrtc_double.cpp ;
 run test_log1p_nvrtc_float.cpp ;
