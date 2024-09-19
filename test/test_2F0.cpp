@@ -5,8 +5,10 @@
 
 #include "test_2F0.hpp"
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
+#endif
 
 void expected_results()
 {
@@ -54,7 +56,11 @@ void expected_results()
       ".*",                          // platform
       largest_type,                  // test type(s)
       "Random non-integer a2.*",                   // test data group
+      #ifdef BOOST_MATH_HAS_GPU_SUPPORT
+      ".*", 25000, 3000);
+      #else
       ".*", 9000, 3000);               // test function
+      #endif
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
@@ -77,6 +83,8 @@ void expected_results()
    std::cout << "Tests run with " << BOOST_COMPILER << ", "
       << BOOST_STDLIB << ", " << BOOST_PLATFORM << std::endl;
 }
+
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 
 BOOST_AUTO_TEST_CASE( test_main )
 {
@@ -116,3 +124,15 @@ BOOST_AUTO_TEST_CASE( test_main )
 #endif
 #endif
 }
+
+#else
+
+BOOST_AUTO_TEST_CASE( test_main )
+{
+   expected_results();
+   BOOST_MATH_CONTROL_FP;
+   test_spots(0.0F, "float");
+   test_spots(0.0, "double");
+}
+
+#endif

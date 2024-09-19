@@ -5,6 +5,8 @@
 
 #include "test_1F0.hpp"
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
@@ -35,5 +37,12 @@ BOOST_AUTO_TEST_CASE( test_main )
 #endif
 }
 
+#else
 
+BOOST_AUTO_TEST_CASE( test_main )
+{
+   test_spots(0.0F);
+   test_spots(0.0);
+}
 
+#endif 

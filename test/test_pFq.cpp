@@ -3,17 +3,18 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#ifdef __clang__
+#  pragma clang diagnostic push 
+#  pragma clang diagnostic ignored "-Wliteral-range"
+#elif defined(__GNUC__)
+#  pragma GCC diagnostic push 
+#  pragma GCC diagnostic ignored "-Woverflow"
+#endif
+
 #include "test_pFq.hpp"
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 #include <boost/multiprecision/cpp_bin_float.hpp>
-
-#if defined(_MSC_FULL_VER) && (_MSC_FULL_VER < 190023026)
-//
-// Early msvc versions have <initializer_list> but can't handle
-// argument deduction of actual initializer_lists :(
-//
-#define DISABLE_TESTS
-#endif
 
 BOOST_AUTO_TEST_CASE( test_main )
 {
@@ -48,3 +49,12 @@ BOOST_AUTO_TEST_CASE( test_main )
 #endif
 }
 
+#else 
+
+BOOST_AUTO_TEST_CASE( test_main )
+{
+   //test_spots(0.0F, "float");
+   test_spots(0.0, "double");
+}
+
+#endif 

@@ -99,6 +99,24 @@ namespace detail{
 
 } // namespace detail
 
+   template <class T1, class T2>
+   struct laguerre_result
+   {
+      using type = typename boost::math::conditional<
+         policies::is_policy<T2>::value,
+         typename tools::promote_args<T1>::type,
+         typename tools::promote_args<T2>::type
+      >::type;
+   };
+
+template <class T, class Policy>
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type 
+   laguerre(unsigned n, unsigned m, T x, const Policy& pol);
+
+template <class T1, class T2>
+BOOST_MATH_GPU_ENABLED inline typename laguerre_result<T1, T2>::type 
+   laguerre(unsigned n, T1 m, T2 x);
+
 } // namespace math
 } // namespace boost
 
@@ -301,25 +319,25 @@ namespace boost
          legendre_p(int l, int m, T x, const Policy& pol);
 
    template <class T1, class T2, class T3>
-   tools::promote_args_t<T1, T2, T3>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3>
          laguerre_next(unsigned n, T1 x, T2 Ln, T3 Lnm1);
 
    template <class T1, class T2, class T3>
-   tools::promote_args_t<T1, T2, T3>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3>
       laguerre_next(unsigned n, unsigned l, T1 x, T2 Pl, T3 Plm1);
 
    template <class T>
-   tools::promote_args_t<T>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T>
       laguerre(unsigned n, T x);
 
    template <class T, class Policy>
-   tools::promote_args_t<T>
+   BOOST_MATH_GPU_ENABLED tools::promote_args_t<T>
       laguerre(unsigned n, unsigned m, T x, const Policy& pol);
 
    template <class T1, class T2>
    struct laguerre_result
    {
-      using type = typename std::conditional<
+      using type = typename boost::math::conditional<
          policies::is_policy<T2>::value,
          typename tools::promote_args<T1>::type,
          typename tools::promote_args<T2>::type
@@ -327,7 +345,7 @@ namespace boost
    };
 
    template <class T1, class T2>
-   typename laguerre_result<T1, T2>::type
+   BOOST_MATH_GPU_ENABLED typename laguerre_result<T1, T2>::type
       laguerre(unsigned n, T1 m, T2 x);
 
    template <class T>
@@ -1255,14 +1273,14 @@ namespace boost
    boost::math::tools::promote_args_t<T> lambert_wm1_prime(T z);
 
    // Hypergeometrics:
-   template <class T1, class T2> tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z);
-   template <class T1, class T2, class Policy> tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z, const Policy&);
+   template <class T1, class T2> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z);
+   template <class T1, class T2, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_1F0(T1 a, T2 z, const Policy&);
 
-   template <class T1, class T2> tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z);
-   template <class T1, class T2, class Policy> tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z, const Policy&);
+   template <class T1, class T2> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z);
+   template <class T1, class T2, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2> hypergeometric_0F1(T1 b, T2 z, const Policy&);
 
-   template <class T1, class T2, class T3> tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z);
-   template <class T1, class T2, class T3, class Policy> tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z, const Policy&);
+   template <class T1, class T2, class T3> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z);
+   template <class T1, class T2, class T3, class Policy> BOOST_MATH_GPU_ENABLED tools::promote_args_t<T1, T2, T3> hypergeometric_2F0(T1 a1, T2 a2, T3 z, const Policy&);
 
    template <class T1, class T2, class T3> tools::promote_args_t<T1, T2, T3> hypergeometric_1F1(T1 a, T2 b, T3 z);
    template <class T1, class T2, class T3, class Policy> tools::promote_args_t<T1, T2, T3> hypergeometric_1F1(T1 a, T2 b, T3 z, const Policy&);
@@ -1385,11 +1403,11 @@ namespace boost
    using ::boost::math::laguerre_next;\
 \
    template <class T>\
-   inline boost::math::tools::promote_args_t<T> \
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T> \
    laguerre(unsigned n, T x){ return ::boost::math::laguerre(n, x, Policy()); }\
 \
    template <class T1, class T2>\
-   inline typename boost::math::laguerre_result<T1, T2>::type \
+   BOOST_MATH_GPU_ENABLED inline typename boost::math::laguerre_result<T1, T2>::type \
    laguerre(unsigned n, T1 m, T2 x) { return ::boost::math::laguerre(n, m, x, Policy()); }\
 \
    template <class T>\
@@ -1885,11 +1903,11 @@ template <class OutputIterator, class T>\
    { return boost::math::hypergeometric_1F0(a, z, Policy()); }\
    \
    template <class T, class U>\
-   inline boost::math::tools::promote_args_t<T, U> hypergeometric_0F1(const T& a, const U& z)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T, U> hypergeometric_0F1(const T& a, const U& z)\
    { return boost::math::hypergeometric_0F1(a, z, Policy()); }\
    \
    template <class T, class U, class V>\
-   inline boost::math::tools::promote_args_t<T, U> hypergeometric_2F0(const T& a1, const U& a2, const V& z)\
+   BOOST_MATH_GPU_ENABLED inline boost::math::tools::promote_args_t<T, U> hypergeometric_2F0(const T& a1, const U& a2, const V& z)\
    { return boost::math::hypergeometric_2F0(a1, a2, z, Policy()); }\
    \
 

@@ -8,14 +8,20 @@
 #ifndef BOOST_MATH_HYPERGEOMETRIC_PFQ_HPP
 #define BOOST_MATH_HYPERGEOMETRIC_PFQ_HPP
 
+#include <boost/math/tools/config.hpp>
+#include <boost/math/tools/tuple.hpp>
 #include <boost/math/special_functions/detail/hypergeometric_pFq_checked_series.hpp>
+
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 #include <boost/math/tools/throw_exception.hpp>
 #include <chrono>
 #include <initializer_list>
+#endif
 
 namespace boost {
    namespace math {
 
+      #ifndef BOOST_MATH_HAS_GPU_SUPPORT
       namespace detail {
 
          struct pFq_termination_exception : public std::runtime_error
@@ -41,10 +47,11 @@ namespace boost {
             std::chrono::system_clock::time_point start_time;
          };
 
-      }
+      } // namespace detail
+      #endif // BOOST_MATH_HAS_GPU_SUPPORT
 
       template <class Seq, class Real, class Policy>
-      inline typename tools::promote_args<Real, typename Seq::value_type>::type hypergeometric_pFq(const Seq& aj, const Seq& bj, const Real& z, Real* p_abs_error, const Policy& pol)
+      BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<Real, typename Seq::value_type>::type hypergeometric_pFq(const Seq& aj, const Seq& bj, const Real& z, Real* p_abs_error, const Policy& pol)
       {
          typedef typename tools::promote_args<Real, typename Seq::value_type>::type result_type;
          typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -58,7 +65,7 @@ namespace boost {
          BOOST_MATH_STD_USING
 
          long long scale = 0;
-         std::pair<value_type, value_type> r = boost::math::detail::hypergeometric_pFq_checked_series_impl(aj, bj, value_type(z), pol, boost::math::detail::iteration_terminator(boost::math::policies::get_max_series_iterations<forwarding_policy>()), scale);
+         boost::math::pair<value_type, value_type> r = boost::math::detail::hypergeometric_pFq_checked_series_impl(aj, bj, value_type(z), pol, boost::math::detail::iteration_terminator(boost::math::policies::get_max_series_iterations<forwarding_policy>()), scale);
          r.first *= exp(Real(scale));
          r.second *= exp(Real(scale));
          if (p_abs_error)
@@ -67,19 +74,19 @@ namespace boost {
       }
 
       template <class Seq, class Real>
-      inline typename tools::promote_args<Real, typename Seq::value_type>::type hypergeometric_pFq(const Seq& aj, const Seq& bj, const Real& z, Real* p_abs_error = 0)
+      BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<Real, typename Seq::value_type>::type hypergeometric_pFq(const Seq& aj, const Seq& bj, const Real& z, Real* p_abs_error = 0)
       {
          return hypergeometric_pFq(aj, bj, z, p_abs_error, boost::math::policies::policy<>());
       }
 
       template <class R, class Real, class Policy>
-      inline typename tools::promote_args<Real, R>::type hypergeometric_pFq(const std::initializer_list<R>& aj, const std::initializer_list<R>& bj, const Real& z, Real* p_abs_error, const Policy& pol)
+      BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<Real, R>::type hypergeometric_pFq(const std::initializer_list<R>& aj, const std::initializer_list<R>& bj, const Real& z, Real* p_abs_error, const Policy& pol)
       {
          return hypergeometric_pFq<std::initializer_list<R>, Real, Policy>(aj, bj, z, p_abs_error, pol);
       }
 
       template <class R, class Real>
-      inline typename tools::promote_args<Real, R>::type  hypergeometric_pFq(const std::initializer_list<R>& aj, const std::initializer_list<R>& bj, const Real& z, Real* p_abs_error = nullptr)
+      BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<Real, R>::type  hypergeometric_pFq(const std::initializer_list<R>& aj, const std::initializer_list<R>& bj, const Real& z, Real* p_abs_error = nullptr)
       {
          return hypergeometric_pFq<std::initializer_list<R>, Real>(aj, bj, z, p_abs_error);
       }

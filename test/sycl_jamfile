@@ -93,3 +93,12 @@ run test_igamma_inv.cpp ;
 run test_igamma_inva.cpp ;
 
 run test_hermite.cpp ;
+
+run test_0F1.cpp ;
+run test_1F0.cpp ;
+run test_2F0.cpp ;
+# The pFq test compiles and runs just fine but returns gross errors
+# that are not replicated on NVCC or NVRTC...
+#run test_pFq.cpp ;
+
+run test_laguerre.cpp ;

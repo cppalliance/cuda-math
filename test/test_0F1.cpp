@@ -5,8 +5,10 @@
 
 #include "test_0F1.hpp"
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
+#endif
 
 void expected_results()
 {
@@ -60,6 +62,8 @@ void expected_results()
       << BOOST_STDLIB << ", " << BOOST_PLATFORM << std::endl;
 }
 
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
+
 BOOST_AUTO_TEST_CASE( test_main )
 {
    expected_results();
@@ -93,5 +97,16 @@ BOOST_AUTO_TEST_CASE( test_main )
 #endif
 }
 
+#else
 
+BOOST_AUTO_TEST_CASE( test_main )
+{
+   expected_results();
+   BOOST_MATH_CONTROL_FP;
+
+   test_spots(0.0F, "float");
+   test_spots(0.0, "double");
+}
+
+#endif
 

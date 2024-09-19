@@ -6,13 +6,18 @@
 
 #define BOOST_MATH_OVERFLOW_ERROR_POLICY ignore_error
 
+#include <boost/math/tools/config.hpp>
+
+#ifndef BOOST_MATH_NO_REAL_CONCEPT_TESTS
 #include <boost/math/concepts/real_concept.hpp>
+#endif
+
 #include <boost/math/special_functions/math_fwd.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/tools/stats.hpp>
-#include <boost/math/tools/test.hpp>
+#include "../include_private/boost/math/tools/test.hpp"
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
@@ -50,11 +55,11 @@ void test_spots(T)
    BOOST_CHECK_CLOSE(boost::math::hypergeometric_1F0(T(-3), T(-2)), T(27), tolerance);
    BOOST_CHECK_CLOSE(boost::math::hypergeometric_1F0(T(-3), T(-4)), T(125), tolerance);
 
-   BOOST_CHECK_THROW(boost::math::hypergeometric_1F0(T(3), T(1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_1F0(T(-3), T(1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_1F0(T(3.25), T(1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_1F0(T(-3.25), T(1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_1F0(T(3.25), T(2)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_1F0(T(-3.25), T(2)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_1F0(T(3), T(1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_1F0(T(-3), T(1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_1F0(T(3.25), T(1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_1F0(T(-3.25), T(1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_1F0(T(3.25), T(2)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_1F0(T(-3.25), T(2)), std::domain_error);
 }
 

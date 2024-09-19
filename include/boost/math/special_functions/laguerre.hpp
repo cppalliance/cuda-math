@@ -11,8 +11,10 @@
 #pragma once
 #endif
 
-#include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/tools/config.hpp>
+#include <boost/math/tools/promotion.hpp>
+#include <boost/math/tools/type_traits.hpp>
+#include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/policies/error_handling.hpp>
 
 namespace boost{
@@ -20,7 +22,7 @@ namespace math{
 
 // Recurrence relation for Laguerre polynomials:
 template <class T1, class T2, class T3>
-inline typename tools::promote_args<T1, T2, T3>::type  
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T1, T2, T3>::type  
    laguerre_next(unsigned n, T1 x, T2 Ln, T3 Lnm1)
 {
    typedef typename tools::promote_args<T1, T2, T3>::type result_type;
@@ -31,7 +33,7 @@ namespace detail{
 
 // Implement Laguerre polynomials via recurrence:
 template <class T>
-T laguerre_imp(unsigned n, T x)
+BOOST_MATH_GPU_ENABLED T laguerre_imp(unsigned n, T x)
 {
    T p0 = 1;
    T p1 = 1 - x;
@@ -43,7 +45,7 @@ T laguerre_imp(unsigned n, T x)
 
    while(c < n)
    {
-      std::swap(p0, p1);
+      BOOST_MATH_GPU_SAFE_SWAP(p0, p1);
       p1 = laguerre_next(c, x, p0, p1);
       ++c;
    }
@@ -51,8 +53,8 @@ T laguerre_imp(unsigned n, T x)
 }
 
 template <class T, class Policy>
-inline typename tools::promote_args<T>::type 
-laguerre(unsigned n, T x, const Policy&, const std::true_type&)
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type 
+   laguerre(unsigned n, T x, const Policy&, const boost::math::true_type&)
 {
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -60,8 +62,8 @@ laguerre(unsigned n, T x, const Policy&, const std::true_type&)
 }
 
 template <class T>
-inline typename tools::promote_args<T>::type 
-   laguerre(unsigned n, unsigned m, T x, const std::false_type&)
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type 
+   laguerre(unsigned n, unsigned m, T x, const boost::math::false_type&)
 {
    return boost::math::laguerre(n, m, x, policies::policy<>());
 }
@@ -69,7 +71,7 @@ inline typename tools::promote_args<T>::type
 } // namespace detail
 
 template <class T>
-inline typename tools::promote_args<T>::type 
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type 
    laguerre(unsigned n, T x)
 {
    return laguerre(n, x, policies::policy<>());
@@ -77,7 +79,7 @@ inline typename tools::promote_args<T>::type
 
 // Recurrence for associated polynomials:
 template <class T1, class T2, class T3>
-inline typename tools::promote_args<T1, T2, T3>::type  
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T1, T2, T3>::type  
    laguerre_next(unsigned n, unsigned l, T1 x, T2 Pl, T3 Plm1)
 {
    typedef typename tools::promote_args<T1, T2, T3>::type result_type;
@@ -87,7 +89,7 @@ inline typename tools::promote_args<T1, T2, T3>::type
 namespace detail{
 // Laguerre Associated Polynomial:
 template <class T, class Policy>
-T laguerre_imp(unsigned n, unsigned m, T x, const Policy& pol)
+BOOST_MATH_GPU_ENABLED T laguerre_imp(unsigned n, unsigned m, T x, const Policy& pol)
 {
    // Special cases:
    if(m == 0)
@@ -104,7 +106,7 @@ T laguerre_imp(unsigned n, unsigned m, T x, const Policy& pol)
 
    while(c < n)
    {
-      std::swap(p0, p1);
+      BOOST_MATH_GPU_SAFE_SWAP(p0, p1);
       p1 = static_cast<T>(laguerre_next(c, m, x, p0, p1));
       ++c;
    }
@@ -114,7 +116,7 @@ T laguerre_imp(unsigned n, unsigned m, T x, const Policy& pol)
 }
 
 template <class T, class Policy>
-inline typename tools::promote_args<T>::type 
+BOOST_MATH_GPU_ENABLED inline typename tools::promote_args<T>::type 
    laguerre(unsigned n, unsigned m, T x, const Policy& pol)
 {
    typedef typename tools::promote_args<T>::type result_type;
@@ -123,7 +125,7 @@ inline typename tools::promote_args<T>::type
 }
 
 template <class T1, class T2>
-inline typename laguerre_result<T1, T2>::type 
+BOOST_MATH_GPU_ENABLED inline typename laguerre_result<T1, T2>::type 
    laguerre(unsigned n, T1 m, T2 x)
 {
    typedef typename policies::is_policy<T2>::type tag_type;

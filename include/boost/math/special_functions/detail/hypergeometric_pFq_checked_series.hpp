@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright 2018 John Maddock
+//  Copyright 2024 Matt Borland
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -11,16 +12,42 @@
 #  define BOOST_MATH_PFQ_MAX_B_TERMS 5
 #endif
 
-#include <array>
-#include <cstdint>
+#include <boost/math/tools/config.hpp>
+#include <boost/math/tools/cstdint.hpp>
+#include <boost/math/tools/array.hpp>
+#include <boost/math/tools/tuple.hpp>
+#include <boost/math/tools/precision.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/expm1.hpp>
+#include <boost/math/special_functions/trunc.hpp>
 #include <boost/math/special_functions/detail/hypergeometric_series.hpp>
+#include <boost/math/policies/error_handling.hpp>
 
   namespace boost { namespace math { namespace detail {
 
+     #ifdef BOOST_MATH_HAS_GPU_SUPPORT
+     // We can't use std::sort on NVRTC platforms so we make our own sort that's fine for small sets
+     // default terms in the array is 5.
+      template <typename T>
+      BOOST_MATH_GPU_ENABLED void small_less_sort(T* arr, unsigned n)
+      {
+         for (unsigned i = 1; i < n; ++i)
+         {
+            T key = arr[i];
+            int j = static_cast<int>(i) - 1;
+
+            while (j >= 0 && arr[j] > key)
+            {
+               arr[j + 1] = arr[j];
+               --j;
+            }
+            arr[j + 1] = key;
+         }
+      }
+     #endif
+
      template <class Seq, class Real>
-     unsigned set_crossover_locations(const Seq& aj, const Seq& bj, const Real& z, unsigned int* crossover_locations)
+     BOOST_MATH_GPU_ENABLED unsigned set_crossover_locations(const Seq& aj, const Seq& bj, const Real& z, unsigned int* crossover_locations)
      {
         BOOST_MATH_STD_USING
         unsigned N_terms = 0;
@@ -81,7 +108,11 @@
                  ++N_terms;
               }
            }
+           #ifndef BOOST_MATH_HAS_GPU_SUPPORT
            std::sort(crossover_locations, crossover_locations + N_terms, std::less<Real>());
+           #else
+           small_less_sort(crossover_locations, N_terms);
+           #endif
            //
            // Now we need to discard every other terms, as these are the minima:
            //
@@ -112,14 +143,19 @@
            {
               crossover_locations[n] = *bi >= 0 ? 0 : itrunc(-*bi) + 1;
            }
+           #ifndef BOOST_MATH_HAS_GPU_SUPPORT
            std::sort(crossover_locations, crossover_locations + bj.size(), std::less<Real>());
+           #else
+           small_less_sort(crossover_locations, bj.size());
+           #endif 
+
            N_terms = (unsigned)bj.size();
         }
         return N_terms;
      }
 
      template <class Seq, class Real, class Policy, class Terminal>
-     std::pair<Real, Real> hypergeometric_pFq_checked_series_impl(const Seq& aj, const Seq& bj, const Real& z, const Policy& pol, const Terminal& termination, long long& log_scale)
+     BOOST_MATH_GPU_ENABLED boost::math::pair<Real, Real> hypergeometric_pFq_checked_series_impl_final(const Seq& aj, const Seq& bj, const Real& z, const Policy& pol, const Terminal& termination, long long& log_scale)
      {
         BOOST_MATH_STD_USING
         Real result = 1;
@@ -127,7 +163,7 @@
         Real term = 1;
         Real term0 = 0;
         Real tol = boost::math::policies::get_epsilon<Real, Policy>();
-        std::uintmax_t k = 0;
+        boost::math::uintmax_t k = 0;
         Real upper_limit(sqrt(boost::math::tools::max_value<Real>())), diff;
         Real lower_limit(1 / upper_limit);
         long long log_scaling_factor = lltrunc(boost::math::tools::log_max_value<Real>()) - 2;
@@ -136,29 +172,6 @@
         long long local_scaling = 0;
         bool have_no_correct_bits = false;
 
-        if ((aj.size() == 1) && (bj.size() == 0))
-        {
-           if (fabs(z) > 1)
-           {
-              if ((z > 0) && (floor(*aj.begin()) != *aj.begin()))
-              {
-                 Real r = policies::raise_domain_error("boost::math::hypergeometric_pFq", "Got p == 1 and q == 0 and |z| > 1, result is imaginary", z, pol);
-                 return std::make_pair(r, r);
-              }
-              std::pair<Real, Real> r = hypergeometric_pFq_checked_series_impl(aj, bj, Real(1 / z), pol, termination, log_scale);
-              
-              #if (defined(__GNUC__) && __GNUC__ == 13)
-              Real mul = pow(-z, Real(-*aj.begin()));
-              #else
-              Real mul = pow(-z, -*aj.begin());
-              #endif
-              
-              r.first *= mul;
-              r.second *= mul;
-              return r;
-           }
-        }
-
         if (aj.size() > bj.size())
         {
            if (aj.size() == bj.size() + 1)
@@ -166,7 +179,7 @@
               if (fabs(z) > 1)
               {
                  Real r = policies::raise_domain_error("boost::math::hypergeometric_pFq", "Got p == q+1 and |z| > 1, series does not converge", z, pol);
-                 return std::make_pair(r, r);
+                 return boost::math::make_pair(r, r);
               }
               if (fabs(z) == 1)
               {
@@ -178,19 +191,19 @@
                  if ((z == 1) && (s <= 0))
                  {
                     Real r = policies::raise_domain_error("boost::math::hypergeometric_pFq", "Got p == q+1 and |z| == 1, in a situation where the series does not converge", z, pol);
-                    return std::make_pair(r, r);
+                    return boost::math::make_pair(r, r);
                  }
                  if ((z == -1) && (s <= -1))
                  {
                     Real r = policies::raise_domain_error("boost::math::hypergeometric_pFq", "Got p == q+1 and |z| == 1, in a situation where the series does not converge", z, pol);
-                    return std::make_pair(r, r);
+                    return boost::math::make_pair(r, r);
                  }
               }
            }
            else
            {
               Real r = policies::raise_domain_error("boost::math::hypergeometric_pFq", "Got p > q+1, series does not converge", z, pol);
-              return std::make_pair(r, r);
+              return boost::math::make_pair(r, r);
            }
         }
 
@@ -203,7 +216,7 @@
            if (term == 0)
            {
               // There is a negative integer in the aj's:
-              return std::make_pair(result, abs_result);
+              return boost::math::make_pair(result, abs_result);
            }
            for (auto bi = bj.begin(); bi != bj.end(); ++bi)
            {
@@ -211,7 +224,7 @@
               {
                  // The series is undefined:
                  result = boost::math::policies::raise_domain_error("boost::math::hypergeometric_pFq<%1%>", "One of the b values was the negative integer %1%", *bi, pol);
-                 return std::make_pair(result, result);
+                 return boost::math::make_pair(result, result);
               }
               term /= *bi + k;
            }
@@ -254,7 +267,7 @@
               {
                  // We have no correct bits in the result... just give up!
                  result = boost::math::policies::raise_evaluation_error("boost::math::hypergeometric_pFq<%1%>", "Cancellation is so severe that no bits in the result are correct, last result was %1%", Real(result * exp(Real(log_scale))), pol);
-                 return std::make_pair(result, result);
+                 return boost::math::make_pair(result, result);
               }
               else
                  have_no_correct_bits = true;
@@ -287,7 +300,7 @@
               for (auto ai = aj.begin(); ai != aj.end(); ++ai)
               {
                  if ((*ai < 0) && (floor(*ai) == *ai) && (*ai > static_cast<decltype(*ai)>(crossover_locations[n])))
-                    return std::make_pair(result, abs_result);  // b's will never cross the origin!
+                    return boost::math::make_pair(result, abs_result);  // b's will never cross the origin!
               }
               //
               // local results:
@@ -307,7 +320,7 @@
               // so we need to jump forward to that term and then evaluate forwards and backwards from there:
               //
               unsigned s = crossover_locations[n];
-              std::uintmax_t backstop = k;
+              boost::math::uintmax_t backstop = k;
               long long s1(1), s2(1);
               term = 0;
               for (auto ai = aj.begin(); ai != aj.end(); ++ai)
@@ -324,7 +337,7 @@
                     Real p = log_pochhammer(*ai, s, pol, &ls);
                     s1 *= ls;
                     term += p;
-                    loop_error_scale = (std::max)(p, loop_error_scale);
+                    loop_error_scale = BOOST_MATH_GPU_SAFE_MAX(p, loop_error_scale);
                     //err_est += boost::multiprecision::mpfi_float(p);
                  }
               }
@@ -337,17 +350,17 @@
                  Real p = log_pochhammer(*bi, s, pol, &ls);
                  s2 *= ls;
                  term -= p;
-                 loop_error_scale = (std::max)(p, loop_error_scale);
+                 loop_error_scale = BOOST_MATH_GPU_SAFE_MAX(p, loop_error_scale);
                  //err_est -= boost::multiprecision::mpfi_float(p);
               }
               //std::cout << "term = " << term << std::endl;
               Real p = lgamma(Real(s + 1), pol);
               term -= p;
-              loop_error_scale = (std::max)(p, loop_error_scale);
+              loop_error_scale = BOOST_MATH_GPU_SAFE_MAX(p, loop_error_scale);
               //err_est -= boost::multiprecision::mpfi_float(p);
               p = s * log(fabs(z));
               term += p;
-              loop_error_scale = (std::max)(p, loop_error_scale);
+              loop_error_scale = BOOST_MATH_GPU_SAFE_MAX(p, loop_error_scale);
               //err_est += boost::multiprecision::mpfi_float(p);
               //err_est = exp(err_est);
               //std::cout << err_est << std::endl;
@@ -417,7 +430,7 @@
                   if (term == 0)
                   {
                      // There is a negative integer in the aj's:
-                     return std::make_pair(result, abs_result);
+                     return boost::math::make_pair(result, abs_result);
                   }
                   for (auto bi = bj.begin(); bi != bj.end(); ++bi)
                   {
@@ -425,7 +438,7 @@
                      {
                         // The series is undefined:
                         result = boost::math::policies::raise_domain_error("boost::math::hypergeometric_pFq<%1%>", "One of the b values was the negative integer %1%", *bi, pol);
-                        return std::make_pair(result, result);
+                        return boost::math::make_pair(result, result);
                      }
                      term /= *bi + k;
                   }
@@ -470,7 +483,7 @@
                // local results we have now.  First though, rescale abs_result by loop_error_scale
                // to factor in the error in the pochhammer terms at the start of this block:
                //
-               std::uintmax_t next_backstop = k;
+               boost::math::uintmax_t next_backstop = k;
                loop_abs_result += loop_error_scale * fabs(loop_result);
                if (loop_scale > local_scaling)
                {
@@ -528,7 +541,7 @@
                      {
                         // The series is undefined:
                         result = boost::math::policies::raise_domain_error("boost::math::hypergeometric_pFq<%1%>", "One of the b values was the negative integer %1%", *bi, pol);
-                        return std::make_pair(result, result);
+                        return boost::math::make_pair(result, result);
                      }
                      term *= *bi + k;
                   }
@@ -629,24 +642,55 @@
            }
         }
 
-        return std::make_pair(result, abs_result);
+        return boost::math::make_pair(result, abs_result);
+     }
+
+     template <class Seq, class Real, class Policy, class Terminal>
+     BOOST_MATH_GPU_ENABLED boost::math::pair<Real, Real> hypergeometric_pFq_checked_series_impl(const Seq& aj, const Seq& bj, const Real& z, const Policy& pol, const Terminal& termination, long long& log_scale)
+     {
+        BOOST_MATH_STD_USING
+
+        if ((aj.size() == 1) && (bj.size() == 0))
+        {
+           if (fabs(z) > 1)
+           {
+              if ((z > 0) && (floor(*aj.begin()) != *aj.begin()))
+              {
+                 Real r = policies::raise_domain_error("boost::math::hypergeometric_pFq", "Got p == 1 and q == 0 and |z| > 1, result is imaginary", z, pol);
+                 return boost::math::make_pair(r, r);
+              }
+              boost::math::pair<Real, Real> r = hypergeometric_pFq_checked_series_impl_final(aj, bj, Real(1 / z), pol, termination, log_scale);
+              
+              #if (defined(__GNUC__) && __GNUC__ == 13)
+              Real mul = pow(-z, Real(-*aj.begin()));
+              #else
+              Real mul = pow(-z, -*aj.begin());
+              #endif
+              
+              r.first *= mul;
+              r.second *= mul;
+              return r;
+           }
+        }
+        
+        return hypergeometric_pFq_checked_series_impl_final(aj, bj, z, pol, termination, log_scale);
      }
 
      struct iteration_terminator
      {
-        iteration_terminator(std::uintmax_t i) : m(i) {}
+        BOOST_MATH_GPU_ENABLED iteration_terminator(boost::math::uintmax_t i) : m(i) {}
 
-        bool operator()(std::uintmax_t v) const { return v >= m; }
+        BOOST_MATH_GPU_ENABLED bool operator()(boost::math::uintmax_t v) const { return v >= m; }
 
-        std::uintmax_t m;
+        boost::math::uintmax_t m;
      };
 
      template <class Seq, class Real, class Policy>
-     Real hypergeometric_pFq_checked_series_impl(const Seq& aj, const Seq& bj, const Real& z, const Policy& pol, long long& log_scale)
+     BOOST_MATH_GPU_ENABLED Real hypergeometric_pFq_checked_series_impl(const Seq& aj, const Seq& bj, const Real& z, const Policy& pol, long long& log_scale)
      {
         BOOST_MATH_STD_USING
         iteration_terminator term(boost::math::policies::get_max_series_iterations<Policy>());
-        std::pair<Real, Real> result = hypergeometric_pFq_checked_series_impl(aj, bj, z, pol, term, log_scale);
+        boost::math::pair<Real, Real> result = hypergeometric_pFq_checked_series_impl(aj, bj, z, pol, term, log_scale);
         //
         // Check to see how many digits we've lost, if it's more than half, raise an evaluation error -
         // this is an entirely arbitrary cut off, but not unreasonable.
@@ -659,10 +703,10 @@
      }
 
      template <class Real, class Policy>
-     inline Real hypergeometric_1F1_checked_series_impl(const Real& a, const Real& b, const Real& z, const Policy& pol, long long& log_scale)
+     BOOST_MATH_GPU_ENABLED inline Real hypergeometric_1F1_checked_series_impl(const Real& a, const Real& b, const Real& z, const Policy& pol, long long& log_scale)
      {
-        std::array<Real, 1> aj = { a };
-        std::array<Real, 1> bj = { b };
+        boost::math::array<Real, 1> aj = { a };
+        boost::math::array<Real, 1> bj = { b };
         return hypergeometric_pFq_checked_series_impl(aj, bj, z, pol, log_scale);
      }
 

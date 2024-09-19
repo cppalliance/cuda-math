@@ -6,13 +6,18 @@
 
 #define BOOST_MATH_OVERFLOW_ERROR_POLICY ignore_error
 
+#include <boost/math/tools/config.hpp>
+
+#ifndef BOOST_MATH_HAS_GPU_SUPPORT
 #include <boost/math/concepts/real_concept.hpp>
+#endif
+
 #include <boost/math/special_functions/math_fwd.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/tools/stats.hpp>
-#include <boost/math/tools/test.hpp>
+#include "../include_private/boost/math/tools/test.hpp"
 #include <boost/math/tools/big_constant.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
@@ -121,12 +126,12 @@ void test_spots_1F0(T, const char*)
    BOOST_CHECK_CLOSE(boost::math::hypergeometric_pFq({ T(-3) }, {}, T(-2)), T(27), tolerance);
    BOOST_CHECK_CLOSE(boost::math::hypergeometric_pFq({ T(-3) }, {}, T(-4)), T(125), tolerance);
 
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({ T(3) }, {}, T(1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({ T(3) }, {}, T(1)), std::domain_error);
    //BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({ T(-3) }, {}, T(1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({ T(3.25) }, {}, T(1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({ T(3.25) }, {}, T(1)), std::domain_error);
    //BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({ T(-3.25) }, {}, T(1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({ T(3.25) }, {}, T(2)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({ T(-3.25) }, {}, T(2)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({ T(3.25) }, {}, T(2)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({ T(-3.25) }, {}, T(2)), std::domain_error);
 }
 
 template <class T>
@@ -138,9 +143,9 @@ void test_spots_0F1(T, const char*)
    BOOST_CHECK_EQUAL(boost::math::hypergeometric_pFq({}, { T(-3) }, T(0)), 1);
    //BOOST_CHECK_EQUAL(boost::math::hypergeometric_pFq({}, { T(0) }, T(0)), 1);
 
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({}, { T(0) }, T(-1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({}, { T(-1) }, T(-1)), std::domain_error);
-   BOOST_CHECK_THROW(boost::math::hypergeometric_pFq({}, { T(-10) }, T(-5)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({}, { T(0) }, T(-1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({}, { T(-1) }, T(-1)), std::domain_error);
+   BOOST_MATH_CHECK_THROW(boost::math::hypergeometric_pFq({}, { T(-10) }, T(-5)), std::domain_error);
 
    static const std::array<std::array<T, 3>, 35> hypergeometric_pFq_integer_data = { {
       { SC_(4.0), SC_(-20.0),  SC_(-0.012889714201783047561923257996127233830940165138385) },
@@ -209,12 +214,17 @@ void test_spots_1F1(T, const char*)
 
    for (auto row = hypergeometric_1F1.begin(); row != hypergeometric_1F1.end(); ++row)
    {
-      try {
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
+      try
+      #endif
+      {
          T norm;
          T result = boost::math::hypergeometric_pFq({ (*row)[0] }, { (*row)[1] }, (*row)[2], &norm);
          check_pFq_result(result, norm, (*row)[3], { (*row)[0] }, { (*row)[1] }, (*row)[2]);
       }
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
       catch (const boost::math::evaluation_error&) {}
+      #endif
    }
 }
 
@@ -225,12 +235,17 @@ void test_spots_1F1_b(T, const char*)
 
    for (auto row = hypergeometric_1F1_big.begin(); row != hypergeometric_1F1_big.end(); ++row)
    {
-      try {
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
+      try
+      #endif
+      {
          T norm;
          T result = boost::math::hypergeometric_pFq({ (*row)[0] }, { (*row)[1] }, (*row)[2], &norm);
          check_pFq_result(result, norm, (*row)[3], { (*row)[0] }, { (*row)[1] }, (*row)[2]);
       }
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
       catch (const boost::math::evaluation_error&) {}
+      #endif
    }
 }
 
@@ -241,12 +256,17 @@ void test_spots_2F1(T, const char*)
 
    for (auto row = hypergeometric_2F1.begin(); row != hypergeometric_2F1.end(); ++row)
    {
-      try {
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
+      try
+      #endif
+      {
          T norm;
          T result = boost::math::hypergeometric_pFq({ (*row)[0], (*row)[1] }, { (*row)[2] }, (*row)[3], &norm);
          check_pFq_result(result, norm, (*row)[4], { (*row)[0], (*row)[1] }, { (*row)[2] }, (*row)[3]);
       }
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
       catch (const boost::math::evaluation_error&) {}
+      #endif
    }
 }
 
@@ -257,12 +277,17 @@ void test_spots_0F2(T, const char*)
 
    for (auto row = hypergeometric_0F2.begin(); row != hypergeometric_0F2.end(); ++row)
    {
-      try {
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
+      try
+      #endif
+      {
          T norm;
          T result = boost::math::hypergeometric_pFq({}, { (*row)[0], (*row)[1] }, (*row)[2], &norm);
          check_pFq_result(result, norm, (*row)[3], {}, { (*row)[0], (*row)[1] }, (*row)[2]);
       }
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
       catch (const boost::math::evaluation_error&) {}
+      #endif
    }
 }
 
@@ -273,12 +298,17 @@ void test_spots_1F2(T, const char*)
 
    for (auto row = hypergeometric_1F2.begin(); row != hypergeometric_1F2.end(); ++row)
    {
-      try {
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
+      try
+      #endif
+      {
          T norm;
          T result = boost::math::hypergeometric_pFq({ (*row)[0] }, { (*row)[1], (*row)[2] }, (*row)[3], &norm);
          check_pFq_result(result, norm, (*row)[4], { (*row)[0] }, { (*row)[1], (*row)[2] }, (*row)[3]);
       }
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
       catch (const boost::math::evaluation_error&) {}
+      #endif
    }
 }
 
@@ -289,12 +319,17 @@ void test_spots_2F2(T, const char*)
 
    for (auto row = hypergeometric_2F2.begin(); row != hypergeometric_2F2.end(); ++row)
    {
-      try {
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
+      try
+      #endif
+      {
          T norm;
          T result = boost::math::hypergeometric_pFq({ (*row)[0], (*row)[1] }, { (*row)[2], (*row)[3] }, (*row)[4], &norm);
          check_pFq_result(result, norm, (*row)[5], { (*row)[0], (*row)[1] }, { (*row)[2], (*row)[3] }, (*row)[4]);
       }
+      #ifndef BOOST_MATH_NO_EXCEPTIONS
       catch (const boost::math::evaluation_error&) {}
+      #endif
    }
 }
 
